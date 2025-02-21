@@ -1,7 +1,7 @@
 {
   "version": "0.0.1",
   "source": "src/index.js",
-  "module": "dist/today-card.js",
+  "module": "dist/ha-today-card.js",
   "targets": {
     "module": {
       "includeNodeModules": true
