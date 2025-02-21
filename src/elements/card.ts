@@ -10,6 +10,7 @@ import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
+import {REFRESH_INTERVAL} from "../const";
 
 @customElement('today-card')
 export class TodayCard extends LitElement {
@@ -18,6 +19,7 @@ export class TodayCard extends LitElement {
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private content: TemplateResult = html``;
     private initialized: boolean = false;
+    private refreshInterval: number | undefined;
 
     static get styles(): CSSResult {
         return unsafeCSS(styles);
@@ -25,6 +27,22 @@ export class TodayCard extends LitElement {
 
     static getConfigElement(): HTMLElement {
         return document.createElement("today-card-editor");
+    }
+
+    connectedCallback(): void {
+        super.connectedCallback();
+
+        if (this.refreshInterval === undefined) {
+            this.refreshInterval = window.setInterval((): void => {
+                this.updateEvents();
+            }, REFRESH_INTERVAL);
+        }
+    }
+
+    disconnectedCallback(): void {
+        window.clearInterval(this.refreshInterval);
+
+        super.disconnectedCallback();
     }
 
     static getStubConfig(
