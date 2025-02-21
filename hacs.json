@@ -1,7 +1,7 @@
 {
     "name": "Today Card",
     "content_in_root": false,
-    "filename": "dist/ha-today-card.js",
+    "filename": "ha-today-card.js",
     "homeassistant": "2025.2.0",
     "hacs": "2.0.0"
 }

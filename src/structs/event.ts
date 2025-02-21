@@ -8,10 +8,10 @@ export default class CalendarEvent
 {
     private _rawEvent: any;
     private _config: any;
-    private _cachedStart: dayjs.Dayjs;
-    private _cachedEnd: dayjs.Dayjs;
-    private _cachedNumberOfDays: number;
-    private _cachedCurrentDay: number;
+    private _cachedStart: dayjs.Dayjs | undefined;
+    private _cachedEnd: dayjs.Dayjs | undefined;
+    private _cachedNumberOfDays: number | undefined;
+    private _cachedCurrentDay: number | undefined;
 
     constructor(rawEvent: any, config: any)
     {

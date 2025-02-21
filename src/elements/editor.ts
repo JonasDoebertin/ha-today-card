@@ -1,9 +1,10 @@
 import styles from "bundle-text:./editor.css";
 import {html, LitElement, nothing, unsafeCSS} from "lit";
+import {customElement} from "lit/decorators.js";
 import {assert} from "superstruct";
 import {fireEvent, processEditorEntities} from "../functions/config.js";
 import {loadHaComponents} from "../functions/hacks";
-import {cardConfigStruct} from "../structs/config";
+import {CardConfig} from "../structs/config";
 
 const FORM_SCHEMA = [
     {
@@ -35,6 +36,7 @@ const FORM_SCHEMA = [
     },
 ];
 
+@customElement('today-card-editor')
 export class TodayCardEditor extends LitElement
 {
 
@@ -57,7 +59,7 @@ export class TodayCardEditor extends LitElement
 
     setConfig(config)
     {
-        assert(config, cardConfigStruct);
+        assert(config, CardConfig);
 
         let entities = processEditorEntities(config.entities, false);
         this._config = {...config, entities: entities};

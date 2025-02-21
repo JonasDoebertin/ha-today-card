@@ -1,9 +1,11 @@
 import {mdiClose} from "@mdi/js";
 import styles from "bundle-text:./entity-editor.css";
 import {html, LitElement, nothing, unsafeCSS} from "lit";
+import {customElement} from "lit/decorators.js";
 import {repeat} from "lit/directives/repeat";
 import {fireEvent} from "../functions/config.js";
 
+@customElement('today-card-entities-editor')
 export class TodayCardEntitiesEditor extends LitElement
 {
     static styles = unsafeCSS(styles);

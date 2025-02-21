@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
-  "source": "src/index.js",
+  "source": "src/index.ts",
   "module": "dist/ha-today-card.js",
   "targets": {
     "module": {
@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
+    "custom-card-helpers": "^1.9.0",
     "dayjs": "^1.11.13",
+    "home-assistant-js-websocket": "^9.4.0",
     "lit": "^3.2.1",
     "superstruct": "^2.0.2"
   }

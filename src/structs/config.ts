@@ -1,6 +1,6 @@
-import {any, array, assign, boolean, number, object, optional, string, union} from "superstruct";
+import {any, array, assign, boolean, Infer, number, object, optional, string, union} from "superstruct";
 
-export const baseCardConfigStruct = object({
+export const BaseCardConfig = object({
     type: string(),
     view_layout: any(),
     layout_options: any(),
@@ -8,18 +8,24 @@ export const baseCardConfigStruct = object({
     visibility: any(),
 });
 
-export const entitiesRowConfigStruct = object({
+export type BaseCardConfig = Infer<typeof BaseCardConfig>;
+
+export const EntitiesRowConfig = object({
     entity: string(),
     color: optional(string()),
 });
 
-export const cardConfigStruct = assign(
-    baseCardConfigStruct,
+export type EntitiesRowConfig = Infer<typeof EntitiesRowConfig>;
+
+export const CardConfig = assign(
+    BaseCardConfig,
     object({
         title: optional(string()),
         advance: optional(number()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),
-        entities: union([array(string()), array(entitiesRowConfigStruct)]),
+        entities: union([array(string()), array(EntitiesRowConfig)]),
     }),
 );
+
+export type CardConfig = Infer<typeof CardConfig>;
