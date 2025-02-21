@@ -1,27 +1,24 @@
 import {mdiClose} from "@mdi/js";
 import styles from "bundle-text:./entity-editor.css";
-import {html, LitElement, nothing, unsafeCSS} from "lit";
-import {customElement} from "lit/decorators.js";
+import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
+import {customElement, property, state} from "lit/decorators.js";
 import {repeat} from "lit/directives/repeat";
-import {fireEvent} from "../functions/config.js";
+import {fireEvent} from "../functions/config";
+import {HomeAssistant} from "custom-card-helpers";
+import {EntitiesRowConfig} from "../structs/config";
 
 @customElement('today-card-entities-editor')
-export class TodayCardEntitiesEditor extends LitElement
-{
-    static styles = unsafeCSS(styles);
+export class TodayCardEntitiesEditor extends LitElement {
+    @property({attribute: false}) public hass!: HomeAssistant;
+    @state() private entities: EntitiesRowConfig[] = [];
 
-    static get properties()
-    {
-        return {
-            hass: {state: true},
-            entities: {state: true},
-        };
+    static get styles(): CSSResult {
+        return unsafeCSS(styles);
     }
 
-    render()
-    {
+    render(): TemplateResult {
         if (!this.entities || !this.hass) {
-            return nothing;
+            return html``;
         }
 
         return html`
@@ -46,14 +43,14 @@ export class TodayCardEntitiesEditor extends LitElement
                                 .includeNone=${true}
                                 .includeState=${false}
                                 .index=${index}
-                                @value-changed=${this._changeColor}
+                                @value-changed=${this.changeColor}
                             ></ha-color-picker>
                             <ha-icon-button
                                 .label="Clear"
                                 .path=${mdiClose}
                                 class="remove-icon"
                                 .index=${index}
-                                @click=${this._removeRow}
+                                @click=${this.removeRow}
                             ></ha-icon-button>
                         </div>
                         </div>
@@ -64,14 +61,15 @@ export class TodayCardEntitiesEditor extends LitElement
                 class="add-entity"
                 .hass=${this.hass}
                 .includeDomains="${['calendar']}"
-                @value-changed=${this._addRow}
+                @value-changed=${this.addRow}
             ></ha-entity-picker>
         `;
     }
 
-    _changeColor(event)
-    {
+    private changeColor(event: Event): void {
+        // @ts-expect-error
         const index = event.currentTarget.index;
+        // @ts-expect-error
         const value = event.detail.value;
 
         const newEntities = this.entities.concat();
@@ -83,21 +81,23 @@ export class TodayCardEntitiesEditor extends LitElement
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
 
-    _addRow(event)
-    {
+    private addRow(event: Event): void {
+        // @ts-expect-error
         const value = event.detail.value;
         if (value === "") {
             return;
         }
 
-        const newEntities = this.entities.concat({entity: value});
+        const newEntities = this.entities.concat({entity: value, color: ""});
+
+        // @ts-expect-error
         event.target.value = "";
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
 
-    _removeRow(event)
-    {
+    private removeRow(event: Event): void {
+        // @ts-expect-error
         const index = event.currentTarget.index;
 
         const newEntities = this.entities.concat();
@@ -105,5 +105,4 @@ export class TodayCardEntitiesEditor extends LitElement
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
-
 }

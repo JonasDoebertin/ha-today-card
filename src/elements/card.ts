@@ -1,25 +1,25 @@
 import styles from "bundle-text:./card.css";
 import {CSSResult, html, LitElement, nothing, TemplateResult, unsafeCSS} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import {assert} from "superstruct";
-import {getEvents} from "../functions/calendar.js";
+import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
-import {processEditorEntities} from "../functions/config.js";
+import {processEditorEntities} from "../functions/config";
 import localize from "../localization/localize";
-import {CardConfig} from "../structs/config";
+import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 
 @customElement('today-card')
 export class TodayCard extends LitElement {
-    // @property({ attribute: false }) public hass!: HomeAssistant;
-    @state() private config: CardConfig;
-    @state() private content: TemplateResult;
+    @property({attribute: false}) public hass!: HomeAssistant;
+    @state() private config: CardConfig | undefined;
+    @state() private entities: EntitiesRowConfig[] = [];
+    @state() private content: TemplateResult = html``;
     private initialized: boolean = false;
-    private _hass?: HomeAssistant;
 
-    set hass(hass: HomeAssistant) {
-        this._hass = hass;
+    static get styles(): CSSResult {
+        return unsafeCSS(styles);
     }
 
     static getConfigElement(): HTMLElement {
@@ -49,13 +49,16 @@ export class TodayCard extends LitElement {
 
     setConfig(config: CardConfig) {
         assert(config, CardConfig);
-        this.config = {...config, entities: processEditorEntities(config.entities, true)};
+
+        let entities = processEditorEntities(config.entities, true);
+        this.config = {...config, entities: entities};
+        this.entities = entities;
+
         this.content = html``;
     }
 
     async updateEvents() {
-        console.log('Updating events');
-        const events = await getEvents(this.config, this._hass);
+        const events = await getEvents(this.config, this.entities, this.hass);
 
         let eventsHtml = events.map((event: CalendarEvent) => {
             return html`
@@ -77,22 +80,17 @@ export class TodayCard extends LitElement {
     }
 
     render() {
-        console.log('Rendering');
         if (!this.initialized) {
             this.updateEvents();
             this.initialized = true;
         }
 
         return html`
-            <ha-card header="${this.config.title}">
+            <ha-card header="${this.config?.title || nothing}">
                 <div class="card-content">
                     ${this.content}
                 </div>
             </ha-card>
         `;
-    }
-
-    static get styles(): CSSResult {
-        return unsafeCSS(styles);
     }
 }

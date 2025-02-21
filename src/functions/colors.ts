@@ -1,13 +1,13 @@
-export const FALLBACK_COLORS = new Set([
+export const FALLBACK_COLORS: string[] = [
     "blue",
     "yellow",
     "red",
     "cyan",
     "deep-purple",
     "pink",
-]);
+];
 
-export const THEME_COLORS = new Set([
+export const THEME_COLORS: string[] = [
     "primary",
     "accent",
     "disabled",
@@ -34,16 +34,16 @@ export const THEME_COLORS = new Set([
     "blue-grey",
     "black",
     "white",
-]);
+];
 
-export function getFallBackColor(index)
+export function getFallBackColor(index: number): string
 {
-    return FALLBACK_COLORS[index % FALLBACK_COLORS.size];
+    return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
 }
 
-export function computeCssColor(color)
+export function computeCssColor(color: string): string
 {
-    if (THEME_COLORS.has(color)) {
+    if (THEME_COLORS.includes(color)) {
         return `var(--${color}-color)`;
     }
 

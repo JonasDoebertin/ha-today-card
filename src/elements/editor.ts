@@ -1,10 +1,11 @@
 import styles from "bundle-text:./editor.css";
-import {html, LitElement, nothing, unsafeCSS} from "lit";
-import {customElement} from "lit/decorators.js";
+import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
+import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";
-import {fireEvent, processEditorEntities} from "../functions/config.js";
+import {fireEvent, processEditorEntities} from "../functions/config";
 import {loadHaComponents} from "../functions/hacks";
-import {CardConfig} from "../structs/config";
+import {CardConfig, EntitiesRowConfig} from "../structs/config";
+import {HomeAssistant} from "custom-card-helpers";
 
 const FORM_SCHEMA = [
     {
@@ -37,83 +38,74 @@ const FORM_SCHEMA = [
 ];
 
 @customElement('today-card-editor')
-export class TodayCardEditor extends LitElement
-{
+export class TodayCardEditor extends LitElement {
+    @property({attribute: false}) public hass!: HomeAssistant;
+    @state() private config: CardConfig | undefined;
+    @state() private entities: EntitiesRowConfig[] = [];
 
-    static styles = unsafeCSS(styles);
-
-    static get properties()
-    {
-        return {
-            hass: {},
-            _config: {state: true},
-            _entities: {state: true},
-        };
+    static get styles(): CSSResult {
+        return unsafeCSS(styles);
     }
 
-    connectedCallback()
-    {
+    connectedCallback(): void {
         super.connectedCallback();
         loadHaComponents();
     }
 
-    setConfig(config)
-    {
+    setConfig(config: CardConfig): void {
         assert(config, CardConfig);
 
         let entities = processEditorEntities(config.entities, false);
-        this._config = {...config, entities: entities};
-        this._entities = entities;
+        this.config = {...config, entities: entities};
+        this.entities = entities;
     }
 
-    render()
-    {
-        if (!this.hass || !this._config) {
-            return nothing;
+    render(): TemplateResult {
+        if (!this.hass || !this.config) {
+            return html``;
         }
 
         return html`
             <ha-form
                 .hass=${this.hass}
-                .data=${this._config}
+                .data=${this.config}
                 .schema=${FORM_SCHEMA}
-                .computeLabel=${this._computeLabel}
-                @value-changed=${this._valueChanged}
+                .computeLabel=${this.computeLabel}
+                @value-changed=${this.valueChanged}
             ></ha-form>
             <today-card-entities-editor
                 .hass=${this.hass}
-                .entities=${this._entities}
-                @entities-changed=${this._entitiesChanged}
+                .entities=${this.entities}
+                @entities-changed=${this.entitiesChanged}
             ></today-card-entities-editor>
         `;
     }
 
-    _valueChanged(event)
-    {
+    private valueChanged(event: Event): void {
         event.stopPropagation();
-        if (!this._config || !this.hass) {
+        if (!this.config || !this.hass) {
             return;
         }
 
+        // @ts-ignore
         let config = event.detail.value;
 
         fireEvent(this, "config-changed", {config});
     }
 
-    _entitiesChanged(event)
-    {
+    private entitiesChanged(event: Event) {
         event.stopPropagation();
-        if (!this._config || !this.hass) {
+        if (!this.config || !this.hass) {
             return;
         }
 
-        let config = {...this._config, entities: event.detail.entities};
+        // @ts-ignore
+        let config = {...this.config, entities: event.detail.entities};
 
         fireEvent(this, "config-changed", {config});
     }
 
-    _computeLabel(schema)
-    {
+    private computeLabel(schema: Record<string, unknown>): string {
         switch (schema.name) {
             case "title":
                 return "Title";
