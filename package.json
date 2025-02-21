@@ -1,5 +1,19 @@
 {
+  "name": "ha-today-card",
   "version": "0.0.1",
+  "description": "Show today's calendar schedule on your Home Assistant Lovelace Dashboard",
+  "keywords": [
+    "card",
+    "hacs",
+    "home-assistant",
+    "homeassistant",
+    "lovelace"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JonasDoebertin/ha-today-card"
+  },
+  "license": "MIT",
   "source": "src/index.ts",
   "module": "dist/ha-today-card.js",
   "targets": {
@@ -11,10 +25,6 @@
     "watch": "parcel watch",
     "build": "parcel build"
   },
-  "devDependencies": {
-    "@parcel/transformer-inline-string": "^2.13.3",
-    "parcel": "^2.13.3"
-  },
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "custom-card-helpers": "^1.9.0",
@@ -22,5 +32,9 @@
     "home-assistant-js-websocket": "^9.4.0",
     "lit": "^3.2.1",
     "superstruct": "^2.0.2"
+  },
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.13.3",
+    "parcel": "^2.13.3"
   }
 }
