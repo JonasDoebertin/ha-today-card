@@ -6,6 +6,7 @@ import {fireEvent, processEditorEntities} from "../functions/config";
 import {loadHaComponents} from "../functions/hacks";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
+import {setHass} from "../globals";
 
 const FORM_SCHEMA = [
     {
@@ -53,6 +54,7 @@ export class TodayCardEditor extends LitElement {
     }
 
     setConfig(config: CardConfig): void {
+        setHass(this.hass);
         assert(config, CardConfig);
 
         let entities = processEditorEntities(config.entities, false);
@@ -64,6 +66,8 @@ export class TodayCardEditor extends LitElement {
         if (!this.hass || !this.config) {
             return html``;
         }
+
+        setHass(this.hass);
 
         return html`
             <ha-form

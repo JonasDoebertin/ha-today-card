@@ -1,5 +1,15 @@
 {
-    "card": {},
+    "noEvents":{
+        "title": "Keine Termine geplant",
+        "subtitle": "Mach was Schönes"
+    },
+    "event": {
+        "schedule":{
+            "allDay": "Ganztägig",
+            "from": "Ab",
+            "until": "Bis"
+        }
+    },
     "config": {
         "stub": {
             "title": "Heutiger Terminplan"

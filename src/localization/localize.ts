@@ -1,6 +1,7 @@
 import * as de from './lang/de.json';
 import * as en from './lang/en.json';
-import {HomeAssistant} from "custom-card-helpers";
+import {getHass} from "../globals";
+
 
 const TRANSLATIONS: Record<string, unknown> = {
     de,
@@ -24,8 +25,8 @@ function getTranslatedString(lang: string, key: string): string | undefined
     }
 }
 
-export default function localize(hass: HomeAssistant, key: string) {
-    const lang = hass?.language ?? DEFAULT_LANG;
+export default function localize(key: string): string {
+    const lang = getHass()?.language ?? DEFAULT_LANG;
 
     let translated: string | undefined;
 

@@ -2,6 +2,7 @@ import * as dayjs from "dayjs";
 import * as isToday from "dayjs/plugin/isToday";
 import {TIME_FORMAT} from "../const";
 import {EntitiesRowConfig} from "./config";
+import localize from "../localization/localize";
 
 dayjs.extend(isToday);
 
@@ -76,18 +77,26 @@ export default class CalendarEvent
     get schedule(): string
     {
         if (this.isMultiDay && this.isFirstDay) {
-            return "Ab" + " " + this.start.format(TIME_FORMAT);
+            if (this.start.isSame(this.start.clone().startOf('day'))) {
+                return `${localize('event.schedule.allDay')} (${this.currentDay}/${this.numberOfDays})`;
+            }
+
+            return `${localize('event.schedule.from')} ${this.start.format(TIME_FORMAT)}`;
         }
 
         if (this.isMultiDay && this.isLastDay) {
-            return "Bis " + this.end.format(TIME_FORMAT);
+            if (this.end.isSame(this.end.clone().endOf('day'))) {
+                return `${localize('event.schedule.allDay')} (${this.currentDay}/${this.numberOfDays})`;
+            }
+
+            return `${localize('event.schedule.until')} ${this.start.format(TIME_FORMAT)}`;
         }
 
         if (this.isAllDay) {
             if (this.numberOfDays > 1) {
-                return `Ganztägig (${this.currentDay}/${this.numberOfDays})`;
+                return `${localize('event.schedule.allDay')} (${this.currentDay}/${this.numberOfDays})`;
             } else {
-                return "Ganztägig";
+                return localize('event.schedule.allDay');
             }
         }
 

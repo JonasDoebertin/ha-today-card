@@ -1,8 +1,13 @@
 {
-    "card": {},
+    "noEvents":{
+        "title": "No events scheduled",
+        "subtitle": "Do something nice"
+    },
     "event": {
         "schedule":{
-            "allDay": "All day"
+            "allDay": "All day",
+            "from": "From",
+            "until": "Until"
         }
     },
     "config": {

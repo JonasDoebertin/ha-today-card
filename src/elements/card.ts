@@ -9,6 +9,7 @@ import localize from "../localization/localize";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
+import {setHass} from "../globals";
 
 @customElement('today-card')
 export class TodayCard extends LitElement {
@@ -39,7 +40,7 @@ export class TodayCard extends LitElement {
 
         return {
             type: "custom:today-card",
-            title: localize(hass, 'config.stub.title'),
+            title: localize('config.stub.title'),
             advance: 0,
             show_all_day_events: true,
             show_past_events: false,
@@ -48,6 +49,7 @@ export class TodayCard extends LitElement {
     }
 
     setConfig(config: CardConfig) {
+        setHass(this.hass);
         assert(config, CardConfig);
 
         let entities = processEditorEntities(config.entities, true);
@@ -80,6 +82,13 @@ export class TodayCard extends LitElement {
     }
 
     render() {
+    render(): TemplateResult {
+        if (!this.hass || !this.config) {
+            return html``;
+        }
+
+        setHass(this.hass);
+
         if (!this.initialized) {
             this.updateEvents();
             this.initialized = true;
