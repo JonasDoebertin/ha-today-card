@@ -14,9 +14,25 @@ const FORM_SCHEMA = [
         selector: {text: {}},
     },
     {
-        name: "advance",
-        default: 0,
-        selector: {number: {mode: "box", step: 1}},
+        name: "",
+        type: "grid",
+        schema: [
+            {
+                name: "advance",
+                default: 0,
+                selector: {number: {mode: "box", step: 1}},
+            },
+            {
+                name: "fallback_color",
+                selector: {
+                    ui_color: {
+                        default_color: "primary",
+                        include_state: false,
+                        include_none: true,
+                    },
+                },
+            },
+        ],
     },
     {
         name: "",
@@ -26,16 +42,7 @@ const FORM_SCHEMA = [
             {name: "show_past_events", selector: {boolean: {}}},
         ],
     },
-    {
-        name: "temp_color",
-        selector: {
-            ui_color: {
-                default_color: "none",
-                include_state: false,
-                include_none: true,
-            },
-        },
-    },
+
 ];
 
 @customElement('today-card-editor')

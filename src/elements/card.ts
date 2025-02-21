@@ -42,6 +42,7 @@ export class TodayCard extends LitElement {
             type: "custom:today-card",
             title: localize('config.stub.title'),
             advance: 0,
+            fallback_color: "primary",
             show_all_day_events: true,
             show_past_events: false,
             entities: calendarEntities,
@@ -59,20 +60,40 @@ export class TodayCard extends LitElement {
         this.content = html``;
     }
 
-    async updateEvents() {
-        const events = await getEvents(this.config, this.entities, this.hass);
+    async updateEvents(): Promise<void> {
+        if (!this.hass || !this.config) {
+            this.content = html``;
 
-        let eventsHtml = events.map((event: CalendarEvent) => {
-            return html`
+            return;
+        }
+
+        const events = await getEvents(this.config, this.entities, this.hass);
+        let eventsHtml;
+
+        if (events.length === 0) {
+            eventsHtml = html`
                 <div class="event">
-                    <div class="indicator" style="background-color: ${computeCssColor(event.color)}"></div>
+                    <div class="indicator" style="background-color: ${computeCssColor(this.config.fallback_color)}"></div>
                     <div class="details">
-                        <p class="title">${event.title}</p>
-                        <p class="schedule">${event.schedule}</p>
+                        <p class="title">${localize("noEvents.title")}</p>
+                        <p class="schedule">${localize("noEvents.subtitle")}</p>
                     </div>
                 </div>
             `;
-        });
+        } else {
+            eventsHtml = events
+                .map((event: CalendarEvent) => {
+                    return html`
+                        <div class="event">
+                            <div class="indicator" style="background-color: ${computeCssColor(event.color)}"></div>
+                            <div class="details">
+                                <p class="title">${event.title}</p>
+                                <p class="schedule">${event.schedule}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
 
         this.content = html`
             <div class="events">
@@ -81,7 +102,6 @@ export class TodayCard extends LitElement {
         `;
     }
 
-    render() {
     render(): TemplateResult {
         if (!this.hass || !this.config) {
             return html``;

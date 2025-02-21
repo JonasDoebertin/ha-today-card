@@ -41,8 +41,12 @@ export function getFallBackColor(index: number): string
     return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
 }
 
-export function computeCssColor(color: string): string
+export function computeCssColor(color?: string): string
 {
+    if (color === "" || color === null || color === undefined) {
+        color = "primary";
+    }
+
     if (THEME_COLORS.includes(color)) {
         return `var(--${color}-color)`;
     }
