@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "source": "src/index.js",
+  "module": "dist/today-card.js",
+  "targets": {
+    "module": {
+      "includeNodeModules": true
+    }
+  },
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "@parcel/transformer-inline-string": "^2.13.3",
+    "parcel": "^2.13.3"
+  },
+  "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "dayjs": "^1.11.13",
+    "lit": "^3.2.1",
+    "superstruct": "^2.0.2"
+  }
+}

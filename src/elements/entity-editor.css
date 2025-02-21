@@ -1,0 +1,31 @@
+.entity {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.details {
+    flex: 1 1 auto;
+    margin-right: 16px;
+}
+
+.name {
+    display: block;
+    font-weight: bold;
+}
+
+.id {
+    display: block;
+    color: var(--secondary-text-color)
+}
+
+.color-picker {
+    flex: 0;
+    margin-right: 16px;
+}
+
+.remove-icon {
+    flex: 0;
+    --mdc-icon-button-size: 36px;
+    color: var(--secondary-text-color);
+}

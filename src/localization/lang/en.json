@@ -1,0 +1,13 @@
+{
+    "card": {},
+    "event": {
+        "schedule":{
+            "allDay": "All day"
+        }
+    },
+    "config": {
+        "stub": {
+            "title": "Today's Schedule"
+        }
+    }
+}

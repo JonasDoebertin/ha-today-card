@@ -1,0 +1,37 @@
+:host {
+    --tc-spacing: 1rem;
+    --tc-indicator-spacing: 0.5rem;
+    --tc-indicator-width: 0.5rem;
+}
+
+.event {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: var(--tc-spacing);
+}
+
+.event:last-child {
+    margin-bottom: 0;
+}
+
+.indicator {
+    flex: 0 0 auto;
+    align-self: stretch;
+    margin-right: var(--tc-indicator-spacing);
+    width: var(--tc-indicator-width);
+    border-radius: calc(var(--tc-indicator-width) / 2);
+}
+
+.details {
+    flex: 1 0 auto;
+}
+
+.title {
+    font-weight: bold;
+    margin: 0;
+}
+
+.schedule {
+    margin: 0;
+    color: var(--secondary-text-color);
+}
