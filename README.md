@@ -3,7 +3,7 @@
 [![HACS][hacs-badge]][hacs-url]
 [![Release][release-badge]][release-url]
 
-[![Open in your Home Assistant instance][my-ha-badge][my-ha-url]
+[![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
 
 <!-- Badges -->
 
