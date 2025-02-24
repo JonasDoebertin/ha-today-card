@@ -6,6 +6,7 @@ export const BaseCardConfig = object({
     layout_options: any(),
     grid_options: any(),
     visibility: any(),
+    card_mod: any(),
 });
 
 export type BaseCardConfig = Infer<typeof BaseCardConfig>;
