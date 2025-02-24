@@ -13,6 +13,16 @@
     "config": {
         "stub": {
             "title": "Today's Schedule"
+        },
+        "label": {
+            "title": "Title",
+            "advance": "Advance (optional)",
+            "fallback_color": "Fallback Color",
+            "show_all_day_events": "Show all day events",
+            "show_past_events": "Show past events",
+            "entities": "Entities (required)",
+            "color": "Color",
+            "clear": "Clear"
         }
     }
 }

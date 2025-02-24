@@ -13,6 +13,16 @@
     "config": {
         "stub": {
             "title": "Heutiger Terminplan"
+        },
+        "label": {
+            "title": "Titel",
+            "advance": "Vorlauf (optional)",
+            "fallback_color": "Standard-Farbe",
+            "show_all_day_events": "Zeige ganztägige Termine",
+            "show_past_events": "Zeige vergangene Termine",
+            "entities": "Entitäten (benötigt)",
+            "color": "Farbe",
+            "clear": "Entfernen"
         }
     }
 }

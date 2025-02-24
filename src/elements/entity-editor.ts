@@ -6,6 +6,7 @@ import {repeat} from "lit/directives/repeat";
 import {fireEvent} from "../functions/config";
 import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
+import localize from "../localization/localize";
 
 @customElement('today-card-entities-editor')
 export class TodayCardEntitiesEditor extends LitElement {
@@ -22,9 +23,7 @@ export class TodayCardEntitiesEditor extends LitElement {
         }
 
         return html`
-            <h3>
-                Entities (required)
-            </h3>
+            <h3>${localize('config.label.entities')}</h3>
             <div class="entities">
                 ${repeat(
                     this.entities,
@@ -38,7 +37,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                             <ha-color-picker
                                 class="color-picker"
                                 .hass=${this.hass}
-                                .label="Color"
+                                .label=${localize('config.label.color')}
                                 .value=${entity.color ?? ""}
                                 .includeNone=${true}
                                 .includeState=${false}
@@ -46,7 +45,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                                 @value-changed=${this.changeColor}
                             ></ha-color-picker>
                             <ha-icon-button
-                                .label="Clear"
+                                .label=${localize('config.label.clear')}
                                 .path=${mdiClose}
                                 class="remove-icon"
                                 .index=${index}

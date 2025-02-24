@@ -7,6 +7,7 @@ import {loadHaComponents} from "../functions/hacks";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import {setHass} from "../globals";
+import localize from "../localization/localize";
 
 const FORM_SCHEMA = [
     {
@@ -117,19 +118,6 @@ export class TodayCardEditor extends LitElement {
     }
 
     private computeLabel(schema: Record<string, unknown>): string {
-        switch (schema.name) {
-            case "title":
-                return "Title";
-            case "advance":
-                return "Advance (optional)";
-            case "show_all_day_events":
-                return "Show all day events";
-            case "show_past_events":
-                return "Show past events";
-            case "temp_color":
-                return "Fallback color";
-            default:
-                return "";
-        }
+        return localize(`config.label.${schema.name}`);
     };
 }
