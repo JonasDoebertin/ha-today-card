@@ -29,22 +29,6 @@ export class TodayCard extends LitElement {
         return document.createElement("today-card-editor");
     }
 
-    connectedCallback(): void {
-        super.connectedCallback();
-
-        if (this.refreshInterval === undefined) {
-            this.refreshInterval = window.setInterval((): void => {
-                this.updateEvents();
-            }, REFRESH_INTERVAL);
-        }
-    }
-
-    disconnectedCallback(): void {
-        window.clearInterval(this.refreshInterval);
-
-        super.disconnectedCallback();
-    }
-
     static getStubConfig(
         hass: HomeAssistant,
         entities: string[],
@@ -65,6 +49,22 @@ export class TodayCard extends LitElement {
             show_past_events: false,
             entities: calendarEntities,
         };
+    }
+
+    connectedCallback(): void {
+        super.connectedCallback();
+
+        if (this.refreshInterval === undefined) {
+            this.refreshInterval = window.setInterval((): void => {
+                this.updateEvents();
+            }, REFRESH_INTERVAL);
+        }
+    }
+
+    disconnectedCallback(): void {
+        window.clearInterval(this.refreshInterval);
+
+        super.disconnectedCallback();
     }
 
     setConfig(config: CardConfig) {
@@ -91,7 +91,8 @@ export class TodayCard extends LitElement {
         if (events.length === 0) {
             eventsHtml = html`
                 <div class="event">
-                    <div class="indicator" style="background-color: ${computeCssColor(this.config.fallback_color)}"></div>
+                    <div class="indicator"
+                         style="background-color: ${computeCssColor(this.config.fallback_color)}"></div>
                     <div class="details">
                         <p class="title">${localize("noEvents.title")}</p>
                         <p class="schedule">${localize("noEvents.subtitle")}</p>

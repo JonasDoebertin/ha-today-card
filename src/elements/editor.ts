@@ -2,12 +2,13 @@ import styles from "bundle-text:./editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";
-import {fireEvent, processEditorEntities} from "../functions/config";
+import {processEditorEntities} from "../functions/config";
 import {loadHaComponents} from "../functions/hacks";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import {setHass} from "../globals";
 import localize from "../localization/localize";
+import {fireEvent} from "../functions/events";
 
 const FORM_SCHEMA = [
     {

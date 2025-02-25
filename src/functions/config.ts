@@ -1,26 +1,14 @@
 import {EntitiesRowConfig} from "../structs/config";
 import {getFallBackColor} from "./colors";
+import {getHass} from "../globals";
 
-export function fireEvent(
-    node: HTMLElement,
-    type: string,
-    detail: Record<string, any> | null | undefined,
-    options?: Record<string, any>
-): Event {
-    options = options || {};
-    detail = detail === null || detail === undefined ? {} : detail;
+export function getEntityName(entity: string): string {
+    const hass = getHass();
+    if (!hass) {
+        return entity;
+    }
 
-    const event = new Event(type, {
-        bubbles: options.bubbles === undefined ? true : options.bubbles,
-        cancelable: Boolean(options.cancelable),
-        composed: options.composed === undefined ? true : options.composed,
-    });
-    // @ts-ignore
-    event.detail = detail;
-
-    node.dispatchEvent(event);
-
-    return event;
+    return hass.entities[entity]?.name ?? entity;
 }
 
 export function processEditorEntities(
@@ -31,13 +19,13 @@ export function processEditorEntities(
         if (typeof entry === "string") {
             return {
                 entity: entry,
-                color: getFallBackColor(i),
+                color: assignColors ? getFallBackColor(i): "",
             };
         }
 
-        // TODO: Inject color for object type entrys
-        // TODO: Only inject colors if enabled
-
-        return entry;
+        return {
+            entity: entry.entity,
+            color: entry.color ?? (assignColors ? getFallBackColor(i): ""),
+        };
     });
 }

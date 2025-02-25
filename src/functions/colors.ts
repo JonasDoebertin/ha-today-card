@@ -1,10 +1,10 @@
 export const FALLBACK_COLORS: string[] = [
-    "blue",
-    "yellow",
-    "red",
-    "cyan",
-    "deep-purple",
+    "light-blue",
+    "amber",
+    "light-green",
     "pink",
+    "deep-purple",
+    "deep-orange",
 ];
 
 export const THEME_COLORS: string[] = [

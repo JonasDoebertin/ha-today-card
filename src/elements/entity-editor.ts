@@ -3,15 +3,16 @@ import styles from "bundle-text:./entity-editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {repeat} from "lit/directives/repeat";
-import {fireEvent} from "../functions/config";
 import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
 import localize from "../localization/localize";
+import {fireEvent} from "../functions/events";
+import {getEntityName} from "../functions/config";
 
 @customElement('today-card-entities-editor')
 export class TodayCardEntitiesEditor extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
-    @state() private entities: EntitiesRowConfig[] = [];
+    @state() public entities: EntitiesRowConfig[] = [];
 
     static get styles(): CSSResult {
         return unsafeCSS(styles);
@@ -31,7 +32,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                     (entity, index) => html`
                         <div class="entity">
                             <div class="details">
-                                <span class="name">Name</span>
+                                <span class="name">${getEntityName(entity.entity)}</span>
                                 <span class="id">${entity.entity}</span>
                             </div>
                             <ha-color-picker
@@ -72,22 +73,18 @@ export class TodayCardEntitiesEditor extends LitElement {
         const value = event.detail.value;
 
         const newEntities = this.entities.concat();
-        newEntities[index] = {
-            entity: newEntities[index].entity,
-            color: value,
-        };
+        newEntities[index] = {...newEntities[index], color: value};
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
 
     private addRow(event: Event): void {
-        // @ts-expect-error
-        const value = event.detail.value;
-        if (value === "") {
+        const entityId = event.detail.value;
+        if (entityId === "") {
             return;
         }
 
-        const newEntities = this.entities.concat({entity: value, color: ""});
+        const newEntities: EntitiesRowConfig[] = this.entities.concat({entity: entityId});
 
         // @ts-expect-error
         event.target.value = "";
