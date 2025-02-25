@@ -1,23 +1,42 @@
 {
     "compilerOptions": {
+
+        // language & environment
         "target": "es2017",
-        "module": "esnext",
-        "moduleResolution": "node",
         "lib": [
-            "es2017",
+            "ESNext",
             "dom",
             "dom.iterable"
         ],
-        "isolatedModules": true,
         "experimentalDecorators": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noUnusedParameters": true,
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "strict": true,
         "useDefineForClassFields": false,
+
+        // emit
+        "removeComments": true,
+
+        // modules
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+
+        // interop constraints
+        "isolatedModules": true,
+
+        // type checking
+        "strict": true,
+        "alwaysStrict": true,
+        "allowUnreachableCode": false,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+
+        // completeness
+        "skipLibCheck": true,
+
     },
     "include": ["src/**/*"]
 }

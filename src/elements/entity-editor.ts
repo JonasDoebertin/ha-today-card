@@ -1,4 +1,4 @@
-import {mdiClose} from "@mdi/js";
+import {mdiClose} from "../functions/icons";
 import styles from "bundle-text:./entity-editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
@@ -72,7 +72,7 @@ export class TodayCardEntitiesEditor extends LitElement {
         // @ts-expect-error
         const value = event.detail.value;
 
-        const newEntities = this.entities.concat();
+        const newEntities: EntitiesRowConfig[] = this.entities.concat();
         newEntities[index] = {...newEntities[index], color: value};
 
         fireEvent(this, "entities-changed", {entities: newEntities});

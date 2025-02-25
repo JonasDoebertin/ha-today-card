@@ -38,7 +38,7 @@ export const THEME_COLORS: string[] = [
 
 export function getFallBackColor(index: number): string
 {
-    return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+    return (FALLBACK_COLORS[index % FALLBACK_COLORS.length] as string);
 }
 
 export function computeCssColor(color?: string): string
