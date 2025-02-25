@@ -5,6 +5,8 @@
 
 [![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
 
+![Today Card for Home Assistant Lovelace Preview](docs/preview.png)
+
 ## Installation
 
 ### HACS
