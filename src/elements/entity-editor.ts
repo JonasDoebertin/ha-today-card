@@ -1,4 +1,4 @@
-import {mdiClose} from "@mdi/js";
+import {mdiClose} from "../functions/icons";
 import styles from "bundle-text:./entity-editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
