@@ -72,7 +72,7 @@ export class TodayCardEntitiesEditor extends LitElement {
         // @ts-expect-error
         const value = event.detail.value;
 
-        const newEntities = this.entities.concat();
+        const newEntities: EntitiesRowConfig[] = this.entities.concat();
         newEntities[index] = {...newEntities[index], color: value};
 
         fireEvent(this, "entities-changed", {entities: newEntities});
