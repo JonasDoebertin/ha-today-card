@@ -49,10 +49,8 @@ fallback_color: teal
 entities:
   - entity: calendar.your_calendar_1
     color: "#1abcf2"
-    name: Calender 1
   - entity: calendar.your_calendar_2
     color: pink
-    name: Calendar 2
 ```
 
 ### Configuration Options
@@ -70,6 +68,14 @@ entities:
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#Colors))                                                                                     |
 
 #### Calendar Entities
+
+Calendar entities can either be provided as a simple list of calendar entities (see [minimal configuration](#Minimal-YAML-Configuration) example) or a list of objects following the below-mentioned structure.
+
+| Name   | Type   | Required     | Default | Description                                                                                                                                                    |
+|--------|--------|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| entity | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
+| color  | string | Optional     |         | The calendars color in the schedule (see [colors](#Colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
+
 
 #### Colors
 
