@@ -2,7 +2,7 @@ import styles from "bundle-text:./editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";
-import {processEditorEntities} from "../functions/config";
+import {isEqual, processEditorEntities} from "../functions/config";
 import {loadHaComponents} from "../functions/hacks";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
@@ -100,10 +100,13 @@ export class TodayCardEditor extends LitElement {
             return;
         }
 
-        // @ts-ignore
-        let config = event.detail.value;
+        const newConfig: CardConfig = (event as any).detail.value;
 
-        fireEvent(this, "config-changed", {config});
+        if (isEqual(newConfig, this.config)) {
+            return;
+        }
+
+        fireEvent(this, "config-changed", {config: newConfig});
     }
 
     private entitiesChanged(event: Event) {
