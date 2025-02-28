@@ -1,10 +1,10 @@
 {
-    "noEvents":{
+    "noEvents": {
         "title": "Keine Termine geplant",
         "subtitle": "Mach was Schönes"
     },
     "event": {
-        "schedule":{
+        "schedule": {
             "allDay": "Ganztägig",
             "from": "Ab",
             "until": "Bis"

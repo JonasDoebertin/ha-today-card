@@ -9,7 +9,7 @@ import localize from "../localization/localize";
 import {fireEvent} from "../functions/events";
 import {getEntityName} from "../functions/config";
 
-@customElement('today-card-entities-editor')
+@customElement("today-card-entities-editor")
 export class TodayCardEntitiesEditor extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
     @state() public entities: EntitiesRowConfig[] = [];
@@ -24,7 +24,7 @@ export class TodayCardEntitiesEditor extends LitElement {
         }
 
         return html`
-            <h3>${localize('config.label.entities')}</h3>
+            <h3>${localize("config.label.entities")}</h3>
             <div class="entities">
                 ${repeat(
                     this.entities,
@@ -38,7 +38,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                             <ha-color-picker
                                 class="color-picker"
                                 .hass=${this.hass}
-                                .label=${localize('config.label.color')}
+                                .label=${localize("config.label.color")}
                                 .value=${entity.color ?? ""}
                                 .includeNone=${true}
                                 .includeState=${false}
@@ -46,7 +46,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                                 @value-changed=${this.changeColor}
                             ></ha-color-picker>
                             <ha-icon-button
-                                .label=${localize('config.label.clear')}
+                                .label=${localize("config.label.clear")}
                                 .path=${mdiClose}
                                 class="remove-icon"
                                 .index=${index}
@@ -60,7 +60,7 @@ export class TodayCardEntitiesEditor extends LitElement {
             <ha-entity-picker
                 class="add-entity"
                 .hass=${this.hass}
-                .includeDomains="${['calendar']}"
+                .includeDomains="${["calendar"]}"
                 @value-changed=${this.addRow}
             ></ha-entity-picker>
         `;
@@ -88,7 +88,9 @@ export class TodayCardEntitiesEditor extends LitElement {
             return;
         }
 
-        const newEntities: EntitiesRowConfig[] = this.entities.concat({entity: entityId});
+        const newEntities: EntitiesRowConfig[] = this.entities.concat({
+            entity: entityId,
+        });
 
         // @ts-expect-error
         event.target.value = "";

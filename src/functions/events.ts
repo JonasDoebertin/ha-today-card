@@ -2,7 +2,7 @@ export function fireEvent(
     node: HTMLElement,
     type: string,
     detail: Record<string, any> | null | undefined,
-    options?: Record<string, any>
+    options?: Record<string, any>,
 ): Event {
     options = options || {};
     detail = detail === null || detail === undefined ? {} : detail;

@@ -1,13 +1,8 @@
 {
     "compilerOptions": {
-
         // language & environment
         "target": "es2017",
-        "lib": [
-            "ESNext",
-            "dom",
-            "dom.iterable"
-        ],
+        "lib": ["ESNext", "dom", "dom.iterable"],
         "experimentalDecorators": true,
         "useDefineForClassFields": false,
 
@@ -35,8 +30,7 @@
         "noFallthroughCasesInSwitch": true,
 
         // completeness
-        "skipLibCheck": true,
-
+        "skipLibCheck": true
     },
     "include": ["src/**/*"]
 }

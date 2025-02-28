@@ -1,6 +1,13 @@
 import styles from "bundle-text:./card.css";
-import {CSSResult, html, LitElement, nothing, TemplateResult, unsafeCSS} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {
+    CSSResult,
+    html,
+    LitElement,
+    nothing,
+    TemplateResult,
+    unsafeCSS,
+} from "lit";
+import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
@@ -12,7 +19,7 @@ import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
 import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
 
-@customElement('today-card')
+@customElement("today-card")
 export class TodayCard extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
     @state() private config: CardConfig | undefined;
@@ -32,19 +39,23 @@ export class TodayCard extends LitElement {
     static getStubConfig(
         hass: HomeAssistant,
         entities: string[],
-        entitiesFallback: string[]
+        entitiesFallback: string[],
     ): Partial<CardConfig> {
-        let calendarEntities = entities.filter((entityId) => entityId.startsWith('calendar.'));
+        let calendarEntities = entities.filter((entityId) => {
+            entityId.startsWith("calendar.");
+        });
 
         if (calendarEntities.length < 1) {
-            calendarEntities = entitiesFallback.filter((entityId) => entityId.startsWith('calendar.'));
+            calendarEntities = entitiesFallback.filter((entityId) => {
+                entityId.startsWith("calendar.");
+            });
         }
 
         return {
             ...DEFAULT_CONFIG,
-            title: localize('config.stub.title'),
+            title: localize("config.stub.title"),
             entities: calendarEntities,
-        }
+        };
     }
 
     connectedCallback(): void {
@@ -87,8 +98,12 @@ export class TodayCard extends LitElement {
         if (events.length === 0) {
             eventsHtml = html`
                 <div class="event">
-                    <div class="indicator"
-                         style="background-color: ${computeCssColor(this.config.fallback_color)}"></div>
+                    <div
+                        class="indicator"
+                        style="background-color: ${computeCssColor(
+                            this.config.fallback_color,
+                        )}"
+                    ></div>
                     <div class="details">
                         <p class="title">${localize("noEvents.title")}</p>
                         <p class="schedule">${localize("noEvents.subtitle")}</p>
@@ -96,25 +111,25 @@ export class TodayCard extends LitElement {
                 </div>
             `;
         } else {
-            eventsHtml = events
-                .map((event: CalendarEvent) => {
-                    return html`
-                        <div class="event">
-                            <div class="indicator" style="background-color: ${computeCssColor(event.color)}"></div>
-                            <div class="details">
-                                <p class="title">${event.title}</p>
-                                <p class="schedule">${event.schedule}</p>
-                            </div>
+            eventsHtml = events.map((event: CalendarEvent) => {
+                return html`
+                    <div class="event">
+                        <div
+                            class="indicator"
+                            style="background-color: ${computeCssColor(
+                                event.color,
+                            )}"
+                        ></div>
+                        <div class="details">
+                            <p class="title">${event.title}</p>
+                            <p class="schedule">${event.schedule}</p>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
+            });
         }
 
-        this.content = html`
-            <div class="events">
-                ${eventsHtml}
-            </div>
-        `;
+        this.content = html` <div class="events">${eventsHtml}</div> `;
     }
 
     render(): TemplateResult {
@@ -131,9 +146,7 @@ export class TodayCard extends LitElement {
 
         return html`
             <ha-card header="${this.config?.title || nothing}">
-                <div class="card-content">
-                    ${this.content}
-                </div>
+                <div class="card-content">${this.content}</div>
             </ha-card>
         `;
     }

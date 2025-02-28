@@ -1,10 +1,10 @@
 {
-    "noEvents":{
+    "noEvents": {
         "title": "No events scheduled",
         "subtitle": "Do something nice"
     },
     "event": {
-        "schedule":{
+        "schedule": {
             "allDay": "All day",
             "from": "From",
             "until": "Until"
