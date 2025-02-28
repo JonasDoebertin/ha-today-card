@@ -16,7 +16,7 @@
 
 .id {
     display: block;
-    color: var(--secondary-text-color)
+    color: var(--secondary-text-color);
 }
 
 .color-picker {

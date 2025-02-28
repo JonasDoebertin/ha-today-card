@@ -7,10 +7,14 @@ import {HomeAssistant} from "custom-card-helpers";
 export async function getEvents(
     config: CardConfig,
     entities: EntitiesRowConfig[],
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ): Promise<CalendarEvent[]> {
-    const start = dayjs().startOf('day').add(config.advance ?? 0, 'day');
-    const end = dayjs().endOf('day').add(config.advance ?? 0, 'day');
+    const start = dayjs()
+        .startOf("day")
+        .add(config.advance ?? 0, "day");
+    const end = dayjs()
+        .endOf("day")
+        .add(config.advance ?? 0, "day");
 
     const events = await fetchEvents(entities, start, end, config, hass);
 
@@ -22,7 +26,7 @@ async function fetchEvents(
     start: dayjs.Dayjs,
     end: dayjs.Dayjs,
     config: CardConfig,
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ): Promise<CalendarEvent[]> {
     const startTime = start.format(HA_API_DATE_FORMAT);
     const endTime = end.format(HA_API_DATE_FORMAT);
@@ -35,9 +39,9 @@ async function fetchEvents(
 
         promises.push(
             hass
-                .callApi('GET', url)
+                .callApi("GET", url)
                 .then((events: any): CalendarEvent[] => {
-                    return transformEvents(events, entity, config)
+                    return transformEvents(events, entity, config);
                 })
                 .then((events: CalendarEvent[]): void => {
                     collectedEvents.push(...events);
@@ -56,46 +60,48 @@ async function fetchEvents(
 function transformEvents(
     events: Record<string, unknown>[],
     entity: EntitiesRowConfig,
-    config: CardConfig
+    config: CardConfig,
 ): CalendarEvent[] {
-    return events.map(
-        (event) => new CalendarEvent(event, entity, config)
-    );
+    return events.map((event) => new CalendarEvent(event, entity, config));
 }
 
 function filterEvents(
     events: CalendarEvent[],
-    config: CardConfig
+    config: CardConfig,
 ): CalendarEvent[] {
-    return events
-        .filter((event: CalendarEvent): boolean => {
-            if (event.isAllDay && event.end.isBefore(dayjs().startOf('day').add(config.advance ?? 0, 'day'))) {
-                return false;
-            }
+    return events.filter((event: CalendarEvent): boolean => {
+        if (
+            event.isAllDay
+            && event.end.isBefore(
+                dayjs()
+                    .startOf("day")
+                    .add(config.advance ?? 0, "day"),
+            )
+        ) {
+            return false;
+        }
 
-            if (!config.show_all_day_events && event.isAllDay) {
-                return false;
-            }
+        if (!config.show_all_day_events && event.isAllDay) {
+            return false;
+        }
 
-            if (!config.show_past_events && event.isInPast) {
-                return false;
-            }
+        if (!config.show_past_events && event.isInPast) {
+            return false;
+        }
 
-            return true;
-        });
+        return true;
+    });
 }
 
-function getCompareStart(event: CalendarEvent): number
-{
+function getCompareStart(event: CalendarEvent): number {
     if (event.isMultiDay && !event.isFirstDay) {
-        return dayjs().startOf('day').unix();
+        return dayjs().startOf("day").unix();
     } else {
         return event.start.unix();
     }
 }
 
-function getCompareEnd(event: CalendarEvent): number
-{
+function getCompareEnd(event: CalendarEvent): number {
     if (event.isMultiDay && !event.isLastDay) {
         return dayjs().unix();
     } else {
@@ -103,8 +109,7 @@ function getCompareEnd(event: CalendarEvent): number
     }
 }
 
-function compareAllDayEvents(a: CalendarEvent, b: CalendarEvent): number
-{
+function compareAllDayEvents(a: CalendarEvent, b: CalendarEvent): number {
     let result = b.numberOfDays - a.numberOfDays;
 
     if (result === 0) {
@@ -118,8 +123,7 @@ function compareAllDayEvents(a: CalendarEvent, b: CalendarEvent): number
     return result;
 }
 
-function compareRegularEvents(a: CalendarEvent, b: CalendarEvent): number
-{
+function compareRegularEvents(a: CalendarEvent, b: CalendarEvent): number {
     const startA = getCompareStart(a);
     const startB = getCompareStart(b);
     const endA = getCompareEnd(a);
@@ -132,8 +136,7 @@ function compareRegularEvents(a: CalendarEvent, b: CalendarEvent): number
     return startA - startB;
 }
 
-function sortEvents(events: CalendarEvent[]): CalendarEvent[]
-{
+function sortEvents(events: CalendarEvent[]): CalendarEvent[] {
     const allDayEvents = events
         .filter((event) => event.isAllDay)
         .sort(compareAllDayEvents);

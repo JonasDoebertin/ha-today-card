@@ -36,13 +36,11 @@ export const THEME_COLORS: string[] = [
     "white",
 ];
 
-export function getFallBackColor(index: number): string
-{
-    return (FALLBACK_COLORS[index % FALLBACK_COLORS.length] as string);
+export function getFallBackColor(index: number): string {
+    return FALLBACK_COLORS[index % FALLBACK_COLORS.length] as string;
 }
 
-export function computeCssColor(color?: string): string
-{
+export function computeCssColor(color?: string): string {
     if (color === "" || color === null || color === undefined) {
         color = "primary";
     }

@@ -1,4 +1,4 @@
-export function loadHaComponents (): void {
+export function loadHaComponents(): void {
     if (!customElements.get("ha-entity-picker")) {
         (customElements.get("hui-entities-card") as any)?.getConfigElement();
     }
@@ -6,4 +6,4 @@ export function loadHaComponents (): void {
     if (!customElements.get("ha-form")) {
         (customElements.get("hui-entity-badge") as any)?.getConfigElement();
     }
-};
+}

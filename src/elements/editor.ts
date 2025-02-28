@@ -25,7 +25,7 @@ const FORM_SCHEMA = [
                 default: 0,
                 selector: {number: {mode: "box", step: 1}},
             },
-        ]
+        ],
     },
     {
         name: "",
@@ -62,7 +62,7 @@ const FORM_SCHEMA = [
     },
 ];
 
-@customElement('today-card-editor')
+@customElement("today-card-editor")
 export class TodayCardEditor extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
     @state() private config: CardConfig | undefined;
@@ -138,5 +138,5 @@ export class TodayCardEditor extends LitElement {
 
     private computeLabel(schema: Record<string, unknown>): string {
         return localize(`config.label.${schema.name}`);
-    };
+    }
 }

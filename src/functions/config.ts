@@ -13,19 +13,19 @@ export function getEntityName(entity: string): string {
 
 export function processEditorEntities(
     entities: (EntitiesRowConfig | string)[],
-    assignColors: boolean = false
+    assignColors: boolean = false,
 ): EntitiesRowConfig[] {
     return entities.map((entry, i) => {
         if (typeof entry === "string") {
             return {
                 entity: entry,
-                color: assignColors ? getFallBackColor(i): "",
+                color: assignColors ? getFallBackColor(i) : "",
             };
         }
 
         return {
             entity: entry.entity,
-            color: entry.color ?? (assignColors ? getFallBackColor(i): ""),
+            color: entry.color ?? (assignColors ? getFallBackColor(i) : ""),
         };
     });
 }
@@ -35,11 +35,12 @@ export function isEqual<T>(a: T, b: T): boolean {
         return true;
     }
 
-    const bothAreObjects = a && b && typeof a === "object" && typeof b === "object";
+    const bothAreObjects =
+        a && b && typeof a === "object" && typeof b === "object";
 
     return Boolean(
-        bothAreObjects &&
-        Object.keys(a).length === Object.keys(b).length &&
-        Object.entries(a).every(([k, v]) => isEqual(v, b[k as keyof T]))
+        bothAreObjects
+            && Object.keys(a).length === Object.keys(b).length
+            && Object.entries(a).every(([k, v]) => isEqual(v, b[k as keyof T])),
     );
-};
+}

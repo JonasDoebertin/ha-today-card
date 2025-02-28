@@ -1,0 +1,5 @@
+{
+    "experimentalTernaries": false,
+    "experimentalOperatorPosition": "start",
+    "bracketSpacing": false
+}

@@ -1,4 +1,15 @@
-import {any, array, assign, boolean, Infer, number, object, optional, string, union} from "superstruct";
+import {
+    any,
+    array,
+    assign,
+    boolean,
+    Infer,
+    number,
+    object,
+    optional,
+    string,
+    union,
+} from "superstruct";
 
 export const BaseCardConfig = object({
     type: string(),

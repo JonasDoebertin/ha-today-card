@@ -10,7 +10,4 @@ import "./elements/entity-editor";
     description: "Show today's schedule",
 });
 
-console.info(
-    `%c🗓️ Today Card v${version}`,
-    "font-weight: 700;",
-);
+console.info(`%c🗓️ Today Card v${version}`, "font-weight: 700;");
