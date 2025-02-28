@@ -15,19 +15,23 @@ export function processEditorEntities(
     entities: (EntitiesRowConfig | string)[],
     assignColors: boolean = false,
 ): EntitiesRowConfig[] {
-    return entities.map((entry, i) => {
-        if (typeof entry === "string") {
-            return {
-                entity: entry,
-                color: assignColors ? getFallBackColor(i) : "",
-            };
-        }
+    return entities
+        .map((entry, i) => {
+            if (typeof entry === "string") {
+                return {
+                    entity: entry,
+                    color: assignColors ? getFallBackColor(i) : "",
+                };
+            }
 
-        return {
-            entity: entry.entity,
-            color: entry.color ?? (assignColors ? getFallBackColor(i) : ""),
-        };
-    });
+            return {
+                entity: entry.entity,
+                color: entry.color ?? (assignColors ? getFallBackColor(i) : ""),
+            };
+        })
+        .filter((entry: EntitiesRowConfig): boolean => {
+            return entry.entity.startsWith("calendar.");
+        });
 }
 
 export function isEqual<T>(a: T, b: T): boolean {
