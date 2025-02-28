@@ -1,6 +1,5 @@
 import * as dayjs from "dayjs";
 import * as isToday from "dayjs/plugin/isToday";
-import {TIME_FORMAT} from "../const";
 import {EntitiesRowConfig} from "./config";
 import localize from "../localization/localize";
 
@@ -81,7 +80,7 @@ export default class CalendarEvent
                 return `${localize('event.schedule.allDay')} (${this.currentDay}/${this.numberOfDays})`;
             }
 
-            return `${localize('event.schedule.from')} ${this.start.format(TIME_FORMAT)}`;
+            return `${localize('event.schedule.from')} ${this.start.format(this.config.time_format)}`;
         }
 
         if (this.isMultiDay && this.isLastDay) {
@@ -89,7 +88,7 @@ export default class CalendarEvent
                 return `${localize('event.schedule.allDay')} (${this.currentDay}/${this.numberOfDays})`;
             }
 
-            return `${localize('event.schedule.until')} ${this.start.format(TIME_FORMAT)}`;
+            return `${localize('event.schedule.until')} ${this.start.format(this.config.time_format)}`;
         }
 
         if (this.isAllDay) {
@@ -100,7 +99,7 @@ export default class CalendarEvent
             }
         }
 
-        return this.start.format(TIME_FORMAT) + " – " + this.end.format(TIME_FORMAT);
+        return this.start.format(this.config.time_format) + " – " + this.end.format(this.config.time_format);
     }
 
     get isInPast(): boolean

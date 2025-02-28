@@ -20,6 +20,7 @@
             "fallback_color": "Standard-Farbe",
             "show_all_day_events": "Zeige ganztägige Termine",
             "show_past_events": "Zeige vergangene Termine",
+            "time_format": "Zeit-Darstellung",
             "entities": "Entitäten (benötigt)",
             "color": "Farbe",
             "clear": "Entfernen"
