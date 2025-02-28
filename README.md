@@ -67,6 +67,7 @@ entities:
 | `advance`             | number          | Optional     | `0`       | Advance                                                                                                                                                                         |
 | `show_all_day_events` | boolean         | Optional     | `true`    | Whether to show all day events in the schedule                                                                                                                                  |
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
+| `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the events start and end times (see [time formats](#Time-Formatting))                                                                     |
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#Colors))                                                                                     |
 
 #### Calendar Entities
@@ -78,6 +79,31 @@ Calendar entities can either be provided as a simple list of calendar entities (
 | entity | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
 | color  | string | Optional     |         | The calendars color in the schedule (see [colors](#Colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
 
+#### Time Formatting
+
+With the `time_format` configuration option, you can change how the events start and end times are being displayed. Choose from the following formatting placeholders:
+
+| Format | Output | Description                       |
+|--------|--------|-----------------------------------|
+| `H`    | 0-23   | The hour                          |
+| `HH`   | 00-23  | The hour, 2-digits                |
+| `h`    | 1-12   | The hour, 12-hour clock           |
+| `hh`   | 01-12  | The hour, 12-hour clock, 2-digits |
+| `m`    | 0-59   | The minute                        |
+| `mm`   | 00-59  | The minute, 2-digits              |
+| `A`    | AM PM  |                                   |
+| `a`    | am pm  |                                   |
+
+Using those in combination can result in the following common formats:
+
+| Format    | Output   |
+|-----------|----------|
+| `H:mm`    | 8:02     |
+| `HH:mm`   | 08:02    |
+| `h:mm A`  | 8:02 AM  |
+| `hh:mm A` | 08:02 AM |
+| `h:mm a`  | 8:02 am  |
+| `hh:mm a` | 08:02 am |
 
 #### Colors
 
