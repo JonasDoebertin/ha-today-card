@@ -10,7 +10,7 @@ import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
-import {REFRESH_INTERVAL} from "../const";
+import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
 
 @customElement('today-card')
 export class TodayCard extends LitElement {
@@ -41,15 +41,10 @@ export class TodayCard extends LitElement {
         }
 
         return {
-            type: "custom:today-card",
+            ...DEFAULT_CONFIG,
             title: localize('config.stub.title'),
-            advance: 0,
-            time_format: "HH:mm",
-            fallback_color: "primary",
-            show_all_day_events: true,
-            show_past_events: false,
             entities: calendarEntities,
-        };
+        }
     }
 
     connectedCallback(): void {
@@ -73,7 +68,7 @@ export class TodayCard extends LitElement {
         assert(config, CardConfig);
 
         let entities = processEditorEntities(config.entities, true);
-        this.config = {...config, entities: entities};
+        this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
 
         this.content = html``;

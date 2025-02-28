@@ -1,3 +1,9 @@
+import {CardConfig} from "./structs/config";
+
+export const HA_API_DATE_FORMAT: string = 'YYYY-MM-DDTHH:mm:ss';
+
+export const REFRESH_INTERVAL: number = 60 * 1_000;
+
 export const TIME_FORMATS = [
     {
         value: "H:mm",
@@ -25,6 +31,13 @@ export const TIME_FORMATS = [
     },
 ];
 
-export const HA_API_DATE_FORMAT: string = 'YYYY-MM-DDTHH:mm:ss';
-
-export const REFRESH_INTERVAL: number = 60 * 1_000;
+export const DEFAULT_CONFIG: CardConfig = {
+    type: "custom:today-card",
+    title: "",
+    advance: 0,
+    time_format: "HH:mm",
+    fallback_color: "primary",
+    show_all_day_events: true,
+    show_past_events: false,
+    entities: [],
+};
