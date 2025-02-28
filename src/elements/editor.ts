@@ -9,20 +9,36 @@ import {HomeAssistant} from "custom-card-helpers";
 import {setHass} from "../globals";
 import localize from "../localization/localize";
 import {fireEvent} from "../functions/events";
+import {TIME_FORMATS} from "../const";
 
 const FORM_SCHEMA = [
     {
-        name: "title",
-        selector: {text: {}},
+        name: "",
+        type: "grid",
+        schema: [
+            {
+                name: "title",
+                selector: {text: {}},
+            },
+            {
+                name: "advance",
+                default: 0,
+                selector: {number: {mode: "box", step: 1}},
+            },
+        ]
     },
     {
         name: "",
         type: "grid",
         schema: [
             {
-                name: "advance",
-                default: 0,
-                selector: {number: {mode: "box", step: 1}},
+                name: "time_format",
+                selector: {
+                    select: {
+                        mode: "dropdown",
+                        options: TIME_FORMATS,
+                    },
+                },
             },
             {
                 name: "fallback_color",
@@ -44,7 +60,6 @@ const FORM_SCHEMA = [
             {name: "show_past_events", selector: {boolean: {}}},
         ],
     },
-
 ];
 
 @customElement('today-card-editor')

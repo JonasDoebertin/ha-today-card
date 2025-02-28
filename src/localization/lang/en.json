@@ -20,6 +20,7 @@
             "fallback_color": "Fallback Color",
             "show_all_day_events": "Show all day events",
             "show_past_events": "Show past events",
+            "time_format": "Time Display Format",
             "entities": "Entities (required)",
             "color": "Color",
             "clear": "Clear"

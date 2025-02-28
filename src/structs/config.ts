@@ -23,6 +23,7 @@ export const CardConfig = assign(
     object({
         title: optional(string()),
         advance: optional(number()),
+        time_format: optional(string()),
         fallback_color: optional(string()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),

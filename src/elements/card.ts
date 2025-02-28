@@ -44,6 +44,7 @@ export class TodayCard extends LitElement {
             type: "custom:today-card",
             title: localize('config.stub.title'),
             advance: 0,
+            time_format: "HH:mm",
             fallback_color: "primary",
             show_all_day_events: true,
             show_past_events: false,
