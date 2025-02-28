@@ -47,6 +47,7 @@ title: "Today's Schedule"
 advance: 4
 show_all_day_events: true
 show_past_events: false
+time_format: "HH:mm"
 fallback_color: teal
 entities:
   - entity: calendar.your_calendar_1
