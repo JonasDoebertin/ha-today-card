@@ -27,8 +27,15 @@
 }
 
 .title {
-    font-weight: bold;
     margin: 0;
+}
+
+.title strong {
+    font-weight: bold;
+}
+
+.title span {
+    color: var(--secondary-text-color);
 }
 
 .schedule {
