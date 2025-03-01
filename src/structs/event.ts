@@ -1,6 +1,6 @@
 import * as dayjs from "dayjs";
 import * as isToday from "dayjs/plugin/isToday";
-import {EntitiesRowConfig} from "./config";
+import {CardConfig, EntitiesRowConfig} from "./config";
 import localize from "../localization/localize";
 
 dayjs.extend(isToday);
@@ -8,7 +8,7 @@ dayjs.extend(isToday);
 export default class CalendarEvent {
     private rawEvent: any;
     private entity: EntitiesRowConfig;
-    private config: any;
+    private config: CardConfig;
     private cachedStart: dayjs.Dayjs | undefined;
     private cachedEnd: dayjs.Dayjs | undefined;
     private cachedNumberOfDays: number | undefined;
@@ -68,36 +68,38 @@ export default class CalendarEvent {
         return this.cachedEnd.clone();
     }
 
-    get schedule(): string {
-        if (this.isMultiDay && this.isFirstDay) {
-            if (this.start.isSame(this.start.clone().startOf("day"))) {
-                return `${localize("event.schedule.allDay")} (${this.currentDay}/${this.numberOfDays})`;
-            }
+    get daySchedule(): string | null {
+        return this.isMultiDay
+            ? `(${this.currentDay}/${this.numberOfDays})`
+            : null;
+    }
 
+    get timeSchedule(): string | null {
+        if (
+            this.isMultiDay
+            && this.isFirstDay
+            && !this.start.isSame(this.start.clone().startOf("day"))
+        ) {
             return `${localize("event.schedule.from")} ${this.start.format(this.config.time_format)}`;
         }
 
-        if (this.isMultiDay && this.isLastDay) {
-            if (this.end.isSame(this.end.clone().endOf("day"))) {
-                return `${localize("event.schedule.allDay")} (${this.currentDay}/${this.numberOfDays})`;
-            }
-
+        if (
+            this.isMultiDay
+            && this.isLastDay
+            && !this.end.isSame(this.end.clone().endOf("day"))
+        ) {
             return `${localize("event.schedule.until")} ${this.start.format(this.config.time_format)}`;
         }
 
-        if (this.isAllDay) {
-            if (this.numberOfDays > 1) {
-                return `${localize("event.schedule.allDay")} (${this.currentDay}/${this.numberOfDays})`;
-            } else {
-                return localize("event.schedule.allDay");
-            }
+        if (!this.isAllDay) {
+            return (
+                this.start.format(this.config.time_format)
+                + " – "
+                + this.end.format(this.config.time_format)
+            );
         }
 
-        return (
-            this.start.format(this.config.time_format)
-            + " – "
-            + this.end.format(this.config.time_format)
-        );
+        return null;
     }
 
     get isInPast(): boolean {
@@ -132,13 +134,13 @@ export default class CalendarEvent {
     }
 
     get isFirstDay(): boolean {
-        let now = dayjs().add(this.config.advance, "days");
+        let now = dayjs().add(this.config.advance ?? 0, "days");
 
         return this.isMultiDay && this.start.isSame(now, "day");
     }
 
     get isLastDay(): boolean {
-        let now = dayjs().add(this.config.advance, "days");
+        let now = dayjs().add(this.config.advance ?? 0, "days");
 
         return this.isMultiDay && this.end.isSame(now, "day");
     }
@@ -157,7 +159,7 @@ export default class CalendarEvent {
     get currentDay(): number {
         if (this.cachedCurrentDay === undefined) {
             let startDate = this.start.clone().startOf("day");
-            let now = dayjs().add(this.config.advance, "days");
+            let now = dayjs().add(this.config.advance ?? 0, "days");
             let endDate = now.endOf("day").add(1, "second");
 
             this.cachedCurrentDay = Math.abs(startDate.diff(endDate, "day"));
