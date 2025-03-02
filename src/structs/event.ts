@@ -88,7 +88,7 @@ export default class CalendarEvent {
             && this.isLastDay
             && !this.end.isSame(this.end.clone().endOf("day"))
         ) {
-            return `${localize("event.schedule.until")} ${this.start.format(this.config.time_format)}`;
+            return `${localize("event.schedule.until")} ${this.end.format(this.config.time_format)}`;
         }
 
         if (!this.isAllDay) {
