@@ -78,10 +78,7 @@ export default class CalendarEvent {
         if (
             this.isMultiDay
             && this.isFirstDay
-            && !this.start
-                .clone()
-                .second(0)
-                .isSame(this.start.clone().startOf("day"))
+            && !this.start.isSame(this.start.clone().startOf("day"), "minute")
         ) {
             return `${localize("event.schedule.from")} ${this.start.format(this.config.time_format)}`;
         }
@@ -89,10 +86,7 @@ export default class CalendarEvent {
         if (
             this.isMultiDay
             && this.isLastDay
-            && !this.end
-                .clone()
-                .second(59)
-                .isSame(this.end.clone().endOf("day"))
+            && !this.end.isSame(this.end.clone().endOf("day"), "minute")
         ) {
             return `${localize("event.schedule.until")} ${this.end.format(this.config.time_format)}`;
         }
