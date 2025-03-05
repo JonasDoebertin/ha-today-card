@@ -37,7 +37,7 @@ export class TodayCard extends LitElement {
     }
 
     static getStubConfig(
-        hass: HomeAssistant,
+        _hass: HomeAssistant,
         entities: string[],
         entitiesFallback: string[],
     ): Partial<CardConfig> {
