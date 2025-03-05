@@ -8,6 +8,7 @@ import {
     unsafeCSS,
 } from "lit";
 import {customElement, property, state} from "lit/decorators.js";
+import {classMap} from "lit/directives/class-map";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
@@ -106,7 +107,10 @@ export class TodayCard extends LitElement {
         }
 
         return html`
-            <ha-card header="${this.config?.title || nothing}">
+            <ha-card
+                header="${this.config?.title || nothing}"
+                class="has-advance-of-${this.config?.advance || 0}"
+            >
                 <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
         `;
@@ -134,7 +138,7 @@ export class TodayCard extends LitElement {
 
     renderFallback(): TemplateResult {
         return html`
-            <div class="event">
+            <div class="event is-fallback">
                 <div
                     class="indicator"
                     style="background-color: ${computeCssColor(
@@ -152,8 +156,18 @@ export class TodayCard extends LitElement {
     }
 
     renderEvent(event: CalendarEvent): TemplateResult {
+        const classes = {
+            "is-all-day": event.isAllDay,
+            "is-multi-day": event.isMultiDay,
+            "is-first-day": event.isFirstDay,
+            "is-last-day": event.isLastDay,
+            "is-in-past": event.isInPast,
+            "is-in-future": event.isInFuture,
+            "is-current": event.isCurrent,
+        };
+
         return html`
-            <div class="event">
+            <div class="event ${classMap(classes)}">
                 <div
                     class="indicator"
                     style="background-color: ${computeCssColor(event.color)}"
