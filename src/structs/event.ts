@@ -103,10 +103,26 @@ export default class CalendarEvent {
     }
 
     get isInPast(): boolean {
-        let currentMinute = dayjs().startOf("minute");
-        let endMinute = this.end.clone().startOf("minute");
+        const now = dayjs().add(this.config.advance ?? 0, "days");
 
-        return endMinute.isBefore(currentMinute);
+        return this.end.isBefore(now, "minute");
+    }
+
+    get isInFuture(): boolean {
+        const now = dayjs().add(this.config.advance ?? 0, "days");
+
+        return this.start.isAfter(now, "minute");
+    }
+
+    get isCurrent(): boolean {
+        const now = dayjs().add(this.config.advance ?? 0, "days");
+
+        return (
+            (this.start.isSame(now, "minute")
+                || this.start.isBefore(now, "minute"))
+            && (this.end.isSame(now, "minute")
+                || this.end.isAfter(now, "minute"))
+        );
     }
 
     get isAllDay(): boolean {
