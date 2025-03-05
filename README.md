@@ -37,6 +37,7 @@ Since **Today Card** is not yet available through the HACS store, you have to ad
 The card can be configured via a fully featured visual UI editor or via YAML.
 
 ### Minimal YAML Configuration
+
 ```yaml
 type: custom:today-card
 entities:
@@ -44,6 +45,7 @@ entities:
 ```
 
 ### Full YAML Configuration
+
 ```yaml
 type: custom:today-card
 title: "Today's Schedule"
@@ -144,6 +146,32 @@ You can also directly specify a hex color code instead, e.g. `color: "#1abcf2"`.
 | `black`       | `--black-color`       |
 | `white`       | `--white-color`       |
 
+## Custom Styling
+
+Today Card was built with custom styling in mind. It fully supports [card-mod][card-mod-url] and has some useful css classes being applied to the individual event entries in the card to make applying custom style easy. The following classes are available:
+
+| Class           | Description                             |
+|-----------------|-----------------------------------------|
+| `.is-all-day`   | Event spans the whole day               |
+| `.is-multi-day` | Event spans multiple days               |
+| `.is-first-day` | It's the first day of a multi day event |
+| `.is-last-day`  | It's the last day of a multi day event  |
+| `.is-in-past`   | Event ended in the past                 |
+| `.is-in-future` | Event will start in the future          |
+| `.is-current`   | Event is happening right now            |
+
+If you wanted to highlight events happening right now, you could add a bit of a muting effect on events in the past, the future and on all day events. That could look like so:
+
+```yaml
+...
+
+card_mod:
+  style: |
+    .is-all-day, .is-in-past, .is-in-future {
+      opacity: 0.5;
+    }
+```
+
 <!-- Badges -->
 
 [hacs-badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge
@@ -156,3 +184,4 @@ You can also directly specify a hex color code instead, e.g. `color: "#1abcf2"`.
 [my-ha-url]: https://my.home-assistant.io/redirect/hacs_repository/?owner=JonasDoebertin&repository=ha-today-card
 [releases-url]: https://github.com/JonasDoebertin/ha-today-card/releases
 [latest-release-url]: https://github.com/JonasDoebertin/ha-today-card/releases/latest
+[card-mod-url]: https://github.com/thomasloven/lovelace-card-mod
