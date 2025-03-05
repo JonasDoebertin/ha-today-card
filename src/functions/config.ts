@@ -8,7 +8,7 @@ export function getEntityName(entity: string): string {
         return entity;
     }
 
-    return hass.entities[entity]?.name ?? entity;
+    return hass.states[entity]?.attributes?.friendly_name ?? entity;
 }
 
 export function processEditorEntities(

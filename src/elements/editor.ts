@@ -109,13 +109,13 @@ export class TodayCardEditor extends LitElement {
         `;
     }
 
-    private valueChanged(event: Event): void {
+    private valueChanged(event: CustomEvent): void {
         event.stopPropagation();
         if (!this.config || !this.hass) {
             return;
         }
 
-        const newConfig: CardConfig = (event as any).detail.value;
+        const newConfig: CardConfig = event.detail.value;
 
         if (isEqual(newConfig, this.config)) {
             return;
@@ -124,13 +124,12 @@ export class TodayCardEditor extends LitElement {
         fireEvent(this, "config-changed", {config: newConfig});
     }
 
-    private entitiesChanged(event: Event) {
+    private entitiesChanged(event: CustomEvent) {
         event.stopPropagation();
         if (!this.config || !this.hass) {
             return;
         }
 
-        // @ts-ignore
         let config = {...this.config, entities: event.detail.entities};
 
         fireEvent(this, "config-changed", {config});

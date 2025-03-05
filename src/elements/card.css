@@ -34,10 +34,12 @@
     font-weight: bold;
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 .title span {
     color: var(--secondary-text-color);
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 .schedule {
     margin: 0;
     color: var(--secondary-text-color);

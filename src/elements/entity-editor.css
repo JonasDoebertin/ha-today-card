@@ -19,6 +19,7 @@
     text-overflow: ellipsis;
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 .id {
     display: block;
     color: var(--secondary-text-color);
@@ -32,6 +33,7 @@
     margin-right: 16px;
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 .remove-icon {
     flex: 0;
     --mdc-icon-button-size: 36px;
