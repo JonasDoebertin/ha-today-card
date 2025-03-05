@@ -71,10 +71,10 @@ entities:
 
 Calendar entities can either be provided as a simple list of calendar entities (see [minimal configuration](#Minimal-YAML-Configuration) example) or a list of objects following the below-mentioned structure.
 
-| Name   | Type   | Required     | Default | Description                                                                                                                                                    |
-|--------|--------|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| entity | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
-| color  | string | Optional     |         | The calendars color in the schedule (see [colors](#Colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
+| Name     | Type   | Required     | Default | Description                                                                                                                                                    |
+|----------|--------|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `entity` | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
+| `color`  | string | Optional     |         | The calendars color in the schedule (see [colors](#Colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
 
 
 #### Colors
@@ -83,34 +83,36 @@ The card generally use Home Assistants default colors, which can be overwritten 
 
 You can also directly specify a hex color code instead, e.g. `color: "#1abcf2"`.
 
-| Name          | Used CSS Variable     |
-|---------------|-----------------------|
-| `primary`     | `--primary-color`     |
-| `accent`      | `--accent-color`      |
-| `disabled`    | `--disabled-color`    |
-| `red`         | `--red-color`         |
-| `pink`        | `--pink-color`        |
-| `purple`      | `--purple-color`      |
-| `deep-purple` | `--deep-purple-color` |
-| `indigo`      | `--indigo-color`      |
-| `blue`        | `--blue-color`        |
-| `light-blue`  | `--light-blue-color`  |
-| `cyan`        | `--cyan-color`        |
-| `teal`        | `--teal-color`        |
-| `green`       | `--green-color`       |
-| `light-green` | `--light-green-color` |
-| `lime`        | `--lime-color`        |
-| `yellow`      | `--yellow-color`      |
-| `amber`       | `--amber-color`       |
-| `orange`      | `--orange-color`      |
-| `deep-orange` | `--deep-orange-color` |
-| `brown`       | `--brown-color`       |
-| `light-grey`  | `--light-grey-color`  |
-| `grey`        | `--grey-color`        |
-| `dark-grey`   | `--dark-grey-color`   |
-| `blue-grey`   | `--blue-grey-color`   |
-| `black`       | `--black-color`       |
-| `white`       | `--white-color`       |
+| Name            | Used CSS Variable       | HA default value |
+|-----------------|-------------------------|------------------|
+| `primary`       | `--primary-color`       | `#03a9f4`        |
+| `dark-primary`  | `--dark-primary-color`  | `#0288d1`        |
+| `light-primary` | `--light-primary-color` | `#b3e5fc`        |
+| `accent`        | `--accent-color`        | `#ff9800`        |
+| `disabled`      | `--disabled-color`      | `#bdbdbd`        |
+| `red`           | `--red-color`           | `#f44336`        |
+| `pink`          | `--pink-color`          | `#e91e63`        |
+| `purple`        | `--purple-color`        | `#926bc7`        |
+| `deep-purple`   | `--deep-purple-color`   | `#6e41ab`        |
+| `indigo`        | `--indigo-color`        | `#3f51b5`        |
+| `blue`          | `--blue-color`          | `#2196f3`        |
+| `light-blue`    | `--light-blue-color`    | `#03a9f4`        |
+| `cyan`          | `--cyan-color`          | `#00bcd4`        |
+| `teal`          | `--teal-color`          | `#009688`        |
+| `green`         | `--green-color`         | `#4caf50`        |
+| `light-green`   | `--light-green-color`   | `#8bc34a`        |
+| `lime`          | `--lime-color`          | `#cddc39`        |
+| `yellow`        | `--yellow-color`        | `#ffeb3b`        |
+| `amber`         | `--amber-color`         | `#ffc107`        |
+| `orange`        | `--orange-color`        | `#ff9800`        |
+| `deep-orange`   | `--deep-orange-color`   | `#ff6f22`        |
+| `brown`         | `--brown-color`         | `#795548`        |
+| `light-grey`    | `--light-grey-color`    | `#bdbdbd`        |
+| `grey`          | `--grey-color`          | `#9e9e9e`        |
+| `dark-grey`     | `--dark-grey-color`     | `#606060`        |
+| `blue-grey`     | `--blue-grey-color`     | `#607d8b`        |
+| `black`         | `--black-color`         | `#000000`        |
+| `white`         | `--white-color`         | `#ffffff`        |
 
 <!-- Badges -->
 
