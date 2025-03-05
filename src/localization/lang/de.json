@@ -5,7 +5,6 @@
     },
     "event": {
         "schedule": {
-            "allDay": "Ganztägig",
             "from": "Ab",
             "until": "Bis"
         }

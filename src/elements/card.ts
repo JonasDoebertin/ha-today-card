@@ -22,9 +22,9 @@ import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
 @customElement("today-card")
 export class TodayCard extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
-    @state() private config: CardConfig | undefined;
+    @state() private config: CardConfig = DEFAULT_CONFIG;
     @state() private entities: EntitiesRowConfig[] = [];
-    @state() private content: TemplateResult = html``;
+    @state() private events: CalendarEvent[] = [];
     private initialized: boolean = false;
     private refreshInterval: number | undefined;
 
@@ -82,54 +82,16 @@ export class TodayCard extends LitElement {
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
 
-        this.content = html``;
+        this.updateEvents();
     }
 
     async updateEvents(): Promise<void> {
         if (!this.hass || !this.config) {
-            this.content = html``;
-
             return;
         }
 
-        const events = await getEvents(this.config, this.entities, this.hass);
-        let eventsHtml;
-
-        if (events.length === 0) {
-            eventsHtml = html`
-                <div class="event">
-                    <div
-                        class="indicator"
-                        style="background-color: ${computeCssColor(
-                            this.config.fallback_color,
-                        )}"
-                    ></div>
-                    <div class="details">
-                        <p class="title">${localize("noEvents.title")}</p>
-                        <p class="schedule">${localize("noEvents.subtitle")}</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            eventsHtml = events.map((event: CalendarEvent) => {
-                return html`
-                    <div class="event">
-                        <div
-                            class="indicator"
-                            style="background-color: ${computeCssColor(
-                                event.color,
-                            )}"
-                        ></div>
-                        <div class="details">
-                            <p class="title">${event.title}</p>
-                            <p class="schedule">${event.schedule}</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        this.content = html` <div class="events">${eventsHtml}</div> `;
+        this.events = await getEvents(this.config, this.entities, this.hass);
+        this.initialized = true;
     }
 
     render(): TemplateResult {
@@ -141,13 +103,73 @@ export class TodayCard extends LitElement {
 
         if (!this.initialized) {
             this.updateEvents();
-            this.initialized = true;
         }
 
         return html`
             <ha-card header="${this.config?.title || nothing}">
-                <div class="card-content">${this.content}</div>
+                <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
+        `;
+    }
+
+    renderEvents(): TemplateResult {
+        let eventsHtml;
+
+        if (!this.initialized) {
+            eventsHtml = nothing;
+        } else if (this.events.length === 0) {
+            eventsHtml = html`
+                <div class="events">${this.renderFallback()}</div>
+            `;
+        } else {
+            eventsHtml = this.events.map(
+                (event: CalendarEvent): TemplateResult => {
+                    return this.renderEvent(event);
+                },
+            );
+        }
+
+        return html`<div class="events">${eventsHtml}</div>`;
+    }
+
+    renderFallback(): TemplateResult {
+        return html`
+            <div class="event">
+                <div
+                    class="indicator"
+                    style="background-color: ${computeCssColor(
+                        this.config.fallback_color,
+                    )}"
+                ></div>
+                <div class="details">
+                    <p class="title">
+                        <strong>${localize("noEvents.title")}</strong>
+                    </p>
+                    <p class="schedule">${localize("noEvents.subtitle")}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    renderEvent(event: CalendarEvent): TemplateResult {
+        return html`
+            <div class="event">
+                <div
+                    class="indicator"
+                    style="background-color: ${computeCssColor(event.color)}"
+                ></div>
+                <div class="details">
+                    <p class="title">
+                        <strong>${event.title}</strong>
+                        ${event.daySchedule
+                            ? html`<span>${event.daySchedule}</span>`
+                            : nothing}
+                    </p>
+                    ${event.timeSchedule
+                        ? html`<p class="schedule">${event.timeSchedule}</p>`
+                        : nothing}
+                </div>
+            </div>
         `;
     }
 }
