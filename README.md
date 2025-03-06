@@ -150,7 +150,24 @@ You can also directly specify a hex color code instead, e.g. `color: "#1abcf2"`.
 
 ## Custom Styling
 
-Today Card was built with custom styling in mind. It fully supports [card-mod][card-mod-url] and has some useful css classes being applied to the individual event entries in the card to make applying custom style easy. The following classes are available:
+The HTML structure of the card with its listed events is kept quite simple. It is a deliberate decision to avoid complex structures and styles and instead make it as easy as possible to adapt the styles to your own ideas.
+
+The markup of an event within the card looks like the follwoing:
+
+```html
+<div class="event [additional classes, see below]">
+    <div class="indicator"></div>
+    <div class="details">
+        <p class="title">
+            <strong>Home-Office</strong>
+            <span>(2/5)</span>
+        </p>
+        <p class="schedule">12:30 – 13:00</p>
+    </div>
+</div>
+```
+
+As Today Card was built with custom styling in mind, it fully supports [card-mod][card-mod-url] and has some useful css classes being applied to the individual events to make applying custom style easy. The following classes are available:
 
 | Class           | Description                             |
 |-----------------|-----------------------------------------|
