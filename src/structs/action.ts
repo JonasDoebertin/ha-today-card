@@ -14,14 +14,11 @@ import {
 
 const baseActionConfigStruct = object({
     action: enums([
-        // "assist",
         "call-service",
         "fire-dom-event",
-        // "more-info",
         "navigate",
         "none",
         "perform-action",
-        // "toggle",
         "url",
     ]),
 });

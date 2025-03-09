@@ -23,7 +23,7 @@ import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
 import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
-import {handleAction, hasAction} from "../functions/action";
+import {handleAction, hasAction} from "../functions/actions";
 
 @customElement("today-card")
 export class TodayCard extends LitElement {

@@ -17,7 +17,12 @@ import {TIME_FORMATS} from "../const";
 import {UiAction} from "../structs/action";
 import {mdiGestureTap, mdiListBox, mdiTextShort} from "../functions/icons";
 
-const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
+const supportedActions: UiAction[] = [
+    "navigate",
+    "url",
+    "perform-action",
+    "none",
+];
 
 const FORM_SCHEMA = [
     {
@@ -87,7 +92,7 @@ const FORM_SCHEMA = [
                 selector: {
                     ui_action: {
                         default_action: "none",
-                        actions,
+                        actions: supportedActions,
                     },
                 },
             },

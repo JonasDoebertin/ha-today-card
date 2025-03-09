@@ -10,6 +10,7 @@ ha-expansion-panel .content {
     padding: 12px;
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 ha-expansion-panel ha-svg-icon {
     color: var(--secondary-text-color);
 }
