@@ -10,8 +10,9 @@ import {
     string,
     union,
 } from "superstruct";
+import {actionConfigStruct} from "./action";
 
-export const BaseCardConfig = object({
+export const baseCardConfigStruct = object({
     type: string(),
     view_layout: any(),
     layout_options: any(),
@@ -20,17 +21,17 @@ export const BaseCardConfig = object({
     card_mod: any(),
 });
 
-export type BaseCardConfig = Infer<typeof BaseCardConfig>;
+export type BaseCardConfig = Infer<typeof baseCardConfigStruct>;
 
-export const EntitiesRowConfig = object({
+export const entitiesRowConfigStruct = object({
     entity: string(),
     color: optional(string()),
 });
 
-export type EntitiesRowConfig = Infer<typeof EntitiesRowConfig>;
+export type EntitiesRowConfig = Infer<typeof entitiesRowConfigStruct>;
 
-export const CardConfig = assign(
-    BaseCardConfig,
+export const cardConfigStruct = assign(
+    baseCardConfigStruct,
     object({
         title: optional(string()),
         advance: optional(number()),
@@ -38,8 +39,9 @@ export const CardConfig = assign(
         fallback_color: optional(string()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),
-        entities: union([array(string()), array(EntitiesRowConfig)]),
+        tap_action: optional(actionConfigStruct),
+        entities: union([array(string()), array(entitiesRowConfigStruct)]),
     }),
 );
 
-export type CardConfig = Infer<typeof CardConfig>;
+export type CardConfig = Infer<typeof cardConfigStruct>;

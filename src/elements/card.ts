@@ -14,11 +14,16 @@ import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
 import {processEditorEntities} from "../functions/config";
 import localize from "../localization/localize";
-import {CardConfig, EntitiesRowConfig} from "../structs/config";
+import {
+    CardConfig,
+    cardConfigStruct,
+    EntitiesRowConfig,
+} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
 import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
+import {handleAction, hasAction} from "../functions/action";
 
 @customElement("today-card")
 export class TodayCard extends LitElement {
@@ -77,7 +82,7 @@ export class TodayCard extends LitElement {
 
     setConfig(config: CardConfig) {
         setHass(this.hass);
-        assert(config, CardConfig);
+        assert(config, cardConfigStruct);
 
         let entities = processEditorEntities(config.entities, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
@@ -93,6 +98,14 @@ export class TodayCard extends LitElement {
 
         this.events = await getEvents(this.config, this.entities, this.hass);
         this.initialized = true;
+    }
+
+    private handleTapAction(_event: Event): void {
+        if (!this.hass || !this.config || !hasAction(this.config.tap_action)) {
+            return;
+        }
+
+        handleAction(this, this.hass, this.config.tap_action);
     }
 
     render(): TemplateResult {
@@ -111,8 +124,28 @@ export class TodayCard extends LitElement {
                 header="${this.config?.title || nothing}"
                 class="has-advance-of-${this.config?.advance || 0}"
             >
+                ${this.renderActionHandler()}
                 <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
+        `;
+    }
+
+    renderActionHandler(): TemplateResult {
+        const actionable = hasAction(this.config.tap_action);
+        if (!actionable) {
+            return html`${nothing}`;
+        }
+
+        return html`
+            <div
+                class="background"
+                @click=${this.handleTapAction}
+                role="button"
+                tabindex="0"
+                aria-labelledby="info"
+            >
+                <ha-ripple .disabled=${!actionable}></ha-ripple>
+            </div>
         `;
     }
 

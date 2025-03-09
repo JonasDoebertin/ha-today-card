@@ -24,7 +24,6 @@ export class TodayCardEntitiesEditor extends LitElement {
         }
 
         return html`
-            <h3>${localize("config.label.entities")}</h3>
             <div class="entities">
                 ${repeat(
                     this.entities,
