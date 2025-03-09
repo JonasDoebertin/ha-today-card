@@ -14,15 +14,18 @@
             "title": "Today's Schedule"
         },
         "label": {
-            "title": "Title",
-            "advance": "Advance (optional)",
+            "advance": "Advance",
+            "clear": "Clear",
+            "color": "Color",
+            "content": "Content",
+            "entities": "Entities",
             "fallback_color": "Fallback Color",
+            "interactions": "Interactions",
             "show_all_day_events": "Show all day events",
             "show_past_events": "Show past events",
+            "tap_action": "Tap behaviour",
             "time_format": "Time Display Format",
-            "entities": "Entities (required)",
-            "color": "Color",
-            "clear": "Clear"
+            "title": "Title"
         }
     }
 }

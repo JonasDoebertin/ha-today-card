@@ -1,7 +1,9 @@
+import {HapticType} from "./haptic";
+
 export function fireEvent(
-    node: HTMLElement,
+    node: HTMLElement | Window,
     type: string,
-    detail: Record<string, any> | null | undefined,
+    detail: Record<string, any> | HapticType | null | undefined,
     options?: Record<string, any>,
 ): Event {
     options = options || {};

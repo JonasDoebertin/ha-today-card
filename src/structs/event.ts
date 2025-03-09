@@ -134,19 +134,11 @@ export default class CalendarEvent {
             return true;
         }
 
-        if (this.isMultiDay && !this.isFirstDay && !this.isLastDay) {
-            return true;
-        }
-
-        return false;
+        return this.isMultiDay && !this.isFirstDay && !this.isLastDay;
     }
 
     get isMultiDay(): boolean {
-        if (!this.start.isSame(this.end, "day")) {
-            return true;
-        }
-
-        return false;
+        return !this.start.isSame(this.end, "day");
     }
 
     get isFirstDay(): boolean {
