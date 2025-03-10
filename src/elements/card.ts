@@ -136,6 +136,7 @@ export class TodayCard extends LitElement {
                 @action=${this.handleTapAction}
                 .actionHandler=${actionHandler()}
             >
+                <ha-ripple></ha-ripple>
                 <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
         `;
