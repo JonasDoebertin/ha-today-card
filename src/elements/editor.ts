@@ -4,60 +4,98 @@ import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";
 import {isEqual, processEditorEntities} from "../functions/config";
 import {loadHaComponents} from "../functions/hacks";
-import {CardConfig, EntitiesRowConfig} from "../structs/config";
+import {
+    CardConfig,
+    cardConfigStruct,
+    EntitiesRowConfig,
+} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 import {setHass} from "../globals";
 import localize from "../localization/localize";
-import {fireEvent} from "../functions/events";
+import {fireEvent} from "../common/fire-event";
 import {TIME_FORMATS} from "../const";
+import {UiAction} from "../structs/action";
+import {mdiGestureTap, mdiListBox, mdiTextShort} from "../functions/icons";
+
+const supportedActions: UiAction[] = [
+    "navigate",
+    "url",
+    "perform-action",
+    "none",
+];
 
 const FORM_SCHEMA = [
     {
-        name: "",
-        type: "grid",
+        name: "content",
+        type: "expandable",
+        flatten: true,
+        iconPath: mdiTextShort,
         schema: [
             {
-                name: "title",
-                selector: {text: {}},
+                name: "",
+                type: "grid",
+                schema: [
+                    {
+                        name: "title",
+                        selector: {text: {}},
+                    },
+                    {
+                        name: "advance",
+                        default: 0,
+                        selector: {number: {mode: "box", step: 1}},
+                    },
+                ],
             },
             {
-                name: "advance",
-                default: 0,
-                selector: {number: {mode: "box", step: 1}},
+                name: "",
+                type: "grid",
+                schema: [
+                    {
+                        name: "time_format",
+                        selector: {
+                            select: {
+                                mode: "dropdown",
+                                options: TIME_FORMATS,
+                            },
+                        },
+                    },
+                    {
+                        name: "fallback_color",
+                        selector: {
+                            ui_color: {
+                                default_color: "primary",
+                                include_state: false,
+                                include_none: true,
+                            },
+                        },
+                    },
+                ],
+            },
+            {
+                name: "",
+                type: "grid",
+                schema: [
+                    {name: "show_all_day_events", selector: {boolean: {}}},
+                    {name: "show_past_events", selector: {boolean: {}}},
+                ],
             },
         ],
     },
     {
-        name: "",
-        type: "grid",
+        name: "interactions",
+        type: "expandable",
+        flatten: true,
+        iconPath: mdiGestureTap,
         schema: [
             {
-                name: "time_format",
+                name: "tap_action",
                 selector: {
-                    select: {
-                        mode: "dropdown",
-                        options: TIME_FORMATS,
+                    ui_action: {
+                        default_action: "none",
+                        actions: supportedActions,
                     },
                 },
             },
-            {
-                name: "fallback_color",
-                selector: {
-                    ui_color: {
-                        default_color: "primary",
-                        include_state: false,
-                        include_none: true,
-                    },
-                },
-            },
-        ],
-    },
-    {
-        name: "",
-        type: "grid",
-        schema: [
-            {name: "show_all_day_events", selector: {boolean: {}}},
-            {name: "show_past_events", selector: {boolean: {}}},
         ],
     },
 ];
@@ -79,7 +117,7 @@ export class TodayCardEditor extends LitElement {
 
     setConfig(config: CardConfig): void {
         setHass(this.hass);
-        assert(config, CardConfig);
+        assert(config, cardConfigStruct);
 
         let entities = processEditorEntities(config.entities, false);
         this.config = {...config, entities: entities};
@@ -101,11 +139,19 @@ export class TodayCardEditor extends LitElement {
                 .computeLabel=${this.computeLabel}
                 @value-changed=${this.valueChanged}
             ></ha-form>
-            <today-card-entities-editor
-                .hass=${this.hass}
-                .entities=${this.entities}
-                @entities-changed=${this.entitiesChanged}
-            ></today-card-entities-editor>
+            <ha-expansion-panel outlined>
+                <div slot="header" role="heading" aria-level="3">
+                    <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
+                    ${localize("config.label.entities")}
+                </div>
+                <div class="content">
+                    <today-card-entities-editor
+                        .hass=${this.hass}
+                        .entities=${this.entities}
+                        @entities-changed=${this.entitiesChanged}
+                    ></today-card-entities-editor>
+                </div>
+            </ha-expansion-panel>
         `;
     }
 

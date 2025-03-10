@@ -9,16 +9,24 @@ import {
 } from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {classMap} from "lit/directives/class-map";
+import {ifDefined} from "lit/directives/if-defined";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
 import {processEditorEntities} from "../functions/config";
 import localize from "../localization/localize";
-import {CardConfig, EntitiesRowConfig} from "../structs/config";
-import {HomeAssistant} from "custom-card-helpers";
+import {
+    CardConfig,
+    cardConfigStruct,
+    EntitiesRowConfig,
+} from "../structs/config";
+import {ActionHandlerEvent, HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
 import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
+import {handleAction} from "../common/handle-action";
+import {ActionConfig} from "../structs/action";
+import {actionHandler} from "../common/action-handler";
 
 @customElement("today-card")
 export class TodayCard extends LitElement {
@@ -77,7 +85,7 @@ export class TodayCard extends LitElement {
 
     setConfig(config: CardConfig) {
         setHass(this.hass);
-        assert(config, CardConfig);
+        assert(config, cardConfigStruct);
 
         let entities = processEditorEntities(config.entities, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
@@ -95,6 +103,17 @@ export class TodayCard extends LitElement {
         this.initialized = true;
     }
 
+    private hasAction(config?: ActionConfig): boolean {
+        return config?.action !== undefined && config.action !== "none";
+    }
+
+    private handleTapAction(event: ActionHandlerEvent): void {
+        const config = {
+            tap_action: this.config!.tap_action,
+        };
+        handleAction(this, this.hass!, config, event.detail.action!);
+    }
+
     render(): TemplateResult {
         if (!this.hass || !this.config) {
             return html``;
@@ -106,11 +125,18 @@ export class TodayCard extends LitElement {
             this.updateEvents();
         }
 
+        const actionable = this.hasAction(this.config.tap_action);
+
         return html`
             <ha-card
                 header="${this.config?.title || nothing}"
                 class="has-advance-of-${this.config?.advance || 0}"
+                role=${ifDefined(actionable ? "button" : undefined)}
+                tabindex=${ifDefined(actionable ? "0" : undefined)}
+                @action=${this.handleTapAction}
+                .actionHandler=${actionHandler()}
             >
+                ${actionable ? html`<ha-ripple></ha-ripple>` : nothing}
                 <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
         `;
