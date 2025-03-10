@@ -12,7 +12,7 @@ import {
 import {HomeAssistant} from "custom-card-helpers";
 import {setHass} from "../globals";
 import localize from "../localization/localize";
-import {fireEvent} from "../functions/events";
+import {fireEvent} from "../common/fire-event";
 import {TIME_FORMATS} from "../const";
 import {UiAction} from "../structs/action";
 import {mdiGestureTap, mdiListBox, mdiTextShort} from "../functions/icons";

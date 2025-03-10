@@ -6,7 +6,7 @@ import {repeat} from "lit/directives/repeat";
 import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
 import localize from "../localization/localize";
-import {fireEvent} from "../functions/events";
+import {fireEvent} from "../common/fire-event";
 import {getEntityName} from "../functions/config";
 
 @customElement("today-card-entities-editor")

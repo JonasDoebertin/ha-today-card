@@ -9,6 +9,7 @@ import {
 } from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {classMap} from "lit/directives/class-map";
+import {ifDefined} from "lit/directives/if-defined";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
@@ -19,11 +20,13 @@ import {
     cardConfigStruct,
     EntitiesRowConfig,
 } from "../structs/config";
-import {HomeAssistant} from "custom-card-helpers";
+import {ActionHandlerEvent, HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
 import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
-import {handleAction, hasAction} from "../functions/actions";
+import {handleAction} from "../common/handle-action";
+import {ActionConfig} from "../structs/action";
+import {actionHandler} from "../common/action-handler";
 
 @customElement("today-card")
 export class TodayCard extends LitElement {
@@ -100,12 +103,15 @@ export class TodayCard extends LitElement {
         this.initialized = true;
     }
 
-    private handleTapAction(_event: Event): void {
-        if (!this.hass || !this.config || !hasAction(this.config.tap_action)) {
-            return;
-        }
+    private hasAction(config?: ActionConfig): boolean {
+        return config?.action !== undefined && config.action !== "none";
+    }
 
-        handleAction(this, this.hass, this.config.tap_action);
+    private handleTapAction(event: ActionHandlerEvent): void {
+        const config = {
+            tap_action: this.config!.tap_action,
+        };
+        handleAction(this, this.hass!, config, event.detail.action!);
     }
 
     render(): TemplateResult {
@@ -119,33 +125,19 @@ export class TodayCard extends LitElement {
             this.updateEvents();
         }
 
+        const actionable = this.hasAction(this.config.tap_action);
+
         return html`
             <ha-card
                 header="${this.config?.title || nothing}"
                 class="has-advance-of-${this.config?.advance || 0}"
+                role=${ifDefined(actionable ? "button" : undefined)}
+                tabindex=${ifDefined(actionable ? "0" : undefined)}
+                @action=${this.handleTapAction}
+                .actionHandler=${actionHandler()}
             >
-                ${this.renderActionHandler()}
                 <div class="card-content">${this.renderEvents()}</div>
             </ha-card>
-        `;
-    }
-
-    renderActionHandler(): TemplateResult {
-        const actionable = hasAction(this.config.tap_action);
-        if (!actionable) {
-            return html`${nothing}`;
-        }
-
-        return html`
-            <div
-                class="background"
-                @click=${this.handleTapAction}
-                role="button"
-                tabindex="0"
-                aria-labelledby="info"
-            >
-                <ha-ripple .disabled=${!actionable}></ha-ripple>
-            </div>
         `;
     }
 

@@ -109,6 +109,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
             case "url": {
                 return urlActionConfigStruct;
             }
+            case "none": {
+                return noActionConfigStruct;
+            }
         }
     }
 
