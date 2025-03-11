@@ -6,34 +6,20 @@
 }
 
 ha-card {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     transition: box-shadow 180ms ease-in-out, border-color 180ms ease-in-out;
 }
-
-/*noinspection CssUnresolvedCustomProperty*/
-/*ha-card:has(.background:focus-visible) {*/
-/*    --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);*/
-/*    --shadow-focus: 0 0 0 1px var(--state-inactive-color);*/
-/*    border-color: var(--state-inactive-color);*/
-/*    box-shadow: var(--shadow-default), var(--shadow-focus);*/
-/*}*/
 
 [role="button"] {
     cursor: pointer;
     pointer-events: auto;
 }
 
-/*noinspection CssUnresolvedCustomProperty*/
-/*.background {*/
-/*    position: absolute;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    bottom: 0;*/
-/*    right: 0;*/
-/*    border-radius: var(--ha-card-border-radius, 12px);*/
-/*    margin: calc(-1 * var(--ha-card-border-width, 1px));*/
-/*    overflow: hidden;*/
-/*}*/
+.card-content {
+    overflow: auto;
+}
 
 .event {
     display: flex;

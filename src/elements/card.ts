@@ -67,6 +67,14 @@ export class TodayCard extends LitElement {
         };
     }
 
+    getLayoutOptions() {
+        return {
+            grid_columns: 4,
+            grid_min_columns: 2,
+            grid_min_rows: 2,
+        };
+    }
+
     connectedCallback(): void {
         super.connectedCallback();
 
