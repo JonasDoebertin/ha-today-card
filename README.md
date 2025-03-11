@@ -59,6 +59,9 @@ entities:
     color: "#1abcf2"
   - entity: calendar.your_calendar_2
     color: pink
+tap_action:
+    action: navigate
+    navigation_path: /calendar
 ```
 
 ### Configuration Options
@@ -75,6 +78,7 @@ entities:
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
 | `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the events start and end times (see [time formats](#Time-Formatting))                                                                     |
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#Colors))                                                                                     |
+| `tap_action`          | action          | Optional     | `none`    | Home assistant [action](https://www.home-assistant.io/dashboards/actions/) to perform on card taps (supports `perform-action`, `navigate`, `url` and `fire-dom-event` actions)  |
 
 #### Calendar Entities
 

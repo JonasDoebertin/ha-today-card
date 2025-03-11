@@ -1,0 +1,16 @@
+ha-expansion-panel {
+    display: block;
+    --expansion-panel-content-padding: 0;
+    border-radius: 6px;
+    --ha-card-border-radius: 6px;
+    margin-top: 24px;
+}
+
+ha-expansion-panel .content {
+    padding: 12px;
+}
+
+/*noinspection CssUnresolvedCustomProperty*/
+ha-expansion-panel ha-svg-icon {
+    color: var(--secondary-text-color);
+}

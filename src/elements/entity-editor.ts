@@ -6,7 +6,7 @@ import {repeat} from "lit/directives/repeat";
 import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
 import localize from "../localization/localize";
-import {fireEvent} from "../functions/events";
+import {fireEvent} from "../common/fire-event";
 import {getEntityName} from "../functions/config";
 
 @customElement("today-card-entities-editor")
@@ -24,7 +24,6 @@ export class TodayCardEntitiesEditor extends LitElement {
         }
 
         return html`
-            <h3>${localize("config.label.entities")}</h3>
             <div class="entities">
                 ${repeat(
                     this.entities,
