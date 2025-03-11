@@ -6,6 +6,8 @@
 }
 
 ha-card {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     transition: box-shadow 180ms ease-in-out, border-color 180ms ease-in-out;
 }
@@ -34,6 +36,10 @@ ha-card {
 /*    margin: calc(-1 * var(--ha-card-border-width, 1px));*/
 /*    overflow: hidden;*/
 /*}*/
+
+.card-content {
+    overflow: auto;
+}
 
 .event {
     display: flex;
