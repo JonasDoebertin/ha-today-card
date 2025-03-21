@@ -1,0 +1,31 @@
+{
+    "noEvents": {
+        "title": "No hay eventos para hoy",
+        "subtitle": "Haz algo agradable"
+    },
+    "event": {
+        "schedule": {
+            "from": "Desde",
+            "until": "Hasta"
+        }
+    },
+    "config": {
+        "stub": {
+            "title": "Calendario para hoy"
+        },
+        "label": {
+            "advance": "Avanzar",
+            "clear": "Limpiar",
+            "color": "Color",
+            "content": "Contenido",
+            "entities": "Entidades",
+            "fallback_color": "Color de respaldo",
+            "interactions": "Interacciones",
+            "show_all_day_events": "Mostrar eventos de todo el día",
+            "show_past_events": "Mostrar eventos pasados",
+            "tap_action": "Comportamiento al pulsar",
+            "time_format": "Formato de hora",
+            "title": "Título"
+        }
+    }
+}
