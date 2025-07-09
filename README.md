@@ -6,8 +6,8 @@
 [![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/preview-dark.png">
-  <img width="500" height="334" alt="Today Card for Home Assistant Lovelace Preview" src="docs/preview-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-dark.png">
+  <img width="500" height="334" alt="Today Card for Home Assistant Lovelace Preview" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-light.png">
 </picture>
 
 ## Installation
