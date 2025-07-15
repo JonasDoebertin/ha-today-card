@@ -1,11 +1,13 @@
 import * as de from "./lang/de.json";
 import * as en from "./lang/en.json";
+import * as es from "./lang/es.json";
 import {getHass} from "../globals";
 
 const TRANSLATIONS: Record<string, unknown> = {
     de,
     en,
     "en-GB": en,
+    es,
 };
 
 const DEFAULT_LANG: string = "en";
