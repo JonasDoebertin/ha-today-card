@@ -65,11 +65,23 @@ function transformEvents(
     return events.map((event) => new CalendarEvent(event, entity, config));
 }
 
+/**
+ * Filter calendar events based on display configuration and apply the configured event limit.
+ *
+ * Filters out events that:
+ * - are all-day and end before the start of the day plus `config.advance` days,
+ * - are all-day when `config.show_all_day_events` is false,
+ * - are in the past when `config.show_past_events` is false.
+ *
+ * @param events - The list of calendar events to filter.
+ * @param config - Card configuration; uses `advance`, `show_all_day_events`, `show_past_events`, and `event_limit`.
+ * @returns The filtered events limited to the first `config.event_limit` entries. If `config.event_limit` is 0, the original `events` array is returned unchanged.
+ */
 function filterEvents(
     events: CalendarEvent[],
     config: CardConfig,
 ): CalendarEvent[] {
-    return events.filter((event: CalendarEvent): boolean => {
+    const filteredEvents = events.filter((event: CalendarEvent): boolean => {
         if (
             event.isAllDay
             && event.end.isBefore(
@@ -91,8 +103,16 @@ function filterEvents(
 
         return true;
     });
+
+    return (config.event_limit === 0) ? events : events.slice(0, config.event_limit);
 }
 
+/**
+ * Compute the Unix timestamp to use when comparing an event's start time.
+ *
+ * @param event - The CalendarEvent to evaluate; for multi-day events that are not on their first day, use the start of today as the comparison point.
+ * @returns The Unix timestamp (seconds since epoch) to use as the event's comparison start: the start of today for applicable multi-day events, otherwise the event's actual start time.
+ */
 function getCompareStart(event: CalendarEvent): number {
     if (event.isMultiDay && !event.isFirstDay) {
         return dayjs().startOf("day").unix();
