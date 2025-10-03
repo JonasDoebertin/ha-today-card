@@ -72,13 +72,18 @@ const FORM_SCHEMA = [
                 ],
             },
             {
+                name: "event_limit",
+                default: 0,
+                selector: {number: {mode: "box", step: 1}},
+            },
+            {
                 name: "",
                 type: "grid",
                 schema: [
                     {name: "show_all_day_events", selector: {boolean: {}}},
                     {name: "show_past_events", selector: {boolean: {}}},
                 ],
-            },
+            }
         ],
     },
     {

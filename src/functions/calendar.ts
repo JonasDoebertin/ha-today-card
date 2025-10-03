@@ -69,7 +69,7 @@ function filterEvents(
     events: CalendarEvent[],
     config: CardConfig,
 ): CalendarEvent[] {
-    return events.filter((event: CalendarEvent): boolean => {
+    const filteredEvents = events.filter((event: CalendarEvent): boolean => {
         if (
             event.isAllDay
             && event.end.isBefore(
@@ -91,6 +91,8 @@ function filterEvents(
 
         return true;
     });
+
+    return (config.event_limit === 0) ? filteredEvents : filteredEvents.slice(0, config.event_limit);
 }
 
 function getCompareStart(event: CalendarEvent): number {
