@@ -1,4 +1,4 @@
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import {HA_API_DATE_FORMAT} from "../const";
 import CalendarEvent from "../structs/event";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";

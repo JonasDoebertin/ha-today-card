@@ -1,5 +1,5 @@
-import * as dayjs from "dayjs";
-import * as isToday from "dayjs/plugin/isToday";
+import dayjs from "dayjs";
+import isToday from "dayjs/plugin/isToday";
 import {CardConfig, EntitiesRowConfig} from "./config";
 import localize from "../localization/localize";
 

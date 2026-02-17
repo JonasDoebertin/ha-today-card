@@ -16,6 +16,7 @@
 
         // interop constraints
         "isolatedModules": true,
+        "esModuleInterop": true,
 
         // type checking
         "strict": true,
