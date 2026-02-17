@@ -1,6 +1,6 @@
 {
     "noEvents": {
-        "title": "No hay eventos para hoy",
+        "title": "Sin eventos programados",
         "subtitle": "Haz algo agradable"
     },
     "event": {
@@ -14,8 +14,8 @@
             "title": "Calendario para hoy"
         },
         "label": {
-            "advance": "Avanzar",
-            "clear": "Limpiar",
+            "advance": "Avance",
+            "clear": "Borrar",
             "color": "Color",
             "content": "Contenido",
             "entities": "Entidades",
