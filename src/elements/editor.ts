@@ -72,9 +72,9 @@ const FORM_SCHEMA = [
                 ],
             },
             {
-                name: "event_limit",
+                name: "limit",
                 default: 0,
-                selector: {number: {mode: "box", step: 1}},
+                selector: {number: {mode: "box", step: 1, min: 0}},
             },
             {
                 name: "",
@@ -83,7 +83,7 @@ const FORM_SCHEMA = [
                     {name: "show_all_day_events", selector: {boolean: {}}},
                     {name: "show_past_events", selector: {boolean: {}}},
                 ],
-            }
+            },
         ],
     },
     {

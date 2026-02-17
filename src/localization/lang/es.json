@@ -23,7 +23,7 @@
             "interactions": "Interacciones",
             "show_all_day_events": "Mostrar eventos de todo el día",
             "show_past_events": "Mostrar eventos pasados",
-            "event_limit": "Límite de eventos",
+            "limit": "Núm. máx. de eventos",
             "tap_action": "Comportamiento al pulsar",
             "time_format": "Formato de hora",
             "title": "Título"

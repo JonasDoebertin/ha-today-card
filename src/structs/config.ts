@@ -7,6 +7,7 @@ import {
     number,
     object,
     optional,
+    refine,
     string,
     union,
 } from "superstruct";
@@ -39,7 +40,7 @@ export const cardConfigStruct = assign(
         fallback_color: optional(string()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),
-        event_limit: optional(number()),
+        limit: optional(refine(number(), "non-negative", (value) => value >= 0)),
         tap_action: optional(actionConfigStruct),
         entities: union([array(string()), array(entitiesRowConfigStruct)]),
     }),
