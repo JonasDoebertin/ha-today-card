@@ -72,6 +72,11 @@ const FORM_SCHEMA = [
                 ],
             },
             {
+                name: "limit",
+                default: 0,
+                selector: {number: {mode: "box", step: 1, min: 0}},
+            },
+            {
                 name: "",
                 type: "grid",
                 schema: [

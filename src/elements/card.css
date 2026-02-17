@@ -9,7 +9,9 @@ ha-card {
     display: flex;
     flex-direction: column;
     height: 100%;
-    transition: box-shadow 180ms ease-in-out, border-color 180ms ease-in-out;
+    transition:
+        box-shadow 180ms ease-in-out,
+        border-color 180ms ease-in-out;
 }
 
 [role="button"] {

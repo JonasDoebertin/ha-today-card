@@ -23,6 +23,7 @@
             "interactions": "Interactions",
             "show_all_day_events": "Show all day events",
             "show_past_events": "Show past events",
+            "limit": "Max. number of events",
             "tap_action": "Tap behaviour",
             "time_format": "Time Display Format",
             "title": "Title"

@@ -18,7 +18,7 @@ export async function getEvents(
 
     const events = await fetchEvents(entities, start, end, config, hass);
 
-    return sortEvents(filterEvents(events, config));
+    return limitEvents(sortEvents(filterEvents(events, config)), config);
 }
 
 async function fetchEvents(
@@ -146,4 +146,13 @@ function sortEvents(events: CalendarEvent[]): CalendarEvent[] {
         .sort(compareRegularEvents);
 
     return [...allDayEvents, ...regularEvents];
+}
+
+function limitEvents(
+    events: CalendarEvent[],
+    config: CardConfig,
+): CalendarEvent[] {
+    return config.limit === 0 || config.limit == null || config.limit < 0
+        ? events
+        : events.slice(0, config.limit);
 }

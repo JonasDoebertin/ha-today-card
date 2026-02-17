@@ -23,6 +23,7 @@
             "interactions": "Interaktionen",
             "show_all_day_events": "Zeige ganztägige Termine",
             "show_past_events": "Zeige vergangene Termine",
+            "limit": "Max. Anzahl Termine",
             "tap_action": "Verhalten beim Antippen",
             "time_format": "Zeit-Darstellung",
             "title": "Titel"
