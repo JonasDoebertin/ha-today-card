@@ -1,4 +1,4 @@
-import styles from "bundle-text:./editor.css";
+import styles from "./editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {assert} from "superstruct";

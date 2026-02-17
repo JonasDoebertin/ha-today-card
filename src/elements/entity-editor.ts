@@ -1,8 +1,8 @@
 import {mdiClose} from "../functions/icons";
-import styles from "bundle-text:./entity-editor.css";
+import styles from "./entity-editor.css";
 import {CSSResult, html, LitElement, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
-import {repeat} from "lit/directives/repeat";
+import {repeat} from "lit/directives/repeat.js";
 import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
 import localize from "../localization/localize";

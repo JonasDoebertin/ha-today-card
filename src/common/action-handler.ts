@@ -4,7 +4,7 @@ import {
     Directive,
     directive,
     DirectiveParameters,
-} from "lit-html/directive";
+} from "lit-html/directive.js";
 
 export interface ActionHandlerDetail {
     action: "hold" | "tap" | "double_tap";
