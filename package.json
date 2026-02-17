@@ -14,18 +14,11 @@
     "url": "https://github.com/JonasDoebertin/ha-today-card"
   },
   "license": "MIT",
-  "source": "src/index.ts",
-  "module": "dist/ha-today-card.js",
-  "targets": {
-    "module": {
-      "includeNodeModules": true
-    }
-  },
   "scripts": {
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
-    "watch": "parcel watch",
-    "build": "parcel build"
+    "watch": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --sourcemap=external --watch",
+    "build": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --minify"
   },
   "dependencies": {
     "custom-card-helpers": "^1.9.0",
@@ -35,8 +28,6 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
-    "@parcel/transformer-inline-string": "^2.13.3",
-    "parcel": "^2.13.3",
     "prettier": "^3.5.2"
   }
 }

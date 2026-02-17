@@ -1,4 +1,4 @@
-import styles from "bundle-text:./card.css";
+import styles from "./card.css";
 import {
     CSSResult,
     html,
@@ -8,8 +8,8 @@ import {
     unsafeCSS,
 } from "lit";
 import {customElement, property, state} from "lit/decorators.js";
-import {classMap} from "lit/directives/class-map";
-import {ifDefined} from "lit/directives/if-defined";
+import {classMap} from "lit/directives/class-map.js";
+import {ifDefined} from "lit/directives/if-defined.js";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor} from "../functions/colors";
