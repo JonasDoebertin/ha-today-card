@@ -40,7 +40,9 @@ export const cardConfigStruct = assign(
         fallback_color: optional(string()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),
-        limit: optional(refine(number(), "non-negative", (value) => value >= 0)),
+        limit: optional(
+            refine(number(), "non-negative", (value) => value >= 0),
+        ),
         tap_action: optional(actionConfigStruct),
         entities: union([array(string()), array(entitiesRowConfigStruct)]),
     }),
