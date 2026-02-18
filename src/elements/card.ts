@@ -12,7 +12,7 @@ import {classMap} from "lit/directives/class-map.js";
 import {ifDefined} from "lit/directives/if-defined.js";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
-import {computeCssColor} from "../functions/colors";
+import {computeCssColor, getFallBackColor} from "../functions/colors";
 import {processEditorEntities} from "../functions/config";
 import localize from "../localization/localize";
 import {
@@ -51,19 +51,23 @@ export class TodayCard extends LitElement {
         entitiesFallback: string[],
     ): Partial<CardConfig> {
         let calendarEntities = entities.filter((entityId) => {
-            entityId.startsWith("calendar.");
+            return entityId.startsWith("calendar.");
         });
 
         if (calendarEntities.length < 1) {
             calendarEntities = entitiesFallback.filter((entityId) => {
-                entityId.startsWith("calendar.");
+                return entityId.startsWith("calendar.");
             });
         }
+
+        const entityDefinitions = calendarEntities.map((entity, i) => {
+            return {entity, color: getFallBackColor(i)};
+        });
 
         return {
             ...DEFAULT_CONFIG,
             title: localize("config.stub.title"),
-            entities: calendarEntities,
+            entities: entityDefinitions,
         };
     }
 
