@@ -31,7 +31,9 @@ export class TodayCardEntitiesEditor extends LitElement {
                     (entity, index) => html`
                         <div class="entity">
                             <div class="details">
-                                <span class="name">${getEntityName(entity.entity)}</span>
+                                <span class="name">
+                                    ${getEntityName(entity.entity)}
+                                </span>
                                 <span class="id">${entity.entity}</span>
                             </div>
                             <ha-color-picker
@@ -72,14 +74,14 @@ export class TodayCardEntitiesEditor extends LitElement {
 
         const index = (target as any).index;
         const value = event.detail.value;
+        const entity = this.entities[index];
 
-        if (this.entities[index]?.color === value) {
+        if (!entity || entity.color === value) {
             return;
         }
 
         const newEntities: EntitiesRowConfig[] = this.entities.concat();
-        // @ts-ignore
-        newEntities[index] = {...newEntities[index], color: value};
+        newEntities[index] = {...entity, color: value};
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
@@ -94,16 +96,23 @@ export class TodayCardEntitiesEditor extends LitElement {
             entity: entityId,
         });
 
-        // @ts-expect-error
-        event.target.value = "";
+        if (event.target && "value" in event.target) {
+            (event.target as any).value = "";
+        }
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
 
     private removeRow(event: CustomEvent): void {
-        // @ts-expect-error
-        const index = event.currentTarget.index;
+        const target = event.currentTarget as HTMLElement | null;
+        if (!target) {
+            return;
+        }
 
+        const index = (target as any).index as number | undefined;
+        if (index === undefined || index < 0 || index >= this.entities.length) {
+            return;
+        }
         const newEntities = this.entities.concat();
         newEntities.splice(index, 1);
 
