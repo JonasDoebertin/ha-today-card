@@ -87,6 +87,7 @@ export class TodayCard extends LitElement {
 
     disconnectedCallback(): void {
         window.clearInterval(this.refreshInterval);
+        this.refreshInterval = undefined;
 
         super.disconnectedCallback();
     }
