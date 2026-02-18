@@ -73,12 +73,20 @@ export class TodayCardEntitiesEditor extends LitElement {
         const index = (target as any).index;
         const value = event.detail.value;
 
-        if (this.entities[index]?.color === value) {
+        if (
+            index == null ||
+            !Number.isFinite(index) ||
+            index < 0 ||
+            index >= this.entities.length
+        ) {
+            return;
+        }
+
+        if (this.entities[index].color === value) {
             return;
         }
 
         const newEntities: EntitiesRowConfig[] = this.entities.concat();
-        // @ts-ignore
         newEntities[index] = {...newEntities[index], color: value};
 
         fireEvent(this, "entities-changed", {entities: newEntities});
@@ -101,8 +109,21 @@ export class TodayCardEntitiesEditor extends LitElement {
     }
 
     private removeRow(event: CustomEvent): void {
-        // @ts-expect-error
-        const index = event.currentTarget.index;
+        const target = event.currentTarget as HTMLElement | null;
+        if (!target) {
+            return;
+        }
+
+        const index = (target as any).index;
+
+        if (
+            index == null ||
+            !Number.isFinite(index) ||
+            index < 0 ||
+            index >= this.entities.length
+        ) {
+            return;
+        }
 
         const newEntities = this.entities.concat();
         newEntities.splice(index, 1);
