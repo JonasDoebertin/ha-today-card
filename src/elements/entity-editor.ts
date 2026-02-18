@@ -52,7 +52,6 @@ export class TodayCardEntitiesEditor extends LitElement {
                                 @click=${this.removeRow}
                             ></ha-icon-button>
                         </div>
-                        </div>
                     `,
                 )}
             </div>
