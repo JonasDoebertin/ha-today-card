@@ -115,7 +115,11 @@ export class TodayCard extends LitElement {
 
         this.updateInProgress = true;
         try {
-            this.events = await getEvents(this.config, this.entities, this.hass);
+            this.events = await getEvents(
+                this.config,
+                this.entities,
+                this.hass,
+            );
             this.initialized = true;
         } finally {
             this.updateInProgress = false;

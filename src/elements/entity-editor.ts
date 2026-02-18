@@ -31,7 +31,9 @@ export class TodayCardEntitiesEditor extends LitElement {
                     (entity, index) => html`
                         <div class="entity">
                             <div class="details">
-                                <span class="name">${getEntityName(entity.entity)}</span>
+                                <span class="name">
+                                    ${getEntityName(entity.entity)}
+                                </span>
                                 <span class="id">${entity.entity}</span>
                             </div>
                             <ha-color-picker
