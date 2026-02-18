@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import {HA_API_DATE_FORMAT} from "../const";
 import CalendarEvent from "../structs/event";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
@@ -28,14 +27,11 @@ async function fetchEvents(
     config: CardConfig,
     hass: HomeAssistant,
 ): Promise<CalendarEvent[]> {
-    const startTime = start.format(HA_API_DATE_FORMAT);
-    const endTime = end.format(HA_API_DATE_FORMAT);
-
     const collectedEvents: CalendarEvent[] = [];
     const promises: Promise<void>[] = [];
 
     entities.forEach((entity: EntitiesRowConfig) => {
-        const url = `calendars/${entity.entity}?start=${startTime}&end=${endTime}`;
+        const url = `calendars/${entity.entity}?start=${start.toISOString()}&end=${end.toISOString()}`;
 
         promises.push(
             hass
