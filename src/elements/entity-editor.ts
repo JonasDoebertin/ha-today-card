@@ -109,7 +109,10 @@ export class TodayCardEntitiesEditor extends LitElement {
             return;
         }
 
-        const index = (target as any).index;
+        const index = (target as any).index as number | undefined;
+        if (index === undefined || index < 0 || index >= this.entities.length) {
+            return;
+        }
         const newEntities = this.entities.concat();
         newEntities.splice(index, 1);
 
