@@ -35,6 +35,7 @@ export class TodayCard extends LitElement {
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private events: CalendarEvent[] = [];
     private initialized: boolean = false;
+    private updateInProgress: boolean = false;
     private refreshInterval: number | undefined;
 
     static get styles(): CSSResult {
@@ -103,12 +104,17 @@ export class TodayCard extends LitElement {
     }
 
     async updateEvents(): Promise<void> {
-        if (!this.hass || !this.config) {
+        if (!this.hass || !this.config || this.updateInProgress) {
             return;
         }
 
-        this.events = await getEvents(this.config, this.entities, this.hass);
-        this.initialized = true;
+        this.updateInProgress = true;
+        try {
+            this.events = await getEvents(this.config, this.entities, this.hass);
+            this.initialized = true;
+        } finally {
+            this.updateInProgress = false;
+        }
     }
 
     private hasAction(config?: ActionConfig): boolean {
