@@ -19,6 +19,7 @@
             "color": "Farbe",
             "content": "Inhalt",
             "entities": "Entitäten",
+            "exclude": "Termine ausschließen bei",
             "fallback_color": "Standard-Farbe",
             "interactions": "Interaktionen",
             "show_all_day_events": "Zeige ganztägige Termine",
