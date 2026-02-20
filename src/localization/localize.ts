@@ -10,6 +10,7 @@ const TRANSLATIONS: Record<string, unknown> = {
     "en-GB": en,
     es,
     it,
+    "it-IT": it,
 };
 
 const DEFAULT_LANG: string = "en";
