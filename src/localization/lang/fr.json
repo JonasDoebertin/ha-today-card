@@ -20,7 +20,7 @@
             "content": "Contenu",
             "entities": "Entités",
             "fallback_color": "Couleur par défaut",
-            "interactions": "Intéractions",
+            "interactions": "Interactions",
             "show_all_day_events": "Montrer tous les événements de la journée",
             "show_past_events": "Montrer les événements passés",
             "limit": "Événements maximum",
