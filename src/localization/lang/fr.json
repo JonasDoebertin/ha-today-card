@@ -1,0 +1,32 @@
+{
+    "noEvents": {
+        "title": "Aucun événement à venir",
+        "subtitle": "Passez une bonne journée"
+    },
+    "event": {
+        "schedule": {
+            "from": "De",
+            "until": "jusqu'à"
+        }
+    },
+    "config": {
+        "stub": {
+            "title": "Aujourd'hui"
+        },
+        "label": {
+            "advance": "Journées de décalage",
+            "clear": "Supprimer",
+            "color": "Couleur",
+            "content": "Contenu",
+            "entities": "Entités",
+            "fallback_color": "Couleur par défaut",
+            "interactions": "Intéractions",
+            "show_all_day_events": "Montrer tous les événements de la journée",
+            "show_past_events": "Montrer les événements passés",
+            "limit": "Événements maximum",
+            "tap_action": "Action à l'appui",
+            "time_format": "Format de l'heure",
+            "title": "Titre"
+        }
+    }
+}
