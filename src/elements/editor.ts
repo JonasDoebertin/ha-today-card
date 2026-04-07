@@ -77,6 +77,10 @@ const FORM_SCHEMA = [
                 selector: {number: {mode: "box", step: 1, min: 0}},
             },
             {
+                name: "exclude",
+                selector: {text: {multiline: true}},
+            },
+            {
                 name: "",
                 type: "grid",
                 schema: [
@@ -136,10 +140,15 @@ export class TodayCardEditor extends LitElement {
 
         setHass(this.hass);
 
+        const formData = {
+            ...this.config,
+            exclude: this.config.exclude?.join("\n") ?? "",
+        };
+
         return html`
             <ha-form
                 .hass=${this.hass}
-                .data=${this.config}
+                .data=${formData}
                 .schema=${FORM_SCHEMA}
                 .computeLabel=${this.computeLabel}
                 @value-changed=${this.valueChanged}
@@ -166,7 +175,16 @@ export class TodayCardEditor extends LitElement {
             return;
         }
 
-        const newConfig: CardConfig = event.detail.value;
+        const newConfig: CardConfig = {
+            ...event.detail.value,
+            exclude:
+                typeof event.detail.value.exclude === "string"
+                    ? event.detail.value.exclude
+                          .split("\n")
+                          .map((line: string) => line.trim())
+                          .filter((line: string) => line.length > 0)
+                    : event.detail.value.exclude,
+        };
 
         if (isEqual(newConfig, this.config)) {
             return;

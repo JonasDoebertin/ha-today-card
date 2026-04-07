@@ -61,6 +61,26 @@ function transformEvents(
     return events.map((event) => new CalendarEvent(event, entity, config));
 }
 
+function matchesExcludePattern(text: string, pattern: string): boolean {
+    const regexMatch = pattern.match(/^\/(.+)\/$/);
+    if (regexMatch) {
+        try {
+            return new RegExp(regexMatch[1]).test(text);
+        } catch {
+            // Invalid regex, fall through to plain string match
+        }
+    }
+    return text.toLowerCase().includes(pattern.toLowerCase());
+}
+
+function isExcluded(event: CalendarEvent, patterns: string[]): boolean {
+    return patterns.some(
+        (pattern) =>
+            matchesExcludePattern(event.title, pattern)
+            || matchesExcludePattern(event.description, pattern),
+    );
+}
+
 function filterEvents(
     events: CalendarEvent[],
     config: CardConfig,
@@ -82,6 +102,10 @@ function filterEvents(
         }
 
         if (!config.show_past_events && event.isInPast) {
+            return false;
+        }
+
+        if (config.exclude?.length && isExcluded(event, config.exclude)) {
             return false;
         }
 

@@ -19,6 +19,7 @@
             "color": "Color",
             "content": "Content",
             "entities": "Entities",
+            "exclude": "Exclude events matching",
             "fallback_color": "Fallback Color",
             "interactions": "Interactions",
             "show_all_day_events": "Show all day events",

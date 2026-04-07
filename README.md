@@ -53,6 +53,9 @@ advance: 4
 show_all_day_events: true
 show_past_events: false
 limit: 3
+exclude:
+  - "Trash Day"
+  - "/^Team \d+ Standup/"
 time_format: "HH:mm"
 fallback_color: teal
 entities:
@@ -78,6 +81,7 @@ tap_action:
 | `show_all_day_events` | boolean         | Optional     | `true`    | Whether to show all day events in the schedule                                                                                                                                  |
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
 | `limit`               | number          | Optional     | `0`       | Limits the number of events to display, the default `0` means no limiting                                                                                                       |
+| `exclude`             | list of strings | Optional     | `[]`      | List of patterns to exclude events from display. Supports plain text (case-insensitive substring match) or regex patterns (wrapped in `/slashes/`)                              |
 | `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the events start and end times (see [time formats](#Time-Formatting))                                                                     |
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#Colors))                                                                                     |
 | `tap_action`          | action          | Optional     | `none`    | Home assistant [action](https://www.home-assistant.io/dashboards/actions/) to perform on card taps (supports `perform-action`, `navigate`, `url` and `fire-dom-event` actions)  |

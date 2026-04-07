@@ -43,6 +43,7 @@ export const cardConfigStruct = assign(
         limit: optional(
             refine(number(), "non-negative", (value) => value >= 0),
         ),
+        exclude: optional(array(string())),
         tap_action: optional(actionConfigStruct),
         entities: union([array(string()), array(entitiesRowConfigStruct)]),
     }),
