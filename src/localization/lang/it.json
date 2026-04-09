@@ -1,0 +1,32 @@
+{
+    "noEvents": {
+        "title": "Nessun evento in programma",
+        "subtitle": "Fai qualcosa di bello"
+    },
+    "event": {
+        "schedule": {
+            "from": "Dalle",
+            "until": "Alle"
+        }
+    },
+    "config": {
+        "stub": {
+            "title": "Programma di oggi"
+        },
+        "label": {
+            "advance": "Anticipo",
+            "clear": "Cancella",
+            "color": "Colore",
+            "content": "Contenuto",
+            "entities": "Entità",
+            "fallback_color": "Colore predefinito",
+            "interactions": "Interazioni",
+            "show_all_day_events": "Mostra eventi di tutto il giorno",
+            "show_past_events": "Mostra eventi passati",
+            "limit": "Numero massimo di eventi",
+            "tap_action": "Azione al tocco",
+            "time_format": "Formato visualizzazione orario",
+            "title": "Titolo"
+        }
+    }
+}
