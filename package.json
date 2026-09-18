@@ -18,6 +18,8 @@
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "watch": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --sourcemap=external --watch",
     "build": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --minify"
   },
@@ -29,6 +31,8 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^20.14.5",
+    "@types/bun": "^1.4.2",
     "prettier": "^3.5.2",
     "typescript": "^5.9.3"
   }

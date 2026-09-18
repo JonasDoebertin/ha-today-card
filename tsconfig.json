@@ -30,8 +30,11 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
 
+        // types
+        "types": ["bun"],
+
         // completeness
         "skipLibCheck": true
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "tests/**/*"]
 }
