@@ -1,6 +1,7 @@
 import * as de from "./lang/de.json";
 import * as en from "./lang/en.json";
 import * as es from "./lang/es.json";
+import * as fr from "./lang/fr.json";
 import * as it from "./lang/it.json";
 import {getHass} from "../globals";
 
@@ -9,6 +10,7 @@ const TRANSLATIONS: Record<string, unknown> = {
     en,
     "en-GB": en,
     es,
+    fr,
     it,
 };
 
