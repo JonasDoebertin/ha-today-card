@@ -28,6 +28,11 @@ import {handleAction} from "../common/handle-action";
 import {ActionConfig} from "../structs/action";
 import {actionHandler} from "../common/action-handler";
 
+export interface EntitySuggestion {
+    config: CardConfig;
+    label?: string;
+}
+
 @customElement("today-card")
 export class TodayCard extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
@@ -46,6 +51,18 @@ export class TodayCard extends LitElement {
         return document.createElement("today-card-editor");
     }
 
+    private static buildConfig(calendarEntities: string[]): CardConfig {
+        const entityDefinitions = calendarEntities.map((entity, i) => {
+            return {entity, color: getFallBackColor(i)};
+        });
+
+        return {
+            ...DEFAULT_CONFIG,
+            title: localize("config.stub.title"),
+            entities: entityDefinitions,
+        };
+    }
+
     static getStubConfig(
         _hass: HomeAssistant,
         entities: string[],
@@ -61,15 +78,28 @@ export class TodayCard extends LitElement {
             });
         }
 
-        const entityDefinitions = calendarEntities.map((entity, i) => {
-            return {entity, color: getFallBackColor(i)};
-        });
+        return TodayCard.buildConfig(calendarEntities);
+    }
 
-        return {
-            ...DEFAULT_CONFIG,
-            title: localize("config.stub.title"),
-            entities: entityDefinitions,
-        };
+    /**
+     * Offer the card in the picker when someone selects a calendar entity.
+     *
+     * Home Assistant 2026.6 and later call this for whichever entity the user
+     * picked. Returning null keeps the card out of the suggestion list, which
+     * matters because every custom card that answers indiscriminately makes the
+     * list less useful for everyone.
+     *
+     * Older versions ignore the property, so this stays safe to ship.
+     */
+    static getEntitySuggestion(
+        _hass: HomeAssistant,
+        entityId: string,
+    ): EntitySuggestion | null {
+        if (!entityId.startsWith("calendar.")) {
+            return null;
+        }
+
+        return {config: TodayCard.buildConfig([entityId])};
     }
 
     getLayoutOptions() {
