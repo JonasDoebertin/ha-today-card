@@ -61,6 +61,40 @@ function transformEvents(
     return events.map((event) => new CalendarEvent(event, entity, config));
 }
 
+function matchesExcludePattern(text: string, pattern: string): boolean {
+    const regexMatch = pattern.match(/^\/(.+)\/([gimsuy]*)$/);
+
+    if (regexMatch) {
+        const [, source = "", flags = ""] = regexMatch;
+
+        try {
+            return new RegExp(source, flags).test(text);
+        } catch {
+            // The pattern looks like a regex but does not compile. Match its
+            // body as plain text instead of the whole pattern, which would
+            // include the delimiting slashes and never match a real title.
+            return text.toLowerCase().includes(source.toLowerCase());
+        }
+    }
+
+    return text.toLowerCase().includes(pattern.toLowerCase());
+}
+
+function isExcluded(event: CalendarEvent, patterns: string[]): boolean {
+    return patterns.some((pattern: string): boolean => {
+        // An empty pattern is a substring of every title and would hide the
+        // whole calendar. The editor strips blank lines, YAML does not.
+        if (pattern.trim() === "") {
+            return false;
+        }
+
+        return (
+            matchesExcludePattern(event.title, pattern)
+            || matchesExcludePattern(event.description, pattern)
+        );
+    });
+}
+
 function filterEvents(
     events: CalendarEvent[],
     config: CardConfig,
@@ -82,6 +116,10 @@ function filterEvents(
         }
 
         if (!config.show_past_events && event.isInPast) {
+            return false;
+        }
+
+        if (config.exclude?.length && isExcluded(event, config.exclude)) {
             return false;
         }
 
