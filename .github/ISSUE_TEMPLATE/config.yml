@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Configuration and styling questions
+    url: https://github.com/JonasDoebertin/ha-today-card#readme
+    about: The README documents every option, the CSS classes and a few card-mod recipes.
+  - name: Home Assistant help
+    url: https://community.home-assistant.io/
+    about: Questions about calendars, dashboards or HACS in general are best asked in the community forum.

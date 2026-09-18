@@ -1,0 +1,50 @@
+name: Bug report
+description: Something in the card behaves differently than it should
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The configuration of your card is the single
+        most useful thing you can include.
+  - type: textarea
+    id: what-happens
+    attributes:
+      label: What happens
+      description: What does the card show or do, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Card configuration
+      description: The YAML of the card, taken from the raw configuration editor.
+      render: yaml
+    validations:
+      required: true
+  - type: input
+    id: card-version
+    attributes:
+      label: Today Card version
+      placeholder: "1.1.2"
+    validations:
+      required: true
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.9.0"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: Only needed for rendering or layout problems.
+      placeholder: "Firefox 142, macOS"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, browser console errors, or the calendar integration you use.
