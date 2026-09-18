@@ -7,6 +7,12 @@ on:
 jobs:
   hacs-validation:
     runs-on: ubuntu-latest
+    # hacs/action validates the head repository, which for a pull request from
+    # a fork is the contributor's copy rather than this one. A fork is never a
+    # published HACS repository, so the job can only ever fail there.
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: HACS Validation
         uses: hacs/action@main
