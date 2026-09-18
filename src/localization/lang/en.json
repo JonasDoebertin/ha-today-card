@@ -3,6 +3,9 @@
         "title": "No events scheduled",
         "subtitle": "Do something nice"
     },
+    "error": {
+        "title": "Calendar unavailable"
+    },
     "event": {
         "schedule": {
             "from": "From",

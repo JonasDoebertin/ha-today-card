@@ -3,6 +3,9 @@
         "title": "Keine Termine geplant",
         "subtitle": "Mach was Schönes"
     },
+    "error": {
+        "title": "Kalender nicht erreichbar"
+    },
     "event": {
         "schedule": {
             "from": "Ab",
