@@ -29,13 +29,11 @@ function getTranslatedString(lang: string, key: string): string | undefined {
 export default function localize(key: string): string {
     const lang = getHass()?.language ?? DEFAULT_LANG;
 
-    let translated: string | undefined;
-
-    if (TRANSLATIONS[lang]) {
-        translated = getTranslatedString(lang, key);
-    } else {
-        translated = getTranslatedString(DEFAULT_LANG, key);
-    }
-
-    return translated ?? key;
+    // A translation file that has not caught up with a newly added key
+    // falls back to English rather than showing the raw key.
+    return (
+        getTranslatedString(lang, key)
+        ?? getTranslatedString(DEFAULT_LANG, key)
+        ?? key
+    );
 }
