@@ -5,23 +5,28 @@ on:
     tags:
       - "v*.*.*"
 
+# Creating the release needs write access. Nothing else here does.
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # The whole tag list has to be present for the previous stable tag
           # to be findable. The default shallow fetch does not include it.
           fetch-depth: 0
       - name: Inject version number
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "v0.0.0"
-          replace: ${{ github.ref_name }}
-          regex: false
-          include: "src/const.ts"
+        run: |
+          sed -i "s/v0\.0\.0/${GITHUB_REF_NAME}/" src/const.ts
+          # A silent miss would ship a bundle telling every user it is v0.0.0,
+          # so confirm the placeholder was actually there.
+          grep -q "\"${GITHUB_REF_NAME}\"" src/const.ts \
+            || { echo "::error::version placeholder not found in src/const.ts"; exit 1; }
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Install
@@ -36,8 +41,7 @@ jobs:
             | grep -v -e "^${GITHUB_REF_NAME}$" \
             | head -1)" >> "$GITHUB_OUTPUT"
       - name: Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           generate_release_notes: true
