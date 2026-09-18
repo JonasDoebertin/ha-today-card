@@ -55,7 +55,7 @@ show_past_events: false
 limit: 3
 exclude:
   - "Trash Day"
-  - "/^Team \d+ Standup/"
+  - '/^Team \d+ Standup/'
 time_format: "HH:mm"
 fallback_color: teal
 entities:
@@ -81,7 +81,7 @@ tap_action:
 | `show_all_day_events` | boolean         | Optional     | `true`    | Whether to show all day events in the schedule                                                                                                                                  |
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
 | `limit`               | number          | Optional     | `0`       | Limits the number of events to display, the default `0` means no limiting                                                                                                       |
-| `exclude`             | list of strings | Optional     | `[]`      | List of patterns to exclude events from display. Supports plain text (case-insensitive substring match) or regex patterns (wrapped in `/slashes/`)                              |
+| `exclude`             | list of strings | Optional     | `[]`      | Patterns that hide an event when they match its title or description. Plain text matches case-insensitively anywhere in the value; a pattern wrapped in `/slashes/` is treated as a regular expression (see [excluding events](#Excluding-Events))   |
 | `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the events start and end times (see [time formats](#Time-Formatting))                                                                     |
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#Colors))                                                                                     |
 | `tap_action`          | action          | Optional     | `none`    | Home assistant [action](https://www.home-assistant.io/dashboards/actions/) to perform on card taps (supports `perform-action`, `navigate`, `url` and `fire-dom-event` actions)  |
@@ -94,6 +94,28 @@ Calendar entities can either be provided as a simple list of calendar entities (
 |----------|--------|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `entity` | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
 | `color`  | string | Optional     |         | The calendars color in the schedule (see [colors](#Colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
+
+#### Excluding Events
+
+Use `exclude` to hide recurring noise, such as a bin collection reminder or a daily stand-up. Each pattern is checked against both the title and the description of an event, and one match is enough to hide it.
+
+A plain pattern matches case-insensitively anywhere in the text, so `standup` also hides `Daily Standup`.
+
+```yaml
+exclude:
+  - Trash Day
+  - standup
+```
+
+A pattern wrapped in slashes is a regular expression, with optional flags after the closing slash. Write these as single-quoted YAML strings, otherwise a backslash sequence such as `\d` makes the dashboard configuration fail to parse.
+
+```yaml
+exclude:
+  - '/^Team \d+ Standup/'
+  - '/vacation/i'
+```
+
+A pattern that looks like a regular expression but does not compile falls back to a plain text search for whatever sits between the slashes.
 
 #### Time Formatting
 
