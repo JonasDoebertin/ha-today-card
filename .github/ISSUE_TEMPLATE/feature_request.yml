@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest an option or a behaviour for the card
+labels:
+  - feature
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the situation on your dashboard, not only the option you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could the card solve it?
+      description: A configuration option, a different rendering, something else.
+  - type: textarea
+    id: workaround
+    attributes:
+      label: What do you do today instead?
+      description: A card-mod snippet, a template sensor, a second card.

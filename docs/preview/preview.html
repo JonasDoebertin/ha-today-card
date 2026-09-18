@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Today Card previews</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /*
+             * Source for the PNGs in docs/. The card markup and the rules below
+             * the "card styles" comment are copies of src/elements/card.ts and
+             * src/elements/card.css, so a preview cannot drift from the card
+             * without someone noticing. Everything above that comment imitates
+             * the Home Assistant frontend around it.
+             *
+             * Render with: python3 -m http.server, then open
+             * /docs/preview/preview.html?scene=<og|schedule|advance|states>
+             */
+            :root {
+                --primary-text-color: #212121;
+                --secondary-text-color: #727272;
+                --divider-color: rgba(0, 0, 0, 0.12);
+                --card-background-color: #ffffff;
+                --primary-background-color: #fafafa;
+                --primary-color: #03a9f4;
+                --error-color: #db4437;
+            }
+
+            body.dark {
+                --primary-text-color: #e1e1e1;
+                --secondary-text-color: #9b9b9b;
+                --divider-color: rgba(225, 225, 225, 0.12);
+                --card-background-color: #1c1c1c;
+                --primary-background-color: #111111;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+                color: var(--primary-text-color);
+                background: var(--primary-background-color);
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .scene {
+                display: none;
+            }
+
+            body[data-scene="schedule"] .scene--schedule,
+            body[data-scene="advance"] .scene--advance,
+            body[data-scene="states"] .scene--states,
+            body[data-scene="og"] .scene--og {
+                display: block;
+            }
+
+            /* 1280 wide keeps the captured PNG at one device pixel per CSS
+               pixel, which is the width the capture tool produces. */
+            .stage {
+                display: flex;
+                gap: 32px;
+                padding: 32px;
+                width: 1280px;
+                justify-content: center;
+                align-items: flex-start;
+            }
+
+            ha-card {
+                display: block;
+                width: 420px;
+                color: var(--primary-text-color);
+                background: var(--card-background-color);
+                border: 1px solid var(--divider-color);
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                font-size: 24px;
+                font-weight: 400;
+                letter-spacing: -0.012em;
+                line-height: 32px;
+                padding: 12px 16px 16px;
+            }
+
+            .card-content {
+                padding: 0 16px 16px;
+            }
+
+            /* The capture tool refuses viewports below 240px, so this scene
+               pads up to that height instead of leaving an empty stripe below the cards. */
+            .scene--states .stage {
+                padding-top: 57px;
+                padding-bottom: 57px;
+            }
+
+            ha-card.headerless .card-content {
+                padding-top: 16px;
+            }
+
+            /* --- card styles, copied from src/elements/card.css --- */
+
+            ha-card {
+                --tc-spacing: 1rem;
+                --tc-indicator-spacing: 0.75rem;
+                --tc-indicator-width: 0.5rem;
+            }
+
+            .event {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: var(--tc-spacing);
+            }
+
+            .event:last-child {
+                margin-bottom: 0;
+            }
+
+            .indicator {
+                flex: 0 0 auto;
+                align-self: stretch;
+                margin-right: var(--tc-indicator-spacing);
+                width: var(--tc-indicator-width);
+                border-radius: calc(var(--tc-indicator-width) / 2);
+            }
+
+            .details {
+                flex: 1 1 auto;
+            }
+
+            .title {
+                margin: 0;
+            }
+
+            .title strong {
+                font-weight: bold;
+            }
+
+            .title span {
+                color: var(--secondary-text-color);
+            }
+
+            .schedule {
+                margin: 0;
+                color: var(--secondary-text-color);
+            }
+
+            /* --- social preview --- */
+
+            .og {
+                width: 1280px;
+                height: 640px;
+                display: flex;
+                align-items: center;
+                gap: 64px;
+                padding: 0 80px;
+                background:
+                    radial-gradient(
+                        circle at 82% 18%,
+                        rgba(3, 169, 244, 0.22),
+                        transparent 55%
+                    ),
+                    linear-gradient(140deg, #0b1220 0%, #131c2b 100%);
+                color: #ffffff;
+            }
+
+            .og__text {
+                flex: 1 1 auto;
+            }
+
+            .og__eyebrow {
+                font-size: 20px;
+                font-weight: 500;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                color: #4fc3f7;
+                margin: 0 0 20px;
+            }
+
+            .og__title {
+                font-size: 76px;
+                font-weight: 700;
+                line-height: 1.05;
+                margin: 0 0 24px;
+            }
+
+            .og__subtitle {
+                font-size: 30px;
+                line-height: 1.4;
+                color: rgba(255, 255, 255, 0.72);
+                margin: 0 0 36px;
+                max-width: 20ch;
+            }
+
+            .og__meta {
+                display: flex;
+                gap: 12px;
+                font-size: 18px;
+            }
+
+            .og__chip {
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-radius: 999px;
+                padding: 8px 18px;
+                color: rgba(255, 255, 255, 0.85);
+            }
+
+            .og .card-wrapper {
+                transform: scale(1.35);
+                transform-origin: center right;
+            }
+
+            .og ha-card {
+                width: 300px;
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+            }
+        </style>
+    </head>
+    <body data-scene="schedule">
+        <div class="scene scene--schedule">
+            <div class="stage">
+                <ha-card>
+                    <div class="card-header">Todays Schedule</div>
+                    <div class="card-content">
+                        <div class="event is-all-day is-multi-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Home-Office</strong>
+                                    <span>(2/5)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-all-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #ffc107"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Eric's Birthday</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-current">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Lunch with Leah</strong>
+                                </p>
+                                <p class="schedule">12:30 – 13:00</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Dentist Appointment</strong>
+                                </p>
+                                <p class="schedule">16:00 – 16:45</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Pilates</strong></p>
+                                <p class="schedule">20:00 – 21:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+            </div>
+        </div>
+
+        <div class="scene scene--advance">
+            <div class="stage">
+                <ha-card>
+                    <div class="card-header">Today</div>
+                    <div class="card-content">
+                        <div class="event is-all-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #ffc107"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Eric's Birthday</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-current">
+                            <div
+                                class="indicator"
+                                style="background-color: #03a9f4"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Lunch with Leah</strong>
+                                </p>
+                                <p class="schedule">12:30 – 13:00</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #e91e63"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Pilates</strong></p>
+                                <p class="schedule">20:00 – 21:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+                <ha-card>
+                    <div class="card-header">Tomorrow</div>
+                    <div class="card-content">
+                        <div class="event is-all-day is-multi-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #009688"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Conference in Berlin</strong>
+                                    <span>(1/3)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #03a9f4"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Train to Berlin</strong>
+                                </p>
+                                <p class="schedule">07:12 – 09:48</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #03a9f4"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Keynote</strong></p>
+                                <p class="schedule">11:00 – 12:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+            </div>
+        </div>
+
+        <div class="scene scene--states">
+            <div class="stage">
+                <ha-card class="headerless">
+                    <div class="card-content">
+                        <div class="event is-fallback">
+                            <div
+                                class="indicator"
+                                style="background-color: #009688"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>No events scheduled</strong>
+                                </p>
+                                <p class="schedule">Do something nice</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+                <ha-card class="headerless">
+                    <div class="card-content">
+                        <div class="event is-error">
+                            <div
+                                class="indicator"
+                                style="background-color: var(--error-color)"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Calendar unavailable</strong>
+                                </p>
+                                <p class="schedule">Work Calendar</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #03a9f4"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Pilates</strong></p>
+                                <p class="schedule">20:00 – 21:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+            </div>
+        </div>
+
+        <div class="scene scene--og">
+            <div class="og">
+                <div class="og__text">
+                    <p class="og__eyebrow">Home Assistant · HACS</p>
+                    <h1 class="og__title">Today Card</h1>
+                    <p class="og__subtitle">
+                        One day of your calendars, as a plain list.
+                    </p>
+                    <div class="og__meta">
+                        <span class="og__chip">Several calendars</span>
+                        <span class="og__chip">Visual editor</span>
+                        <span class="og__chip">card-mod ready</span>
+                    </div>
+                </div>
+                <div class="card-wrapper">
+                    <ha-card style="width: 300px">
+                        <div class="card-header">Todays Schedule</div>
+                        <div class="card-content">
+                            <div class="event is-all-day is-multi-day">
+                                <div
+                                    class="indicator"
+                                    style="background-color: #8bc34a"
+                                ></div>
+                                <div class="details">
+                                    <p class="title">
+                                        <strong>Home-Office</strong>
+                                        <span>(2/5)</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="event is-all-day">
+                                <div
+                                    class="indicator"
+                                    style="background-color: #ffc107"
+                                ></div>
+                                <div class="details">
+                                    <p class="title">
+                                        <strong>Eric's Birthday</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="event is-current">
+                                <div
+                                    class="indicator"
+                                    style="background-color: #03a9f4"
+                                ></div>
+                                <div class="details">
+                                    <p class="title">
+                                        <strong>Lunch with Leah</strong>
+                                    </p>
+                                    <p class="schedule">12:30 – 13:00</p>
+                                </div>
+                            </div>
+                            <div class="event is-in-future">
+                                <div
+                                    class="indicator"
+                                    style="background-color: #e91e63"
+                                ></div>
+                                <div class="details">
+                                    <p class="title">
+                                        <strong>Pilates</strong>
+                                    </p>
+                                    <p class="schedule">20:00 – 21:30</p>
+                                </div>
+                            </div>
+                        </div>
+                    </ha-card>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            document.body.dataset.scene = params.get("scene") || "schedule";
+            if (params.get("theme") === "dark") {
+                document.body.classList.add("dark");
+            }
+        </script>
+    </body>
+</html>
