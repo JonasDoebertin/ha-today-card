@@ -4,6 +4,8 @@ import {fakeHass} from "./factories";
 
 describe("test harness", (): void => {
     test("pins the timezone so date fixtures mean the same everywhere", (): void => {
+        // Including when the shell that started the run had its own TZ: the
+        // fixtures are UTC instants, so an ambient zone would break them.
         expect(process.env.TZ).toBe("UTC");
     });
 

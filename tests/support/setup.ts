@@ -3,9 +3,11 @@ import {GlobalRegistrator} from "@happy-dom/global-registrator";
 import {setHass} from "../../src/globals";
 
 // Pinned before anything imports Day.js, so every machine agrees on what
-// midnight means. An explicit TZ from the environment still wins, which is how
-// the timezone tests do their work.
-process.env.TZ = process.env.TZ || "UTC";
+// midnight means. Unconditionally: honouring an ambient TZ would make the
+// suite pass or fail depending on the shell it was started from, since the
+// fixtures throughout are written as UTC instants. Tests that care about other
+// zones set TZ themselves, per test, and put it back afterwards.
+process.env.TZ = "UTC";
 
 GlobalRegistrator.register();
 

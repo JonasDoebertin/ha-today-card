@@ -89,8 +89,7 @@ tests/
 The tree mirrors `src/`, so the test for a file is where its path says it is.
 
 `tests/support/setup.ts` is loaded via `bunfig.toml` preload and does four
-things: pin `TZ` to UTC unless the environment already set it, register
-happy-dom globally, define stand-ins for the Home Assistant elements the card
+things: pin `TZ` to UTC, register happy-dom globally, define stand-ins for the Home Assistant elements the card
 renders into, and reset the `globals.ts` hass singleton between files. The
 `action-handler` stub is not optional — without it `card.ts` throws during
 render, since the real element is supplied by Home Assistant.
@@ -170,8 +169,8 @@ describe behaviour rather than the private helpers.
 Anything that reads the clock runs under `setSystemTime()` with an explicit
 instant, so no test depends on when it runs.
 
-`setup.ts` pins `TZ` to UTC unless the environment supplies one, making the
-suite deterministic across machines. `tests/structs/event.timezone.test.ts`
+`setup.ts` pins `TZ` to UTC unconditionally, making the suite deterministic
+whatever zone the shell that started it was in. `tests/structs/event.timezone.test.ts`
 then switches deliberately to `Europe/Berlin` and `Pacific/Auckland` and checks
 the all-day and multi-day interpretation there, because that is where the real
 risk sits: an event marked all-day on the 18th must not start on the 17th in

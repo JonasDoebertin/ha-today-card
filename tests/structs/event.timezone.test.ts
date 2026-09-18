@@ -14,7 +14,13 @@ function inTimezone<T>(timezone: string, run: () => T): T {
     try {
         return run();
     } finally {
-        process.env.TZ = previous;
+        // Assigning undefined would set the literal string "undefined", which
+        // is not a zone anyone means.
+        if (previous === undefined) {
+            delete process.env.TZ;
+        } else {
+            process.env.TZ = previous;
+        }
     }
 }
 
