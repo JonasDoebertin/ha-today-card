@@ -20,6 +20,7 @@ export const baseCardConfigStruct = object({
     grid_options: any(),
     visibility: any(),
     card_mod: any(),
+    uix: any(),
 });
 
 export type BaseCardConfig = Infer<typeof baseCardConfigStruct>;
