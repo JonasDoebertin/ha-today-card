@@ -36,6 +36,8 @@ Since **Today Card** is not yet available through the HACS store, you have to ad
 
 The card can be configured via a fully featured visual UI editor or via YAML.
 
+On Home Assistant 2026.6 and newer, the card also offers itself in the card picker when you select a calendar entity, pre-filled with that calendar.
+
 ### Minimal YAML Configuration
 
 ```yaml
