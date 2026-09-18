@@ -2,6 +2,7 @@ import * as de from "./lang/de.json";
 import * as en from "./lang/en.json";
 import * as es from "./lang/es.json";
 import * as fr from "./lang/fr.json";
+import * as it from "./lang/it.json";
 import {getHass} from "../globals";
 
 const TRANSLATIONS: Record<string, unknown> = {
@@ -10,6 +11,7 @@ const TRANSLATIONS: Record<string, unknown> = {
     "en-GB": en,
     es,
     fr,
+    it,
 };
 
 const DEFAULT_LANG: string = "en";
@@ -31,13 +33,11 @@ function getTranslatedString(lang: string, key: string): string | undefined {
 export default function localize(key: string): string {
     const lang = getHass()?.language ?? DEFAULT_LANG;
 
-    let translated: string | undefined;
-
-    if (TRANSLATIONS[lang]) {
-        translated = getTranslatedString(lang, key);
-    } else {
-        translated = getTranslatedString(DEFAULT_LANG, key);
-    }
-
-    return translated ?? key;
+    // A translation file that has not caught up with a newly added key
+    // falls back to English rather than showing the raw key.
+    return (
+        getTranslatedString(lang, key)
+        ?? getTranslatedString(DEFAULT_LANG, key)
+        ?? key
+    );
 }
