@@ -102,6 +102,17 @@ export class TodayCard extends LitElement {
         return {config: TodayCard.buildConfig([entityId])};
     }
 
+    /**
+     * Masonry layout uses this to balance columns, where 1 is roughly 50px.
+     * Without it Home Assistant assumes 1 and packs the column badly, since a
+     * card showing eight events is nothing like the height of one showing none.
+     *
+     * The empty-state message occupies a row too, hence the floor of 1.
+     */
+    getCardSize(): number {
+        return (this.config?.title ? 1 : 0) + Math.max(this.events.length, 1);
+    }
+
     getLayoutOptions() {
         return {
             grid_columns: 4,

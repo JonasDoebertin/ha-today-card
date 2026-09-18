@@ -96,13 +96,22 @@ export class TodayCardEntitiesEditor extends LitElement {
             return;
         }
 
-        const newEntities: EntitiesRowConfig[] = this.entities.concat({
-            entity: entityId,
-        });
-
+        // Reset the picker whichever way this goes, so it does not sit there
+        // holding the entity the user just chose.
         if (event.target && "value" in event.target) {
             (event.target as any).value = "";
         }
+
+        // repeat() above keys rows by entity id, so the same calendar added
+        // twice produces duplicate keys and rows that reorder unpredictably.
+        // It would also fetch and draw the same events twice.
+        if (this.entities.some((entity) => entity.entity === entityId)) {
+            return;
+        }
+
+        const newEntities: EntitiesRowConfig[] = this.entities.concat({
+            entity: entityId,
+        });
 
         fireEvent(this, "entities-changed", {entities: newEntities});
     }
