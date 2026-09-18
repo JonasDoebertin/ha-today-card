@@ -175,16 +175,23 @@ export class TodayCardEditor extends LitElement {
             return;
         }
 
-        const newConfig: CardConfig = {
-            ...event.detail.value,
-            exclude:
-                typeof event.detail.value.exclude === "string"
-                    ? event.detail.value.exclude
-                          .split("\n")
-                          .map((line: string) => line.trim())
-                          .filter((line: string) => line.length > 0)
-                    : event.detail.value.exclude,
-        };
+        const exclude: string[] | undefined =
+            typeof event.detail.value.exclude === "string"
+                ? event.detail.value.exclude
+                      .split("\n")
+                      .map((line: string) => line.trim())
+                      .filter((line: string) => line.length > 0)
+                : event.detail.value.exclude;
+
+        const newConfig: CardConfig = {...event.detail.value};
+
+        // The form always reports the exclude field, so an untouched card
+        // would otherwise gain an empty array in its stored configuration.
+        if (exclude?.length) {
+            newConfig.exclude = exclude;
+        } else {
+            delete newConfig.exclude;
+        }
 
         if (isEqual(newConfig, this.config)) {
             return;
