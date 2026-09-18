@@ -31,6 +31,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Install
         run: bun install --frozen-lockfile
+      # A tag that cannot pass its own tests has no business producing a
+      # bundle that HACS will hand to every user.
+      - name: Test
+        run: bun run test
       - name: Build
         run: bun run build
       - name: Find the previous stable tag
