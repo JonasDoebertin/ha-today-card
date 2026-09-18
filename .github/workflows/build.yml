@@ -2,14 +2,30 @@ name: Build
 
 on:
   push:
+    # Tag pushes are covered by the release workflow, which builds the same
+    # commit. Without this filter every tag rebuilt what main had already built.
+    branches:
+      - main
   pull_request:
+
+# Only reading the repository, so the default write-scoped token is more than
+# this job has any use for.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded pull request runs are worth cancelling. A run on main is not,
+  # since it is the record of whether that commit builds.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       - name: Install
