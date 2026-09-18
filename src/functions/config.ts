@@ -17,17 +17,22 @@ export function processEditorEntities(
 ): EntitiesRowConfig[] {
     return entities
         .map((entry, i) => {
-            if (typeof entry === "string") {
-                return {
-                    entity: entry,
-                    color: assignColors ? getFallBackColor(i) : "",
-                };
+            const entity = typeof entry === "string" ? entry : entry.entity;
+            const color = typeof entry === "string" ? undefined : entry.color;
+
+            if (color) {
+                return {entity, color};
             }
 
-            return {
-                entity: entry.entity,
-                color: entry.color ?? (assignColors ? getFallBackColor(i) : ""),
-            };
+            // Leave the key off entirely when there is no colour to report.
+            // Writing an empty string here used to leak into the saved
+            // configuration through the editor, and "" is not nullish, so the
+            // card's own ?? never replaced it and every calendar rendered in
+            // the primary colour. Treating "" as absent also repairs any
+            // configuration already damaged that way.
+            return assignColors
+                ? {entity, color: getFallBackColor(i)}
+                : {entity};
         })
         .filter((entry: EntitiesRowConfig): boolean => {
             return entry.entity.startsWith("calendar.");
