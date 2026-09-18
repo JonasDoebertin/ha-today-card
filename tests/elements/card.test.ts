@@ -516,3 +516,113 @@ describe("rejecting a broken configuration", (): void => {
         }).toThrow();
     });
 });
+
+describe("the space it asks the grid for", (): void => {
+    test("asks for a sensible default footprint", async (): Promise<void> => {
+        const card = await mountCard();
+
+        expect((card as unknown as TodayCard).getLayoutOptions()).toEqual({
+            grid_columns: 4,
+            grid_min_columns: 2,
+            grid_min_rows: 2,
+        });
+    });
+});
+
+describe("tapping the card", (): void => {
+    async function tap(config: Partial<CardConfig>): Promise<unknown[]> {
+        const card = await mountCard(config);
+        const received: unknown[] = [];
+
+        card.addEventListener("hass-action", (event: Event): void => {
+            received.push((event as CustomEvent).detail);
+        });
+
+        const frame = shadowOne(card, "ha-card") as HTMLElement;
+        const action = new Event("action", {bubbles: true, composed: true});
+        (action as unknown as {detail: unknown}).detail = {action: "tap"};
+        frame.dispatchEvent(action);
+
+        return received;
+    }
+
+    test("hands the configured action to Home Assistant", async (): Promise<void> => {
+        const tap_action = {
+            action: "navigate" as const,
+            navigation_path: "/lovelace/0",
+        };
+
+        expect(await tap({tap_action})).toEqual([
+            {config: {tap_action}, action: "tap"},
+        ]);
+    });
+
+    test("still reports a tap when the action is none, and lets Home Assistant ignore it", async (): Promise<void> => {
+        const tap_action = {action: "none" as const};
+
+        expect(await tap({tap_action})).toEqual([
+            {config: {tap_action}, action: "tap"},
+        ]);
+    });
+});
+
+describe("refreshing on a timer", (): void => {
+    test("fetches again when the interval fires", async (): Promise<void> => {
+        const setInterval = spyOn(window, "setInterval");
+
+        try {
+            let calls = 0;
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({
+                    callApi: async (): Promise<unknown> => {
+                        calls += 1;
+                        return [];
+                    },
+                }),
+            });
+
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+            await settle(card);
+            const before = calls;
+
+            const tick = setInterval.mock.calls[0]?.[0] as () => void;
+            tick();
+            await settle(card);
+
+            expect(before).toBeGreaterThan(0);
+            expect(calls).toBe(before + 1);
+        } finally {
+            setInterval.mockRestore();
+        }
+    });
+
+    test("does not start a second fetch while one is still running", async (): Promise<void> => {
+        // The interval keeps firing while a slow calendar is still answering.
+        // Without the guard those requests pile up and the newest answer is
+        // not necessarily the one that wins.
+        let calls = 0;
+        let release: (() => void) | undefined;
+        const blocked = new Promise<void>((resolve): void => {
+            release = resolve;
+        });
+
+        const card = await mount<Configurable>("today-card", {
+            hass: fakeHass({
+                callApi: async (): Promise<unknown> => {
+                    calls += 1;
+                    await blocked;
+                    return [];
+                },
+            }),
+        });
+
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        void (card as unknown as TodayCard).updateEvents();
+        void (card as unknown as TodayCard).updateEvents();
+
+        expect(calls).toBe(1);
+
+        release?.();
+        await settle(card);
+    });
+});

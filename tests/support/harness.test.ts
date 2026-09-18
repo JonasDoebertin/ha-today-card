@@ -7,10 +7,17 @@ describe("test harness", (): void => {
         expect(process.env.TZ).toBe("UTC");
     });
 
-    test("provides a DOM with the Home Assistant elements stubbed", (): void => {
+    test("provides a DOM with custom element support", (): void => {
         expect(typeof customElements.define).toBe("function");
-        expect(customElements.get("ha-card")).toBeDefined();
         expect(customElements.get("action-handler")).toBeDefined();
+    });
+
+    test("leaves the Home Assistant elements undefined, as they are in a test", (): void => {
+        // They render as ordinary unknown elements, which is enough to query
+        // them and drive them, and it keeps loadHaComponents honest.
+        expect(customElements.get("ha-card")).toBeUndefined();
+        expect(customElements.get("ha-form")).toBeUndefined();
+        expect(customElements.get("ha-entity-picker")).toBeUndefined();
     });
 
     test("mounts a Lit element and waits for its first render", async (): Promise<void> => {
