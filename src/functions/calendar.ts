@@ -3,11 +3,18 @@ import CalendarEvent from "../structs/event";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
 
+export interface CalendarResult {
+    events: CalendarEvent[];
+    /** Entity ids whose fetch failed, so the card can say so instead of
+     *  presenting a partial day as if it were the whole day. */
+    failed: string[];
+}
+
 export async function getEvents(
     config: CardConfig,
     entities: EntitiesRowConfig[],
     hass: HomeAssistant,
-): Promise<CalendarEvent[]> {
+): Promise<CalendarResult> {
     const start = dayjs()
         .startOf("day")
         .add(config.advance ?? 0, "day");
@@ -15,9 +22,18 @@ export async function getEvents(
         .endOf("day")
         .add(config.advance ?? 0, "day");
 
-    const events = await fetchEvents(entities, start, end, config, hass);
+    const {events, failed} = await fetchEvents(
+        entities,
+        start,
+        end,
+        config,
+        hass,
+    );
 
-    return limitEvents(sortEvents(filterEvents(events, config)), config);
+    return {
+        events: limitEvents(sortEvents(filterEvents(events, config)), config),
+        failed,
+    };
 }
 
 async function fetchEvents(
@@ -26,8 +42,9 @@ async function fetchEvents(
     end: dayjs.Dayjs,
     config: CardConfig,
     hass: HomeAssistant,
-): Promise<CalendarEvent[]> {
+): Promise<CalendarResult> {
     const collectedEvents: CalendarEvent[] = [];
+    const failed: string[] = [];
     const promises: Promise<void>[] = [];
 
     entities.forEach((entity: EntitiesRowConfig) => {
@@ -43,14 +60,18 @@ async function fetchEvents(
                     collectedEvents.push(...events);
                 })
                 .catch((error): void => {
+                    // A calendar that fails contributes no events, which is
+                    // indistinguishable from a calendar with nothing on today.
+                    // Record it so the card can tell the difference.
                     console.error(error);
+                    failed.push(entity.entity);
                 }),
         );
     });
 
     await Promise.all(promises);
 
-    return collectedEvents;
+    return {events: collectedEvents, failed};
 }
 
 function transformEvents(

@@ -213,6 +213,8 @@ As Today Card was built with custom styling in mind, it fully supports [card-mod
 | `.is-in-future` | Event will start in the future          |
 | `.is-current`   | Event is happening right now            |
 
+Two further rows can appear in place of an event. `.is-fallback` carries the message shown when the day has nothing on it, and `.is-error` names any calendar Home Assistant could not reach.
+
 If you wanted to highlight events happening right now, you could add a bit of a muting effect on events in the past, the future and on all day events. That could look like so:
 
 ```yaml

@@ -13,7 +13,7 @@ import {ifDefined} from "lit/directives/if-defined.js";
 import {assert} from "superstruct";
 import {getEvents} from "../functions/calendar";
 import {computeCssColor, getFallBackColor} from "../functions/colors";
-import {processEditorEntities} from "../functions/config";
+import {getEntityName, processEditorEntities} from "../functions/config";
 import localize from "../localization/localize";
 import {
     CardConfig,
@@ -39,6 +39,7 @@ export class TodayCard extends LitElement {
     @state() private config: CardConfig = DEFAULT_CONFIG;
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private events: CalendarEvent[] = [];
+    @state() private failedEntities: string[] = [];
     private initialized: boolean = false;
     private updateInProgress: boolean = false;
     private refreshInterval: number | undefined;
@@ -156,11 +157,13 @@ export class TodayCard extends LitElement {
 
         this.updateInProgress = true;
         try {
-            this.events = await getEvents(
+            const result = await getEvents(
                 this.config,
                 this.entities,
                 this.hass,
             );
+            this.events = result.events;
+            this.failedEntities = result.failed;
             this.initialized = true;
         } finally {
             this.updateInProgress = false;
@@ -207,23 +210,49 @@ export class TodayCard extends LitElement {
     }
 
     renderEvents(): TemplateResult {
-        let eventsHtml;
-
         if (!this.initialized) {
-            eventsHtml = nothing;
-        } else if (this.events.length === 0) {
-            eventsHtml = html`
-                <div class="events">${this.renderFallback()}</div>
-            `;
-        } else {
-            eventsHtml = this.events.map(
-                (event: CalendarEvent): TemplateResult => {
-                    return this.renderEvent(event);
-                },
-            );
+            return html`<div class="events">${nothing}</div>`;
         }
 
-        return html`<div class="events">${eventsHtml}</div>`;
+        const failed = this.failedEntities.length > 0;
+
+        // "Nothing scheduled" is only true when every calendar answered. If one
+        // of them failed, an empty list means we do not know what is on today,
+        // so the error takes the place of the reassuring message rather than
+        // sitting next to it.
+        const rows = [
+            ...(failed ? [this.renderError()] : []),
+            ...this.events.map((event: CalendarEvent): TemplateResult => {
+                return this.renderEvent(event);
+            }),
+        ];
+
+        if (rows.length === 0) {
+            rows.push(this.renderFallback());
+        }
+
+        return html`<div class="events">${rows}</div>`;
+    }
+
+    renderError(): TemplateResult {
+        const names = this.failedEntities.map((entityId: string): string => {
+            return getEntityName(entityId);
+        });
+
+        return html`
+            <div class="event is-error">
+                <div
+                    class="indicator"
+                    style="background-color: var(--error-color)"
+                ></div>
+                <div class="details">
+                    <p class="title">
+                        <strong>${localize("error.title")}</strong>
+                    </p>
+                    <p class="schedule">${names.join(", ")}</p>
+                </div>
+            </div>
+        `;
     }
 
     renderFallback(): TemplateResult {
