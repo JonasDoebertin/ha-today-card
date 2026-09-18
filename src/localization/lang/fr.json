@@ -6,7 +6,7 @@
     "event": {
         "schedule": {
             "from": "De",
-            "until": "jusqu'à"
+            "until": "Jusqu'à"
         }
     },
     "config": {
@@ -21,10 +21,10 @@
             "entities": "Entités",
             "fallback_color": "Couleur par défaut",
             "interactions": "Interactions",
-            "show_all_day_events": "Montrer tous les événements de la journée",
+            "show_all_day_events": "Montrer les événements sur toute la journée",
             "show_past_events": "Montrer les événements passés",
             "limit": "Événements maximum",
-            "tap_action": "Action à l'appui",
+            "tap_action": "Comportement lors de l'appui",
             "time_format": "Format de l'heure",
             "title": "Titre"
         }
