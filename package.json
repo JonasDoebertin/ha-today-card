@@ -17,6 +17,7 @@
   "scripts": {
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit",
     "watch": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --sourcemap=external --watch",
     "build": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --minify"
   },
@@ -28,6 +29,7 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
-    "prettier": "^3.5.2"
+    "prettier": "^3.5.2",
+    "typescript": "^5.9.3"
   }
 }

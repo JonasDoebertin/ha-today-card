@@ -9,6 +9,12 @@ import localize from "../localization/localize";
 import {fireEvent} from "../common/fire-event";
 import {getEntityName} from "../functions/config";
 
+declare global {
+    interface HASSDomEvents {
+        "entities-changed": {entities: EntitiesRowConfig[]};
+    }
+}
+
 @customElement("today-card-entities-editor")
 export class TodayCardEntitiesEditor extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;

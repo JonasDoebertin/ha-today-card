@@ -6,10 +6,6 @@ import {
     DirectiveParameters,
 } from "lit-html/directive.js";
 
-export interface ActionHandlerDetail {
-    action: "hold" | "tap" | "double_tap";
-}
-
 export interface ActionHandlerOptions {
     hasHold?: boolean;
     hasDoubleClick?: boolean;
@@ -28,12 +24,6 @@ interface ActionHandlerElement extends HTMLElement {
         end?: (event: Event) => void;
         handleKeyDown?: (event: KeyboardEvent) => void;
     };
-}
-
-declare global {
-    interface HASSDomEvents {
-        action: ActionHandlerDetail;
-    }
 }
 
 const getActionHandler = (): ActionHandler => {
