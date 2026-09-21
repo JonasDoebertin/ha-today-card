@@ -13,7 +13,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-dark.png">
-  <img width="500" height="334" alt="Today Card for Home Assistant Lovelace Preview" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-light.png">
+  <img width="640" height="254" alt="Today Card for Home Assistant Lovelace Preview" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-light.png">
 </picture>
 
 [Installation](#installation) · [Quick start](#quick-start) · [Configuration](#configuration) · [Styling](#custom-styling) · [Recipes](#recipes)
@@ -106,12 +106,12 @@ tap_action:
 | `type`                | string          | **Required** |           | `custom:today-card`                                                                                                                                                             |
 | `entities`            | list of objects | **Required** |           | Either a simple list of calendar entities (see [quick start](#quick-start)) or a list of objects (see [calendar entities](#calendar-entities)) |
 | `title`               | string          | Optional     | `""`      | Card title (if empty, no card title will be shown)                                                                                                                              |
-| `advance`             | number          | Optional     | `0`       | Allows to display the schedule of another day then today, eg. `1` for tomorrows events, `2` for the day after tomorrow, and `-1` for yesterdays events                          |
+| `advance`             | number          | Optional     | `0`       | Allows to display the schedule of another day then today, eg. `1` for tomorrow's events, `2` for the day after tomorrow, and `-1` for yesterday's events                          |
 | `show_all_day_events` | boolean         | Optional     | `true`    | Whether to show all day events in the schedule                                                                                                                                  |
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
 | `limit`               | number          | Optional     | `0`       | Limits the number of events to display, the default `0` means no limiting                                                                                                       |
 | `exclude`             | list of strings | Optional     | `[]`      | Patterns that hide an event when they match its title or description. Plain text matches case-insensitively anywhere in the value; a pattern wrapped in `/slashes/` is treated as a regular expression (see [excluding events](#excluding-events))   |
-| `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the events start and end times (see [time formatting](#time-formatting))                                                                     |
+| `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the event's start and end times (see [time formatting](#time-formatting))                                                                     |
 | `fallback_color`      | string          | Optional     | `primary` | Color to use as a fallback, eg. when no events are left for the day (see [colors](#colors))                                                                                     |
 | `tap_action`          | action          | Optional     | `none`    | Home assistant [action](https://www.home-assistant.io/dashboards/actions/) to perform on card taps (supports `perform-action`, `navigate`, `url` and `fire-dom-event` actions)  |
 
@@ -122,7 +122,7 @@ Calendar entities can either be provided as a simple list of calendar entities (
 | Name     | Type   | Required     | Default | Description                                                                                                                                                    |
 |----------|--------|--------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `entity` | string | **Required** |         | An entity id of the `calendar.*` domain                                                                                                                        |
-| `color`  | string | Optional     |         | The calendars color in the schedule (see [colors](#colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
+| `color`  | string | Optional     |         | The calendar's color in the schedule (see [colors](#colors)). If no color is specified, a color from the list of available colors will be chosen automatically. |
 
 ### Excluding events
 
@@ -148,7 +148,7 @@ A pattern that looks like a regular expression but does not compile falls back t
 
 ### Time formatting
 
-With the `time_format` configuration option, you can change how the events start and end times are being displayed. Choose from the following formatting placeholders:
+With the `time_format` configuration option, you can change how the event's start and end times are being displayed. Choose from the following formatting placeholders:
 
 | Format | Output | Description                       |
 |--------|--------|-----------------------------------|
@@ -174,7 +174,7 @@ Using those in combination can result in the following common formats:
 
 ### Colors
 
-The card generally uses Home Assistants default colors, which can be overwritten by your theme. Any of the names below can be used as a color in the cards configuration, and you can also specify a hex color code directly, e.g. `color: "#1abcf2"`.
+The card generally uses Home Assistant's default colors, which can be overwritten by your theme. Any of the names below can be used as a color in the card's configuration, and you can also specify a hex color code directly, e.g. `color: "#1abcf2"`.
 
 <details>
 <summary><strong>All available color names</strong></summary>
@@ -182,8 +182,6 @@ The card generally uses Home Assistants default colors, which can be overwritten
 | Name            | Used CSS Variable       | HA default value |
 |-----------------|-------------------------|------------------|
 | `primary`       | `--primary-color`       | `#03a9f4`        |
-| `dark-primary`  | `--dark-primary-color`  | `#0288d1`        |
-| `light-primary` | `--light-primary-color` | `#b3e5fc`        |
 | `accent`        | `--accent-color`        | `#ff9800`        |
 | `disabled`      | `--disabled-color`      | `#bdbdbd`        |
 | `red`           | `--red-color`           | `#f44336`        |
@@ -245,7 +243,10 @@ As Today Card was built with custom styling in mind, it fully supports [card-mod
 
 Two further rows can appear in place of an event. `.is-fallback` carries the message shown when the day has nothing on it, and `.is-error` names any calendar Home Assistant could not reach.
 
-<img width="900" alt="An empty day and a calendar that could not be reached" src="docs/preview-states.png">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-states-dark.png">
+  <img width="900" alt="An empty day and a calendar that could not be reached" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-states.png">
+</picture>
 
 Spacing and the size of the colored indicator are CSS variables, so a denser or airier card does not need any selector at all:
 
@@ -296,7 +297,10 @@ cards:
       - calendar.family
 ```
 
-<img width="900" alt="Two Today Cards side by side, one for today and one for tomorrow" src="docs/preview-advance.png">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-advance-dark.png">
+  <img width="900" alt="Two Today Cards side by side, one for today and one for tomorrow" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-advance.png">
+</picture>
 
 Open the calendar panel when someone taps the card.
 
