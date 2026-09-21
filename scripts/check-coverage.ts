@@ -1,20 +1,10 @@
 /**
- * Enforce a floor on the coverage of `src/` as a whole.
- *
- * Bun has a `coverageThreshold` setting, but it is applied per file, so the
- * lowest file in the tree decides what the number can be: `action-handler.ts`
- * sits at 60% of functions because Lit never calls a directive's `render`
- * when its `update` returns `noChange`. A floor of 0.6 across every file says
- * nothing about whether the suite still covers the card. This reads the same
- * run's lcov report and checks the totals instead.
- *
- * Run through `bun run test:coverage`, which produces the report first.
+ * Check the coverage of `src/` as a whole against a floor. Bun's own
+ * `coverageThreshold` applies per file, so the weakest file would set the
+ * number for every file. Run `bun run test:coverage` first for the report.
  */
 
-// Set below what the suite measures today, 96.46% of 113 functions and 99.32%
-// of 1037 lines, with room for an ordinary refactor: about four functions and
-// eight lines of slack. Checked against deleting each of the three largest
-// test files, all of which fall below these.
+// Raise these when the measured coverage rises.
 const THRESHOLDS = {
     functions: 93,
     lines: 98.5,
@@ -57,8 +47,7 @@ function readTotals(report: string): Totals {
 }
 
 function percentage(hit: number, found: number): number {
-    // An empty report means the run did not measure anything, which should
-    // fail rather than read as perfect coverage.
+    // An unmeasured report should fail, not read as perfect coverage.
     return found === 0 ? 0 : (hit / found) * 100;
 }
 
