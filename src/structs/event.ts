@@ -56,7 +56,7 @@ export default class CalendarEvent {
 
     get end(): dayjs.Dayjs {
         if (this.cachedEnd === undefined) {
-            if (this.rawEvent.start.date) {
+            if (this.rawEvent.end.date) {
                 this.cachedEnd = dayjs(this.rawEvent.end.date)
                     .subtract(1, "day")
                     .endOf("day");
