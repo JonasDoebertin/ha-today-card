@@ -35,20 +35,6 @@ function readKey(
     }, source) as string | undefined;
 }
 
-/**
- * Keys these languages do not translate yet. Home Assistant users see the
- * English string instead, which is the designed fallback rather than a
- * failure, so the suite records the gap rather than pretending it is not
- * there. Adding a translation makes the matching assertion fail, which is the
- * reminder to shorten this list; a newly added English key that nobody has
- * translated fails too.
- */
-const KNOWN_GAPS: Record<string, string[]> = {
-    es: ["error.title"],
-    fr: ["config.label.exclude", "error.title"],
-    it: ["config.label.exclude", "error.title"],
-};
-
 describe("localize", (): void => {
     test("returns the string for the language Home Assistant reports", (): void => {
         setHass(fakeHass({language: "de"}));
@@ -84,16 +70,6 @@ describe("localize", (): void => {
         );
     });
 
-    test("falls back to English for a key a translation has not caught up with", (): void => {
-        for (const [language, keys] of Object.entries(KNOWN_GAPS)) {
-            setHass(fakeHass({language}));
-
-            for (const key of keys) {
-                expect(localize(key)).toBe(readKey(en, key) as string);
-            }
-        }
-    });
-
     test("returns the key itself when nothing defines it", (): void => {
         setHass(fakeHass({language: "en"}));
 
@@ -125,7 +101,7 @@ describe("language parity", (): void => {
                 return typeof readKey(translations, key) !== "string";
             });
 
-            expect(missing).toEqual(KNOWN_GAPS[language] ?? []);
+            expect(missing).toEqual([]);
         });
     }
 

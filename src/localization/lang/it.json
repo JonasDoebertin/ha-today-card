@@ -3,6 +3,9 @@
         "title": "Nessun evento in programma",
         "subtitle": "Fai qualcosa di bello"
     },
+    "error": {
+        "title": "Calendario non disponibile"
+    },
     "event": {
         "schedule": {
             "from": "Dalle",
@@ -19,6 +22,7 @@
             "color": "Colore",
             "content": "Contenuto",
             "entities": "Entità",
+            "exclude": "Escludi gli eventi corrispondenti",
             "fallback_color": "Colore predefinito",
             "interactions": "Interazioni",
             "show_all_day_events": "Mostra eventi di tutto il giorno",
