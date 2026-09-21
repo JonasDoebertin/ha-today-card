@@ -1,7 +1,6 @@
 import {describe, expect, test} from "bun:test";
 import "../../src/elements/entity-editor";
 import {EntitiesRowConfig} from "../../src/structs/config";
-import {setHass} from "../../src/globals";
 import {entityRow, entityState, fakeHass} from "../support/factories";
 import {
     mount,
@@ -24,11 +23,6 @@ const STATES: Record<string, unknown> = {
 async function mountList(
     entities: EntitiesRowConfig[],
 ): Promise<{list: HTMLElement; changes: EntitiesChanged[]}> {
-    // The row labels are resolved through the module-level hass singleton
-    // rather than through the element's own property. In Home Assistant the
-    // parent editor sets it while rendering; see the test below.
-    setHass(fakeHass({states: STATES}));
-
     const list = await mount("today-card-entities-editor", {
         hass: fakeHass({states: STATES}),
         entities,
@@ -77,20 +71,14 @@ describe("rendering the list", (): void => {
         expect(shadowOne(list, "ha-entity-picker")).not.toBeNull();
     });
 
-    test("falls back to the entity id when only its own hass property is set", async (): Promise<void> => {
-        // FINDING 3. getEntityName reads the hass singleton, not this.hass, so
-        // the element cannot resolve a friendly name on its own. Nothing is
-        // broken today because the parent editor sets the singleton before it
-        // renders the list, but the property it is handed is not what it uses.
-        setHass(null as never);
-
+    test("resolves the friendly name from its own hass property", async (): Promise<void> => {
         const list = await mount("today-card-entities-editor", {
             hass: fakeHass({states: STATES}),
             entities: [entityRow("calendar.work")],
         });
 
         expect(shadowOne(list, ".entity .name")?.textContent?.trim()).toBe(
-            "calendar.work",
+            "Work Calendar",
         );
     });
 
