@@ -91,7 +91,7 @@ describe("plain accessors", (): void => {
         expect(event.location).toBe("High Street 4");
     });
 
-    test("takes its colour from the entity, or inherits the text colour", (): void => {
+    test("takes its color from the entity, or inherits the text color", (): void => {
         const raw = timed("2026-09-18T09:00:00Z", "2026-09-18T10:00:00Z");
 
         expect(makeEvent(raw, {}, entityRow("calendar.work", "red")).color) //

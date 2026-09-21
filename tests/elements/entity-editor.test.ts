@@ -102,7 +102,7 @@ describe("rendering the list", (): void => {
         expect(shadowOne(list, "ha-entity-picker")).toBeNull();
     });
 
-    test("hands the picker the colour the row already has", async (): Promise<void> => {
+    test("hands the picker the color the row already has", async (): Promise<void> => {
         const {list} = await mountList([
             entityRow("calendar.work", "red"),
             entityRow("calendar.home"),
@@ -116,8 +116,8 @@ describe("rendering the list", (): void => {
     });
 });
 
-describe("changing a colour", (): void => {
-    test("reports the new colour on the right row only", async (): Promise<void> => {
+describe("changing a color", (): void => {
+    test("reports the new color on the right row only", async (): Promise<void> => {
         const {list, changes} = await mountList([
             entityRow("calendar.work", "red"),
             entityRow("calendar.home", "blue"),
@@ -138,7 +138,7 @@ describe("changing a colour", (): void => {
         ]);
     });
 
-    test("stays quiet when the colour did not change", async (): Promise<void> => {
+    test("stays quiet when the color did not change", async (): Promise<void> => {
         const {list, changes} = await mountList([
             entityRow("calendar.work", "red"),
         ]);
@@ -155,8 +155,8 @@ describe("changing a colour", (): void => {
         expect(changes).toEqual([]);
     });
 
-    test("drops the key rather than storing an empty colour", async (): Promise<void> => {
-        // "No colour of my own" is expressed by leaving the key out. An empty
+    test("drops the key rather than storing an empty color", async (): Promise<void> => {
+        // "No color of my own" is expressed by leaving the key out. An empty
         // string is not nullish, so it would defeat the card's own fallback.
         const {list, changes} = await mountList([
             entityRow("calendar.work", "red"),

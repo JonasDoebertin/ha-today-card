@@ -9,7 +9,7 @@ import {setHass} from "../../src/globals";
 import {entityState, fakeHass} from "../support/factories";
 
 describe("processEditorEntities", (): void => {
-    test("turns plain entity ids into rows without inventing a colour", (): void => {
+    test("turns plain entity ids into rows without inventing a color", (): void => {
         const result = processEditorEntities(["calendar.work"]);
 
         // Not toMatchObject: a stray `color: undefined` would leak into the
@@ -17,7 +17,7 @@ describe("processEditorEntities", (): void => {
         expect(result).toEqual([{entity: "calendar.work"}]);
     });
 
-    test("assigns the fallback colours in order when asked to", (): void => {
+    test("assigns the fallback colors in order when asked to", (): void => {
         const result = processEditorEntities(
             ["calendar.a", "calendar.b", "calendar.c"],
             true,
@@ -30,7 +30,7 @@ describe("processEditorEntities", (): void => {
         ]);
     });
 
-    test("keeps a colour the user chose", (): void => {
+    test("keeps a color the user chose", (): void => {
         const result = processEditorEntities(
             [{entity: "calendar.work", color: "#abcdef"}],
             true,
@@ -39,7 +39,7 @@ describe("processEditorEntities", (): void => {
         expect(result).toEqual([{entity: "calendar.work", color: "#abcdef"}]);
     });
 
-    test("treats an empty colour as no colour at all", (): void => {
+    test("treats an empty color as no color at all", (): void => {
         // A configuration damaged by the old editor stored "" here, which is
         // not nullish, so the card's own ?? never replaced it.
         expect(processEditorEntities([{entity: "calendar.work", color: ""}])) //
@@ -61,7 +61,7 @@ describe("processEditorEntities", (): void => {
         expect(result).toEqual([{entity: "calendar.work"}]);
     });
 
-    test("colours by original position, so removing a calendar recolours the rest", (): void => {
+    test("colors by original position, so removing a calendar recolors the rest", (): void => {
         const result = processEditorEntities(
             ["light.kitchen", "calendar.work"],
             true,

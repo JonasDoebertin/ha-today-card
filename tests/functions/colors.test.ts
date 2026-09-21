@@ -7,13 +7,13 @@ import {
 } from "../../src/functions/colors";
 
 describe("computeCssColor", (): void => {
-    test("maps a theme colour name to its CSS variable", (): void => {
+    test("maps a theme color name to its CSS variable", (): void => {
         expect(computeCssColor("red")).toBe("var(--red-color)");
         expect(computeCssColor("deep-purple")).toBe("var(--deep-purple-color)");
         expect(computeCssColor("primary")).toBe("var(--primary-color)");
     });
 
-    test("passes anything that is not a theme colour through untouched", (): void => {
+    test("passes anything that is not a theme color through untouched", (): void => {
         expect(computeCssColor("#ff0000")).toBe("#ff0000");
         expect(computeCssColor("rgb(1, 2, 3)")).toBe("rgb(1, 2, 3)");
         expect(computeCssColor("var(--my-own-color)")).toBe(
@@ -21,7 +21,7 @@ describe("computeCssColor", (): void => {
         );
     });
 
-    test("falls back to the primary colour when none is given", (): void => {
+    test("falls back to the primary color when none is given", (): void => {
         expect(computeCssColor("")).toBe("var(--primary-color)");
         expect(computeCssColor(undefined)).toBe("var(--primary-color)");
     });
@@ -46,7 +46,7 @@ describe("getFallBackColor", (): void => {
         );
     });
 
-    test("only returns colours the card can resolve to a variable", (): void => {
+    test("only returns colors the card can resolve to a variable", (): void => {
         for (const color of FALLBACK_COLORS) {
             expect(THEME_COLORS).toContain(color);
             expect(computeCssColor(color)).toBe(`var(--${color}-color)`);
