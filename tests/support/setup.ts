@@ -3,7 +3,7 @@ import {GlobalRegistrator} from "@happy-dom/global-registrator";
 import {setHass} from "../../src/globals";
 
 // Pinned before anything imports Day.js, so every machine agrees on what
-// midnight means. Unconditionally: honouring an ambient TZ would make the
+// midnight means. Unconditionally: honoring an ambient TZ would make the
 // suite pass or fail depending on the shell it was started from, since the
 // fixtures throughout are written as UTC instants. Tests that care about other
 // zones set TZ themselves, per test, and put it back afterwards.

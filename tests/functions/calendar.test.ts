@@ -257,7 +257,7 @@ describe("excluding events", (): void => {
         expect(await remaining(["/QUARTERLY/i"])).toEqual(["Daily Standup"]);
     });
 
-    test("matches a regular expression and honours its flags", async (): Promise<void> => {
+    test("matches a regular expression and honors its flags", async (): Promise<void> => {
         expect(await remaining(["/^daily/i"])).toEqual(["Design Review"]);
         expect(await remaining(["/^daily/"])).toEqual([
             "Daily Standup",

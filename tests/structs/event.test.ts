@@ -289,7 +289,7 @@ describe("timeSchedule", (): void => {
         ).toBe("09:00 – 09:30");
     });
 
-    test("honours the configured time format", (): void => {
+    test("honors the configured time format", (): void => {
         at("2026-09-18T08:00:00Z");
 
         expect(

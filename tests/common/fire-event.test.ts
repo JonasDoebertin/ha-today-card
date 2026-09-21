@@ -65,7 +65,7 @@ describe("fireEvent", (): void => {
         expect(events[0]?.cancelable).toBe(false);
     });
 
-    test("honours explicit options", (): void => {
+    test("honors explicit options", (): void => {
         const node = document.createElement("div");
         const {events} = listen(node, "config-changed");
 
