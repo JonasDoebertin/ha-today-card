@@ -68,8 +68,9 @@ to review when it arrives with a test that fails without it.
 ## Pull requests
 
 Keep a pull request to one subject. A short description of what changes and why
-is enough; the diff explains how. Pull requests are squash-merged, so the
-branch history is yours to organise as you like.
+is enough; the diff explains how. Pull requests land as merge commits, and the
+repository has squash and rebase turned off, so every commit on your branch
+ends up in the history. Worth a tidy-up before you open it.
 
 ## Preview images
 
