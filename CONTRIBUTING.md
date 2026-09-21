@@ -75,6 +75,6 @@ branch history is yours to organise as you like.
 
 The PNGs in `docs/` come from `docs/preview/preview.html`, which copies the
 card markup and `src/elements/card.css` into a plain page. Serve the repository
-with any static server, open the page with `?scene=schedule`, `?scene=advance`,
-`?scene=states` or `?scene=og`, and take a screenshot at the size the page
-renders. `?theme=dark` switches to the dark variant.
+with any static server, open the page with `?scene=hero`, `?scene=schedule`,
+`?scene=advance`, `?scene=states` or `?scene=og`, and take a screenshot at the
+size the page renders. `?theme=dark` switches to the dark variant.

@@ -18,7 +18,7 @@
              * the Home Assistant frontend around it.
              *
              * Render with: python3 -m http.server, then open
-             * /docs/preview/preview.html?scene=<og|schedule|advance|states>
+             * /docs/preview/preview.html?scene=<og|hero|schedule|advance|states>
              */
             :root {
                 --primary-text-color: #212121;
@@ -54,6 +54,7 @@
                 display: none;
             }
 
+            body[data-scene="hero"] .scene--hero,
             body[data-scene="schedule"] .scene--schedule,
             body[data-scene="advance"] .scene--advance,
             body[data-scene="states"] .scene--states,
@@ -92,6 +93,12 @@
 
             .card-content {
                 padding: 0 16px 16px;
+            }
+
+            /* The README hero is embedded at a fixed width, so this stage
+               hugs its two cards rather than padding out to 1280. */
+            .scene--hero .stage {
+                width: 904px;
             }
 
             /* The capture tool refuses viewports below 240px, so this scene
@@ -225,10 +232,140 @@
         </style>
     </head>
     <body data-scene="schedule">
+        <!-- The README hero: one day, rendered twice, to show time_format. -->
+        <div class="scene scene--hero">
+            <div class="stage">
+                <ha-card>
+                    <div class="card-header">Today's Schedule</div>
+                    <div class="card-content">
+                        <div class="event is-all-day is-multi-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Home-Office</strong>
+                                    <span>(2/5)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-all-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #ffc107"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Eric's Birthday</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-current">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Lunch with Leah</strong>
+                                </p>
+                                <p class="schedule">12:30 – 13:00</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Dentist Appointment</strong>
+                                </p>
+                                <p class="schedule">16:00 – 16:45</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Pilates</strong></p>
+                                <p class="schedule">20:00 – 21:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+                <ha-card>
+                    <div class="card-header">Today's Schedule</div>
+                    <div class="card-content">
+                        <div class="event is-all-day is-multi-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Home-Office</strong>
+                                    <span>(2/5)</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-all-day">
+                            <div
+                                class="indicator"
+                                style="background-color: #ffc107"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Eric's Birthday</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="event is-current">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Lunch with Leah</strong>
+                                </p>
+                                <p class="schedule">12:30 pm – 1:00 pm</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title">
+                                    <strong>Dentist Appointment</strong>
+                                </p>
+                                <p class="schedule">4:00 pm – 4:45 pm</p>
+                            </div>
+                        </div>
+                        <div class="event is-in-future">
+                            <div
+                                class="indicator"
+                                style="background-color: #8bc34a"
+                            ></div>
+                            <div class="details">
+                                <p class="title"><strong>Pilates</strong></p>
+                                <p class="schedule">8:00 pm – 9:30 pm</p>
+                            </div>
+                        </div>
+                    </div>
+                </ha-card>
+            </div>
+        </div>
+
         <div class="scene scene--schedule">
             <div class="stage">
                 <ha-card>
-                    <div class="card-header">Todays Schedule</div>
+                    <div class="card-header">Today's Schedule</div>
                     <div class="card-content">
                         <div class="event is-all-day is-multi-day">
                             <div
@@ -437,7 +574,7 @@
                 </div>
                 <div class="card-wrapper">
                     <ha-card style="width: 300px">
-                        <div class="card-header">Todays Schedule</div>
+                        <div class="card-header">Today's Schedule</div>
                         <div class="card-content">
                             <div class="event is-all-day is-multi-day">
                                 <div
