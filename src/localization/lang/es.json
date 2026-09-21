@@ -3,6 +3,9 @@
         "title": "Sin eventos programados",
         "subtitle": "Haz algo agradable"
     },
+    "error": {
+        "title": "Calendario no disponible"
+    },
     "event": {
         "schedule": {
             "from": "Desde",
