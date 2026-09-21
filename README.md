@@ -24,9 +24,9 @@
 
 Home Assistant's built-in calendar card shows a month, a week or the next few days. Today Card deliberately shows less: the events of a single day, as a list, in the order they happen.
 
-Point it at one or more calendars and it renders today's schedule, one colour per calendar, all-day events first.
+Point it at one or more calendars and it renders today's schedule, one color per calendar, all-day events first.
 
-- Several calendars in one list, each in its own colour. Pick the colours or let the card assign them.
+- Several calendars in one list, each in its own color. Pick the colors or let the card assign them.
 - All-day events sit at the top. Multi-day events carry a day counter such as `(2/5)`.
 - `advance` moves the card to tomorrow, to the day after, or back to yesterday, so one dashboard can show several days side by side.
 - `exclude` drops recurring clutter by plain text or regular expression, `limit` caps the list, and `show_past_events` decides whether the morning stays visible all afternoon.

@@ -87,7 +87,7 @@ export class TodayCardEntitiesEditor extends LitElement {
         }
 
         const newEntities: EntitiesRowConfig[] = this.entities.concat();
-        // Clearing the picker means "no colour of my own", which the config
+        // Clearing the picker means "no color of my own", which the config
         // expresses by leaving the key out rather than storing an empty string.
         newEntities[index] = value
             ? {...entity, color: value}
