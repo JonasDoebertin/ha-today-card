@@ -1,6 +1,6 @@
 [test]
 preload = ["./tests/support/setup.ts"]
-coverageReporter = ["text"]
+coverageReporter = ["text", "lcov"]
 # The suite's own scaffolding is not the thing being measured.
 coveragePathIgnorePatterns = ["**/tests/**"]
 coverageSkipTestFiles = true

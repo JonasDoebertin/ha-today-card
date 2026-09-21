@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
+    "coverage:check": "bun run scripts/check-coverage.ts",
     "watch": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --sourcemap=external --watch",
     "build": "bun build ./src/index.ts --outdir ./dist --entry-naming \"ha-today-card.[ext]\" --loader .css:text --minify"
   },

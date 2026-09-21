@@ -35,6 +35,9 @@ bun test
 # Run the test suite with a coverage report
 bun run test:coverage
 
+# Hold the coverage of src/ to its floor (reads the report above)
+bun run coverage:check
+
 # Format check
 bun run format:check
 
@@ -73,6 +76,10 @@ Lit elements have a DOM, defines an `action-handler` stand-in, and clears the
   rather than through its private helpers.
 - Both `.github/workflows/build.yml` and `.github/workflows/release.yml` run
   the suite, so a release tag cannot publish a bundle whose tests fail.
+- `scripts/check-coverage.ts` holds `src/` to a floor across the whole tree.
+  Bun's own `coverageThreshold` is applied per file, and the lowest file
+  would decide the number, so the script totals the lcov report instead.
+  Raise the floors in it when the real number rises.
 
 ### Key Components
 
