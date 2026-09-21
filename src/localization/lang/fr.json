@@ -3,6 +3,9 @@
         "title": "Aucun événement à venir",
         "subtitle": "Passez une bonne journée"
     },
+    "error": {
+        "title": "Calendrier indisponible"
+    },
     "event": {
         "schedule": {
             "from": "De",
@@ -19,6 +22,7 @@
             "color": "Couleur",
             "content": "Contenu",
             "entities": "Entités",
+            "exclude": "Exclure les événements correspondant à",
             "fallback_color": "Couleur par défaut",
             "interactions": "Interactions",
             "show_all_day_events": "Montrer les événements sur toute la journée",
