@@ -134,3 +134,8 @@ The output file is what HACS downloads and serves to Home Assistant users.
 - Prettier: no bracket spacing, experimental operators at start of line
 - TypeScript: strict mode with all safety features enabled (see tsconfig.json)
 - **Import conventions**: Lit package imports require explicit `.js` extensions due to package.json exports (e.g., `"lit/directives/class-map.js"` not `"lit/directives/class-map"`)
+- **Comments**: keep them short and about the code as it stands. A comment
+  earns its place by explaining why something non-obvious is the way it is, in
+  a line or two. Do not narrate history: no "used to", no "this used to break
+  because", no description of the bug a line fixes. Git and the pull request
+  hold that. If the code is clear, write no comment.
