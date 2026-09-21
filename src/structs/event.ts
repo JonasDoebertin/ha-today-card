@@ -103,18 +103,11 @@ export default class CalendarEvent {
     }
 
     /**
-     * The next three compare against the real current moment rather than
-     * against the day being displayed.
-     *
-     * They used to add the advance offset to dayjs(), which moves the date but
-     * keeps the current time of day. "Past" then meant "earlier in the day than
-     * right now" on whichever day was shown, so with the default
-     * show_past_events: false the card hid tomorrow's 09:00 meeting from about
-     * 09:01 onwards. An event on a later day has not happened yet, whatever the
-     * clock reads.
-     *
-     * isFirstDay, isLastDay and currentDay do still apply the offset, because
-     * they ask which day is on screen rather than what time it is.
+     * The next three compare against the real current moment, without the
+     * advance offset: an event on a later day has not happened yet, whatever
+     * the clock reads. isFirstDay, isLastDay and currentDay do apply the
+     * offset, since they ask which day is on screen rather than what time it
+     * is.
      */
     get isInPast(): boolean {
         return this.end.isBefore(dayjs(), "minute");

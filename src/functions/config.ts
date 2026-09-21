@@ -26,12 +26,8 @@ export function processEditorEntities(
                 return {entity, color};
             }
 
-            // Leave the key off entirely when there is no color to report.
-            // Writing an empty string here used to leak into the saved
-            // configuration through the editor, and "" is not nullish, so the
-            // card's own ?? never replaced it and every calendar rendered in
-            // the primary color. Treating "" as absent also repairs any
-            // configuration already damaged that way.
+            // Leave the key off rather than writing "". An empty string is
+            // not nullish, so the card's own ?? would never replace it.
             return assignColors
                 ? {entity, color: getFallBackColor(i)}
                 : {entity};
