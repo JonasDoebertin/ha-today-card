@@ -1,0 +1,24 @@
+name: Translation
+description: Offer a new language or correct an existing one
+labels:
+  - translation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Pull requests are welcome too. Translations are one JSON file in
+        `src/localization/lang/`, and CONTRIBUTING.md walks through it.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: "Dutch (nl)"
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: A correction to an existing string, or a note that you would like to contribute the language.
+    validations:
+      required: true

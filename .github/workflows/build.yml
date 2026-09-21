@@ -34,5 +34,9 @@ jobs:
         run: bun run format:check
       - name: Typecheck
         run: bun run typecheck
+      - name: Test
+        run: bun run test:coverage
+      - name: Check coverage
+        run: bun run coverage:check
       - name: Build
         run: bun run build
