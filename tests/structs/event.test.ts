@@ -182,17 +182,7 @@ describe("isAllDay and isMultiDay", (): void => {
         expect(event.isAllDay).toBe(false);
     });
 
-    test("a payload with a dated start and a timed end loses its end", (): void => {
-        // FINDING 1. The end getter decides which field to read by looking at
-        // start.date rather than end.date, so a mixed payload reads
-        // rawEvent.end.date, gets undefined, and dayjs(undefined) quietly
-        // returns now. The end then lands a day before whatever today is.
-        //
-        // Home Assistant does not currently mix the two forms, so nothing in
-        // the wild depends on this. It is recorded rather than fixed, and it
-        // is why the third branch of isAllDay is unreachable in practice: the
-        // first two branches cover every payload Home Assistant actually
-        // sends.
+    test("a dated start with a timed end reads the end it was given", (): void => {
         at("2026-09-18T12:00:00Z");
         const event = makeEvent({
             id: "mixed",
@@ -200,11 +190,19 @@ describe("isAllDay and isMultiDay", (): void => {
             end: {dateTime: "2026-09-19T02:00:00Z"},
         });
 
-        expect(event.end.format("YYYY-MM-DD HH:mm:ss.SSS")).toBe(
-            "2026-09-17 23:59:59.999",
-        );
-        expect(event.isMultiDay).toBe(false);
-        expect(event.isAllDay).toBe(false);
+        expect(event.end.format("YYYY-MM-DD HH:mm")).toBe("2026-09-19 02:00");
+    });
+
+    test("a dated start with a timed end still spans its days", (): void => {
+        at("2026-09-18T12:00:00Z");
+        const event = makeEvent({
+            id: "mixed",
+            start: {date: "2026-09-17"},
+            end: {dateTime: "2026-09-19T02:00:00Z"},
+        });
+
+        expect(event.isMultiDay).toBe(true);
+        expect(event.numberOfDays).toBe(3);
     });
 });
 
