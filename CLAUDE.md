@@ -29,6 +29,15 @@ bun run build
 # Watch mode for development
 bun run watch
 
+# Run the test suite
+bun test
+
+# Run the test suite with a coverage report
+bun run test:coverage
+
+# Hold the coverage of src/ to its floor (reads the report above)
+bun run coverage:check
+
 # Format check
 bun run format:check
 
@@ -45,6 +54,32 @@ bun run format:fix
 - `src/structs/` - Superstruct schemas for runtime validation (config, action, event)
 - `src/common/` - Shared utilities (action handler, event firing)
 - `src/localization/` - i18n support with language files in `lang/`
+- `tests/` - test suite, mirroring the structure of `src/`
+
+### Testing
+
+`bun test` runs unit and component tests. `bunfig.toml` preloads
+`tests/support/setup.ts`, which pins `TZ` to UTC, registers happy-dom so the
+Lit elements have a DOM, defines an `action-handler` stand-in, and clears the
+`hass` singleton after every test.
+
+- The other Home Assistant elements (`ha-card`, `ha-form`, `ha-entity-picker`
+  and so on) are deliberately left undefined. They still render as ordinary
+  elements that tests can query and drive, and leaving them out avoids fakes
+  that drift from the real components.
+- Anything that reads the clock must call `setSystemTime()` with an explicit
+  instant. `tests/structs/event.timezone.test.ts` additionally reassigns
+  `process.env.TZ` to check behaviour outside UTC.
+- `tests/support/factories.ts` builds raw events, card configs and a fake
+  `hass`; `tests/support/mount.ts` mounts an element and waits for its render.
+- `getEvents` is tested through its public entry point with a fake `callApi`
+  rather than through its private helpers.
+- Both `.github/workflows/build.yml` and `.github/workflows/release.yml` run
+  the suite, so a release tag cannot publish a bundle whose tests fail.
+- `scripts/check-coverage.ts` holds `src/` to a floor across the whole tree.
+  Bun's own `coverageThreshold` is applied per file, and the lowest file
+  would decide the number, so the script totals the lcov report instead.
+  Raise the floors in it when the real number rises.
 
 ### Key Components
 
