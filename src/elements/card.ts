@@ -236,7 +236,7 @@ export class TodayCard extends LitElement {
 
     renderError(): TemplateResult {
         const names = this.failedEntities.map((entityId: string): string => {
-            return getEntityName(entityId);
+            return getEntityName(this.hass, entityId);
         });
 
         return html`

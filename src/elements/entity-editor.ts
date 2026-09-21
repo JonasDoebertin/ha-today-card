@@ -38,7 +38,7 @@ export class TodayCardEntitiesEditor extends LitElement {
                         <div class="entity">
                             <div class="details">
                                 <span class="name">
-                                    ${getEntityName(entity.entity)}
+                                    ${getEntityName(this.hass, entity.entity)}
                                 </span>
                                 <span class="id">${entity.entity}</span>
                             </div>

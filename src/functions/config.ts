@@ -1,9 +1,11 @@
+import {HomeAssistant} from "custom-card-helpers";
 import {EntitiesRowConfig} from "../structs/config";
 import {getFallBackColor} from "./colors";
-import {getHass} from "../globals";
 
-export function getEntityName(entity: string): string {
-    const hass = getHass();
+export function getEntityName(
+    hass: HomeAssistant | null | undefined,
+    entity: string,
+): string {
     if (!hass) {
         return entity;
     }

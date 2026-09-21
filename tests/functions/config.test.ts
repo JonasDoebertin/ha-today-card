@@ -1,11 +1,10 @@
-import {beforeEach, describe, expect, test} from "bun:test";
+import {describe, expect, test} from "bun:test";
 import {
     getEntityName,
     isEqual,
     processEditorEntities,
 } from "../../src/functions/config";
 import {FALLBACK_COLORS} from "../../src/functions/colors";
-import {setHass} from "../../src/globals";
 import {entityState, fakeHass} from "../support/factories";
 
 describe("processEditorEntities", (): void => {
@@ -78,32 +77,28 @@ describe("processEditorEntities", (): void => {
 });
 
 describe("getEntityName", (): void => {
-    beforeEach((): void => {
-        setHass(
-            fakeHass({
-                states: {"calendar.work": entityState("Work Calendar")},
-            }),
-        );
+    const hass = fakeHass({
+        states: {"calendar.work": entityState("Work Calendar")},
     });
 
     test("prefers the friendly name Home Assistant knows", (): void => {
-        expect(getEntityName("calendar.work")).toBe("Work Calendar");
+        expect(getEntityName(hass, "calendar.work")).toBe("Work Calendar");
     });
 
     test("falls back to the entity id for an unknown entity", (): void => {
-        expect(getEntityName("calendar.missing")).toBe("calendar.missing");
+        expect(getEntityName(hass, "calendar.missing")).toBe(
+            "calendar.missing",
+        );
     });
 
     test("falls back to the entity id when the entity has no friendly name", (): void => {
-        setHass(fakeHass({states: {"calendar.bare": {attributes: {}}}}));
+        const bare = fakeHass({states: {"calendar.bare": {attributes: {}}}});
 
-        expect(getEntityName("calendar.bare")).toBe("calendar.bare");
+        expect(getEntityName(bare, "calendar.bare")).toBe("calendar.bare");
     });
 
-    test("falls back to the entity id before Home Assistant is known", (): void => {
-        setHass(null as never);
-
-        expect(getEntityName("calendar.work")).toBe("calendar.work");
+    test("falls back to the entity id when there is no connection at all", (): void => {
+        expect(getEntityName(null, "calendar.work")).toBe("calendar.work");
     });
 });
 
