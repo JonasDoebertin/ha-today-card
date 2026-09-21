@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  # Superseded pull request runs are worth cancelling. A run on main is not,
+  # Superseded pull request runs are worth canceling. A run on main is not,
   # since it is the record of whether that commit builds.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
