@@ -69,7 +69,7 @@ Lit elements have a DOM, defines an `action-handler` stand-in, and clears the
   that drift from the real components.
 - Anything that reads the clock must call `setSystemTime()` with an explicit
   instant. `tests/structs/event.timezone.test.ts` additionally reassigns
-  `process.env.TZ` to check behaviour outside UTC.
+  `process.env.TZ` to check behavior outside UTC.
 - `tests/support/factories.ts` builds raw events, card configs and a fake
   `hass`; `tests/support/mount.ts` mounts an element and waits for its render.
 - `getEvents` is tested through its public entry point with a fake `callApi`
