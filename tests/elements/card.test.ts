@@ -473,6 +473,51 @@ describe("keeping itself up to date", (): void => {
         }
     });
 
+    test("fetches as soon as Home Assistant arrives after the configuration", async (): Promise<void> => {
+        // The order Home Assistant itself uses: the configuration lands on a
+        // card that has no connection yet.
+        const card = document.createElement("today-card") as Configurable;
+        document.body.appendChild(card);
+
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        (card as unknown as TodayCard).hass = fakeHass({
+            callApi: calendarApi({
+                "calendar.work": [
+                    timed(
+                        "Standup",
+                        "2026-09-18T09:00:00Z",
+                        "2026-09-18T09:15:00Z",
+                    ),
+                ],
+            }),
+        });
+        await settle(card);
+
+        expect(
+            shadowAll(card, ".event .title strong").map(
+                (element) => element.textContent,
+            ),
+        ).toEqual(["Standup"]);
+    });
+
+    test("fetches through the connection it holds now, not the one it started with", async (): Promise<void> => {
+        const card = await mountCard();
+        let asked = "";
+
+        (card as unknown as TodayCard).hass = fakeHass({
+            callApi: async (
+                _method: string,
+                path: string,
+            ): Promise<unknown> => {
+                asked = path;
+                return [];
+            },
+        });
+        await (card as unknown as TodayCard).updateEvents();
+
+        expect(asked).toContain("calendars/calendar.work");
+    });
+
     test("does not stack intervals when it is moved around the dashboard", async (): Promise<void> => {
         const setInterval = spyOn(window, "setInterval");
 
@@ -624,5 +669,68 @@ describe("refreshing on a timer", (): void => {
 
         release?.();
         await settle(card);
+    });
+});
+
+describe("redrawing only when it would look different", (): void => {
+    test("ignores a connection that only differs in an unrelated entity", async (): Promise<void> => {
+        const card = await mountCard(
+            {},
+            {"calendar.work": []},
+            {"light.kitchen": entityState("Kitchen")},
+        );
+        const render = spyOn(card as unknown as TodayCard, "render");
+
+        try {
+            (card as unknown as TodayCard).hass = fakeHass({
+                callApi: calendarApi({"calendar.work": []}),
+                states: {"light.kitchen": entityState("Kitchen ceiling")},
+            });
+            await settle(card);
+
+            expect(render).not.toHaveBeenCalled();
+        } finally {
+            render.mockRestore();
+        }
+    });
+
+    test("redraws when Home Assistant switches language", async (): Promise<void> => {
+        const card = await mountCard();
+
+        (card as unknown as TodayCard).hass = fakeHass({
+            language: "de",
+            callApi: calendarApi({"calendar.work": []}),
+        });
+        await settle(card);
+
+        expect(shadowOne(card, ".is-fallback .title strong")?.textContent).toBe(
+            "Keine Termine geplant",
+        );
+    });
+
+    test("redraws when a calendar it could not reach is renamed", async (): Promise<void> => {
+        const restore = silenceConsole();
+
+        try {
+            const card = await mountCard(
+                {},
+                {"calendar.work": new Error("gateway timeout")},
+                {"calendar.work": entityState("Work Calendar")},
+            );
+
+            (card as unknown as TodayCard).hass = fakeHass({
+                callApi: calendarApi({
+                    "calendar.work": new Error("gateway timeout"),
+                }),
+                states: {"calendar.work": entityState("Team Calendar")},
+            });
+            await settle(card);
+
+            expect(shadowOne(card, ".is-error .schedule")?.textContent).toBe(
+                "Team Calendar",
+            );
+        } finally {
+            restore();
+        }
     });
 });

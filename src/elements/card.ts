@@ -4,6 +4,7 @@ import {
     html,
     LitElement,
     nothing,
+    PropertyValues,
     TemplateResult,
     unsafeCSS,
 } from "lit";
@@ -35,7 +36,7 @@ export interface EntitySuggestion {
 
 @customElement("today-card")
 export class TodayCard extends LitElement {
-    @property({attribute: false}) public hass!: HomeAssistant;
+    private currentHass!: HomeAssistant;
     @state() private config: CardConfig = DEFAULT_CONFIG;
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private events: CalendarEvent[] = [];
@@ -43,6 +44,25 @@ export class TodayCard extends LitElement {
     private initialized: boolean = false;
     private updateInProgress: boolean = false;
     private refreshInterval: number | undefined;
+
+    /**
+     * Home Assistant hands over a fresh object on every state change anywhere
+     * in the instance, and shouldUpdate drops almost all of those. The
+     * singleton and the first fetch therefore cannot ride on a render.
+     */
+    @property({attribute: false})
+    public set hass(hass: HomeAssistant) {
+        this.currentHass = hass;
+        setHass(hass);
+
+        if (!this.initialized) {
+            void this.updateEvents();
+        }
+    }
+
+    public get hass(): HomeAssistant {
+        return this.currentHass;
+    }
 
     static get styles(): CSSResult {
         return unsafeCSS(styles);
@@ -140,7 +160,6 @@ export class TodayCard extends LitElement {
     }
 
     setConfig(config: CardConfig) {
-        setHass(this.hass);
         assert(config, cardConfigStruct);
 
         let entities = processEditorEntities(config.entities, true);
@@ -170,6 +189,29 @@ export class TodayCard extends LitElement {
         }
     }
 
+    protected shouldUpdate(changed: PropertyValues): boolean {
+        // Everything else the card holds is read by the template, so a fresh
+        // hass on its own is the only case worth examining.
+        if (changed.size > 1 || !changed.has("hass")) {
+            return true;
+        }
+
+        const previous = changed.get("hass") as HomeAssistant | undefined;
+
+        if (!previous || previous.language !== this.hass.language) {
+            return true;
+        }
+
+        // Only the error row reads a name out of hass, so a rename matters
+        // exactly while that row is on screen.
+        return this.failedEntities.some((entity: string): boolean => {
+            return (
+                getEntityName(previous, entity)
+                !== getEntityName(this.hass, entity)
+            );
+        });
+    }
+
     private hasAction(config?: ActionConfig): boolean {
         return config?.action !== undefined && config.action !== "none";
     }
@@ -184,12 +226,6 @@ export class TodayCard extends LitElement {
     render(): TemplateResult {
         if (!this.hass || !this.config) {
             return html``;
-        }
-
-        setHass(this.hass);
-
-        if (!this.initialized) {
-            this.updateEvents();
         }
 
         const actionable = this.hasAction(this.config.tap_action);
