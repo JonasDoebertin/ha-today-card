@@ -26,16 +26,22 @@ interface ActionHandlerElement extends HTMLElement {
     };
 }
 
+let handler: ActionHandler | undefined;
+
 const getActionHandler = (): ActionHandler => {
-    const body = document.body;
-    if (body.querySelector("action-handler")) {
-        return body.querySelector("action-handler") as ActionHandler;
+    // Cached because the directive runs on every render. The check keeps a
+    // handler that has left the document from being handed out again.
+    if (handler?.isConnected) {
+        return handler;
     }
 
-    const actionHandler = document.createElement("action-handler");
-    body.appendChild(actionHandler);
+    const body = document.body;
+    handler = (body.querySelector("action-handler")
+        ?? body.appendChild(
+            document.createElement("action-handler"),
+        )) as ActionHandler;
 
-    return actionHandler as ActionHandler;
+    return handler;
 };
 
 export const actionHandlerBind = (

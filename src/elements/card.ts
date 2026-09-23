@@ -4,6 +4,7 @@ import {
     html,
     LitElement,
     nothing,
+    PropertyValues,
     TemplateResult,
     unsafeCSS,
 } from "lit";
@@ -23,7 +24,11 @@ import {
 import {ActionHandlerEvent, HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
-import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
+import {
+    DEFAULT_CONFIG,
+    MINIMUM_REFRESH_DELAY,
+    REFRESH_INTERVAL,
+} from "../const";
 import {handleAction} from "../common/handle-action";
 import {ActionConfig} from "../structs/action";
 import {actionHandler} from "../common/action-handler";
@@ -35,14 +40,36 @@ export interface EntitySuggestion {
 
 @customElement("today-card")
 export class TodayCard extends LitElement {
-    @property({attribute: false}) public hass!: HomeAssistant;
+    private currentHass!: HomeAssistant;
     @state() private config: CardConfig = DEFAULT_CONFIG;
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private events: CalendarEvent[] = [];
     @state() private failedEntities: string[] = [];
+    private clockMoved: boolean = false;
+    private configured: boolean = false;
     private initialized: boolean = false;
     private updateInProgress: boolean = false;
-    private refreshInterval: number | undefined;
+    private refreshTimer: number | undefined;
+
+    /**
+     * Home Assistant hands over a fresh object on every state change anywhere
+     * in the instance, and shouldUpdate drops almost all of those, so the
+     * singleton and the first fetch hang off the assignment rather than a
+     * render.
+     */
+    @property({attribute: false})
+    public set hass(hass: HomeAssistant) {
+        this.currentHass = hass;
+        setHass(hass);
+
+        if (!this.initialized) {
+            void this.updateEvents();
+        }
+    }
+
+    public get hass(): HomeAssistant {
+        return this.currentHass;
+    }
 
     static get styles(): CSSResult {
         return unsafeCSS(styles);
@@ -125,33 +152,59 @@ export class TodayCard extends LitElement {
     connectedCallback(): void {
         super.connectedCallback();
 
-        if (this.refreshInterval === undefined) {
-            this.refreshInterval = window.setInterval((): void => {
-                this.updateEvents();
-            }, REFRESH_INTERVAL);
+        if (this.refreshTimer === undefined) {
+            this.scheduleRefresh();
         }
     }
 
     disconnectedCallback(): void {
-        window.clearInterval(this.refreshInterval);
-        this.refreshInterval = undefined;
+        window.clearTimeout(this.refreshTimer);
+        this.refreshTimer = undefined;
 
         super.disconnectedCallback();
     }
 
+    /**
+     * Refresh on the minute, not a minute from now. Whether an event is past,
+     * current or still to come turns over at the minute boundary, so a timer
+     * running at an arbitrary phase shows the change up to a minute late.
+     *
+     * The redraw is asked for separately: a calendar that takes its time
+     * answering would otherwise hold up the clock as well as the events.
+     */
+    private scheduleRefresh(): void {
+        const untilBoundary =
+            REFRESH_INTERVAL - (Date.now() % REFRESH_INTERVAL);
+
+        // A clock that reads a hair short of the boundary, as Firefox does
+        // with resistFingerprinting, would otherwise schedule a second
+        // refresh milliseconds later.
+        const delay =
+            untilBoundary < MINIMUM_REFRESH_DELAY
+                ? untilBoundary + REFRESH_INTERVAL
+                : untilBoundary;
+
+        this.refreshTimer = window.setTimeout((): void => {
+            this.scheduleRefresh();
+            this.clockMoved = true;
+            this.requestUpdate();
+            void this.updateEvents();
+        }, delay);
+    }
+
     setConfig(config: CardConfig) {
-        setHass(this.hass);
         assert(config, cardConfigStruct);
 
         let entities = processEditorEntities(config.entities, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
+        this.configured = true;
 
         this.updateEvents();
     }
 
     async updateEvents(): Promise<void> {
-        if (!this.hass || !this.config || this.updateInProgress) {
+        if (!this.hass || !this.configured || this.updateInProgress) {
             return;
         }
 
@@ -170,6 +223,42 @@ export class TodayCard extends LitElement {
         }
     }
 
+    protected shouldUpdate(changed: PropertyValues): boolean {
+        // requestUpdate() leaves nothing behind in changed, so the tick
+        // flags the clock move itself.
+        if (this.clockMoved) {
+            return true;
+        }
+
+        // Everything else the card holds is read by the template, so a fresh
+        // hass on its own is the only case worth examining.
+        if (changed.size > 1 || !changed.has("hass")) {
+            return true;
+        }
+
+        // Lit clears changed when a render is skipped, so previous is the
+        // last hass considered rather than the last one rendered. Comparing
+        // for equality survives that; a comparison of degree would not.
+        const previous = changed.get("hass") as HomeAssistant | undefined;
+
+        if (!previous || previous.language !== this.hass.language) {
+            return true;
+        }
+
+        // Only the error row reads a name out of hass, so a rename matters
+        // exactly while that row is on screen.
+        return this.failedEntities.some((entity: string): boolean => {
+            return (
+                getEntityName(previous, entity)
+                !== getEntityName(this.hass, entity)
+            );
+        });
+    }
+
+    protected updated(): void {
+        this.clockMoved = false;
+    }
+
     private hasAction(config?: ActionConfig): boolean {
         return config?.action !== undefined && config.action !== "none";
     }
@@ -184,12 +273,6 @@ export class TodayCard extends LitElement {
     render(): TemplateResult {
         if (!this.hass || !this.config) {
             return html``;
-        }
-
-        setHass(this.hass);
-
-        if (!this.initialized) {
-            this.updateEvents();
         }
 
         const actionable = this.hasAction(this.config.tap_action);

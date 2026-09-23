@@ -4,6 +4,8 @@ export const VERSION: string = "v0.0.0";
 
 export const REFRESH_INTERVAL: number = 60 * 1_000;
 
+export const MINIMUM_REFRESH_DELAY: number = 1_000;
+
 export const TIME_FORMATS = [
     {
         value: "H:mm",
