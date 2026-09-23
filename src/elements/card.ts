@@ -24,7 +24,11 @@ import {
 import {ActionHandlerEvent, HomeAssistant} from "custom-card-helpers";
 import CalendarEvent from "../structs/event";
 import {setHass} from "../globals";
-import {DEFAULT_CONFIG, REFRESH_INTERVAL} from "../const";
+import {
+    DEFAULT_CONFIG,
+    MINIMUM_REFRESH_DELAY,
+    REFRESH_INTERVAL,
+} from "../const";
 import {handleAction} from "../common/handle-action";
 import {ActionConfig} from "../structs/action";
 import {actionHandler} from "../common/action-handler";
@@ -41,14 +45,17 @@ export class TodayCard extends LitElement {
     @state() private entities: EntitiesRowConfig[] = [];
     @state() private events: CalendarEvent[] = [];
     @state() private failedEntities: string[] = [];
+    private clockMoved: boolean = false;
+    private configured: boolean = false;
     private initialized: boolean = false;
     private updateInProgress: boolean = false;
     private refreshTimer: number | undefined;
 
     /**
      * Home Assistant hands over a fresh object on every state change anywhere
-     * in the instance, and shouldUpdate drops almost all of those. The
-     * singleton and the first fetch therefore cannot ride on a render.
+     * in the instance, and shouldUpdate drops almost all of those, so the
+     * singleton and the first fetch hang off the assignment rather than a
+     * render.
      */
     @property({attribute: false})
     public set hass(hass: HomeAssistant) {
@@ -166,10 +173,20 @@ export class TodayCard extends LitElement {
      * answering would otherwise hold up the clock as well as the events.
      */
     private scheduleRefresh(): void {
-        const delay = REFRESH_INTERVAL - (Date.now() % REFRESH_INTERVAL);
+        const untilBoundary =
+            REFRESH_INTERVAL - (Date.now() % REFRESH_INTERVAL);
+
+        // A clock that reads a hair short of the boundary, as Firefox does
+        // with resistFingerprinting, would otherwise schedule a second
+        // refresh milliseconds later.
+        const delay =
+            untilBoundary < MINIMUM_REFRESH_DELAY
+                ? untilBoundary + REFRESH_INTERVAL
+                : untilBoundary;
 
         this.refreshTimer = window.setTimeout((): void => {
             this.scheduleRefresh();
+            this.clockMoved = true;
             this.requestUpdate();
             void this.updateEvents();
         }, delay);
@@ -181,12 +198,13 @@ export class TodayCard extends LitElement {
         let entities = processEditorEntities(config.entities, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
+        this.configured = true;
 
         this.updateEvents();
     }
 
     async updateEvents(): Promise<void> {
-        if (!this.hass || !this.config || this.updateInProgress) {
+        if (!this.hass || !this.configured || this.updateInProgress) {
             return;
         }
 
@@ -206,12 +224,21 @@ export class TodayCard extends LitElement {
     }
 
     protected shouldUpdate(changed: PropertyValues): boolean {
+        // requestUpdate() leaves nothing behind in changed, so the tick
+        // flags the clock move itself.
+        if (this.clockMoved) {
+            return true;
+        }
+
         // Everything else the card holds is read by the template, so a fresh
         // hass on its own is the only case worth examining.
         if (changed.size > 1 || !changed.has("hass")) {
             return true;
         }
 
+        // Lit clears changed when a render is skipped, so previous is the
+        // last hass considered rather than the last one rendered. Comparing
+        // for equality survives that; a comparison of degree would not.
         const previous = changed.get("hass") as HomeAssistant | undefined;
 
         if (!previous || previous.language !== this.hass.language) {
@@ -226,6 +253,10 @@ export class TodayCard extends LitElement {
                 !== getEntityName(this.hass, entity)
             );
         });
+    }
+
+    protected updated(): void {
+        this.clockMoved = false;
     }
 
     private hasAction(config?: ActionConfig): boolean {

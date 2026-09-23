@@ -106,7 +106,11 @@ function scheduledAfter(spy: TimerSpy, delay: number): () => void {
         return entry[1] === delay;
     });
 
-    return call?.[0] as () => void;
+    if (call === undefined) {
+        throw new Error(`nothing was scheduled ${delay}ms out`);
+    }
+
+    return call[0] as () => void;
 }
 
 /** The timer id the card was handed for a given delay. */
@@ -527,6 +531,31 @@ describe("keeping itself up to date", (): void => {
         ).toEqual(["Standup"]);
     });
 
+    test("fetches when the configuration lands in the same task as the connection", async (): Promise<void> => {
+        const card = document.createElement("today-card") as Configurable;
+        document.body.appendChild(card);
+
+        (card as unknown as TodayCard).hass = fakeHass({
+            callApi: calendarApi({
+                "calendar.work": [
+                    timed(
+                        "Standup",
+                        "2026-09-18T09:00:00Z",
+                        "2026-09-18T09:15:00Z",
+                    ),
+                ],
+            }),
+        });
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        await settle(card);
+
+        expect(
+            shadowAll(card, ".event .title strong").map(
+                (element) => element.textContent,
+            ),
+        ).toEqual(["Standup"]);
+    });
+
     test("fetches through the connection it holds now, not the one it started with", async (): Promise<void> => {
         const card = await mountCard();
         let asked = "";
@@ -545,7 +574,7 @@ describe("keeping itself up to date", (): void => {
         expect(asked).toContain("calendars/calendar.work");
     });
 
-    test("does not stack timers when it is moved around the dashboard", async (): Promise<void> => {
+    test("starts a fresh timer when it is moved around the dashboard", async (): Promise<void> => {
         const setTimeout = spyOn(window, "setTimeout");
 
         try {
@@ -559,6 +588,23 @@ describe("keeping itself up to date", (): void => {
             );
 
             expect(refreshes).toHaveLength(2);
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("does not stack timers when it is connected again without leaving", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
+
+        try {
+            const card = await mount("today-card", {hass: fakeHass()});
+            (card as unknown as TodayCard).connectedCallback();
+
+            const refreshes = scheduledDelays(setTimeout).filter(
+                (delay: unknown): boolean => delay === 60_000,
+            );
+
+            expect(refreshes).toHaveLength(1);
         } finally {
             setTimeout.mockRestore();
         }
@@ -673,6 +719,26 @@ describe("refreshing on a timer", (): void => {
         }
     });
 
+    test("does not refresh twice for the same minute when the clock reads coarsely", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
+
+        try {
+            await mount("today-card", {hass: fakeHass()});
+            const tick = scheduledAfter(setTimeout, 60_000);
+
+            // Firefox with resistFingerprinting rounds Date.now() down to
+            // 100ms, so the callback can run while the clock still reads the
+            // minute before.
+            setSystemTime(new Date("2026-09-18T10:00:59.999Z"));
+            tick();
+
+            expect(scheduledDelays(setTimeout)).toContain(60_001);
+            expect(scheduledDelays(setTimeout)).not.toContain(1);
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
     test("fetches again when the timer fires", async (): Promise<void> => {
         const setTimeout = spyOn(window, "setTimeout");
 
@@ -737,6 +803,80 @@ describe("refreshing on a timer", (): void => {
             await settle(card);
 
             expect(classesOfFirstEvent(card)).toContain("is-current");
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("moves an event to under way on the minute even when a connection update is pending", async (): Promise<void> => {
+        setSystemTime(new Date("2026-09-18T10:00:37.500Z"));
+        const setTimeout = spyOn(window, "setTimeout");
+        const stuck = new Promise<void>((): void => {});
+        let calls = 0;
+        const callApi = async (): Promise<unknown> => {
+            calls += 1;
+            if (calls > 1) {
+                await stuck;
+            }
+
+            return [
+                timed(
+                    "Standup",
+                    "2026-09-18T10:01:00Z",
+                    "2026-09-18T10:02:00Z",
+                ),
+            ];
+        };
+
+        try {
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({callApi}),
+            });
+
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+            await settle(card);
+
+            const tick = scheduledAfter(setTimeout, 22_500);
+            setSystemTime(new Date("2026-09-18T10:01:00.020Z"));
+            (card as unknown as TodayCard).hass = fakeHass({
+                callApi,
+                states: {"light.kitchen": entityState("Kitchen")},
+            });
+            tick();
+            await settle(card);
+
+            expect(classesOfFirstEvent(card)).toContain("is-current");
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("goes back to ignoring unrelated updates once the timer has fired", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
+
+        try {
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({callApi: calendarApi({"calendar.work": []})}),
+            });
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+            await settle(card);
+
+            scheduledAfter(setTimeout, 60_000)();
+            await settle(card);
+
+            const render = spyOn(card as unknown as TodayCard, "render");
+
+            try {
+                (card as unknown as TodayCard).hass = fakeHass({
+                    callApi: calendarApi({"calendar.work": []}),
+                    states: {"light.kitchen": entityState("Kitchen")},
+                });
+                await settle(card);
+
+                expect(render).not.toHaveBeenCalled();
+            } finally {
+                render.mockRestore();
+            }
         } finally {
             setTimeout.mockRestore();
         }
@@ -807,6 +947,132 @@ describe("redrawing only when it would look different", (): void => {
         expect(shadowOne(card, ".is-fallback .title strong")?.textContent).toBe(
             "Keine Termine geplant",
         );
+    });
+
+    test("redraws when the configuration and the connection change together", async (): Promise<void> => {
+        // A calendar that is still answering holds off the fetch this
+        // configuration would otherwise start, so the batch it shares with the
+        // connection is the only chance the new title gets.
+        const stuck = new Promise<void>((): void => {});
+        let calls = 0;
+        const callApi = async (): Promise<unknown> => {
+            calls += 1;
+            if (calls > 1) {
+                await stuck;
+            }
+
+            return [];
+        };
+
+        const card = await mount<Configurable>("today-card", {
+            hass: fakeHass({callApi}),
+        });
+        card.setConfig(
+            cardConfig({entities: ["calendar.work"], title: "Today"}),
+        );
+        await settle(card);
+
+        void (card as unknown as TodayCard).updateEvents();
+        card.setConfig(
+            cardConfig({entities: ["calendar.work"], title: "Tomorrow"}),
+        );
+        (card as unknown as TodayCard).hass = fakeHass({callApi});
+        await settle(card);
+
+        expect(shadowOne(card, "ha-card")?.getAttribute("header")).toBe(
+            "Tomorrow",
+        );
+    });
+
+    test("redraws when the connection arrives an update after the configuration", async (): Promise<void> => {
+        const card = document.createElement("today-card") as Configurable;
+        document.body.appendChild(card);
+
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        await settle(card);
+
+        (card as unknown as TodayCard).hass = fakeHass({
+            callApi: calendarApi({
+                "calendar.work": [
+                    timed(
+                        "Standup",
+                        "2026-09-18T09:00:00Z",
+                        "2026-09-18T09:15:00Z",
+                    ),
+                ],
+            }),
+        });
+        await settle(card);
+
+        expect(
+            shadowAll(card, ".event .title strong").map(
+                (element) => element.textContent,
+            ),
+        ).toEqual(["Standup"]);
+    });
+
+    test("ignores an unrelated entity while an error row is on screen", async (): Promise<void> => {
+        const restore = silenceConsole();
+        const card = await mountCard(
+            {},
+            {"calendar.work": new Error("gateway timeout")},
+            {"calendar.work": entityState("Work Calendar")},
+        );
+        const render = spyOn(card as unknown as TodayCard, "render");
+
+        try {
+            (card as unknown as TodayCard).hass = fakeHass({
+                callApi: calendarApi({
+                    "calendar.work": new Error("gateway timeout"),
+                }),
+                states: {
+                    "calendar.work": entityState("Work Calendar"),
+                    "light.kitchen": entityState("Kitchen"),
+                },
+            });
+            await settle(card);
+
+            expect(render).not.toHaveBeenCalled();
+        } finally {
+            render.mockRestore();
+            restore();
+        }
+    });
+
+    test("redraws when one of several unreachable calendars is renamed", async (): Promise<void> => {
+        const restore = silenceConsole();
+
+        try {
+            const card = await mountCard(
+                {},
+                {
+                    "calendar.work": new Error("gateway timeout"),
+                    "calendar.home": new Error("gateway timeout"),
+                },
+                {
+                    "calendar.work": entityState("Work Calendar"),
+                    "calendar.home": entityState("Home Calendar"),
+                },
+            );
+
+            (card as unknown as TodayCard).hass = fakeHass({
+                callApi: calendarApi({
+                    "calendar.work": new Error("gateway timeout"),
+                    "calendar.home": new Error("gateway timeout"),
+                }),
+                states: {
+                    "calendar.work": entityState("Work Calendar"),
+                    "calendar.home": entityState("Family Calendar"),
+                },
+            });
+            await settle(card);
+
+            expect(shadowOne(card, ".is-error .schedule")?.textContent).toBe(
+                "Work Calendar, Family Calendar",
+            );
+        } finally {
+            restore();
+        }
     });
 
     test("redraws when a calendar it could not reach is renamed", async (): Promise<void> => {
