@@ -92,6 +92,32 @@ function silenceConsole(): () => void {
     };
 }
 
+type TimerSpy = {
+    mock: {calls: unknown[][]; results: {value: unknown}[]};
+};
+
+function scheduledDelays(spy: TimerSpy): unknown[] {
+    return spy.mock.calls.map((call: unknown[]): unknown => call[1]);
+}
+
+/** The callback the card scheduled with a given delay. */
+function scheduledAfter(spy: TimerSpy, delay: number): () => void {
+    const call = spy.mock.calls.find((entry: unknown[]): boolean => {
+        return entry[1] === delay;
+    });
+
+    return call?.[0] as () => void;
+}
+
+/** The timer id the card was handed for a given delay. */
+function timerScheduledAfter(spy: TimerSpy, delay: number): unknown {
+    const index = spy.mock.calls.findIndex((entry: unknown[]): boolean => {
+        return entry[1] === delay;
+    });
+
+    return index < 0 ? undefined : spy.mock.results[index]?.value;
+}
+
 beforeEach((): void => {
     setSystemTime(new Date("2026-09-18T10:00:00Z"));
 });
@@ -458,18 +484,19 @@ describe("the configuration it suggests", (): void => {
 
 describe("keeping itself up to date", (): void => {
     test("starts refreshing when it is added and stops when it is removed", async (): Promise<void> => {
-        const setInterval = spyOn(window, "setInterval");
-        const clearInterval = spyOn(window, "clearInterval");
+        const setTimeout = spyOn(window, "setTimeout");
+        const clearTimeout = spyOn(window, "clearTimeout");
 
         try {
             const card = await mount("today-card", {hass: fakeHass()});
-            expect(setInterval).toHaveBeenCalledTimes(1);
+            const timer = timerScheduledAfter(setTimeout, 60_000);
+            expect(timer).toBeDefined();
 
             card.remove();
-            expect(clearInterval).toHaveBeenCalledTimes(1);
+            expect(clearTimeout).toHaveBeenCalledWith(timer);
         } finally {
-            setInterval.mockRestore();
-            clearInterval.mockRestore();
+            setTimeout.mockRestore();
+            clearTimeout.mockRestore();
         }
     });
 
@@ -518,8 +545,8 @@ describe("keeping itself up to date", (): void => {
         expect(asked).toContain("calendars/calendar.work");
     });
 
-    test("does not stack intervals when it is moved around the dashboard", async (): Promise<void> => {
-        const setInterval = spyOn(window, "setInterval");
+    test("does not stack timers when it is moved around the dashboard", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
 
         try {
             const card = await mount("today-card", {hass: fakeHass()});
@@ -527,9 +554,13 @@ describe("keeping itself up to date", (): void => {
             document.body.appendChild(card);
             await settle(card);
 
-            expect(setInterval).toHaveBeenCalledTimes(2);
+            const refreshes = scheduledDelays(setTimeout).filter(
+                (delay: unknown): boolean => delay === 60_000,
+            );
+
+            expect(refreshes).toHaveLength(2);
         } finally {
-            setInterval.mockRestore();
+            setTimeout.mockRestore();
         }
     });
 });
@@ -612,8 +643,38 @@ describe("tapping the card", (): void => {
 });
 
 describe("refreshing on a timer", (): void => {
-    test("fetches again when the interval fires", async (): Promise<void> => {
-        const setInterval = spyOn(window, "setInterval");
+    test("schedules its first refresh on the next full minute", async (): Promise<void> => {
+        setSystemTime(new Date("2026-09-18T10:00:37.500Z"));
+        const setTimeout = spyOn(window, "setTimeout");
+
+        try {
+            await mount("today-card", {hass: fakeHass()});
+
+            expect(scheduledDelays(setTimeout)).toContain(22_500);
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("puts the next refresh on the minute after that one fires", async (): Promise<void> => {
+        setSystemTime(new Date("2026-09-18T10:00:37.500Z"));
+        const setTimeout = spyOn(window, "setTimeout");
+
+        try {
+            await mount("today-card", {hass: fakeHass()});
+            const tick = scheduledAfter(setTimeout, 22_500);
+
+            setSystemTime(new Date("2026-09-18T10:01:00.020Z"));
+            tick();
+
+            expect(scheduledDelays(setTimeout)).toContain(59_980);
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("fetches again when the timer fires", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
 
         try {
             let calls = 0;
@@ -630,14 +691,54 @@ describe("refreshing on a timer", (): void => {
             await settle(card);
             const before = calls;
 
-            const tick = setInterval.mock.calls[0]?.[0] as () => void;
-            tick();
+            scheduledAfter(setTimeout, 60_000)();
             await settle(card);
 
             expect(before).toBeGreaterThan(0);
             expect(calls).toBe(before + 1);
         } finally {
-            setInterval.mockRestore();
+            setTimeout.mockRestore();
+        }
+    });
+
+    test("moves an event to under way on the minute even while a fetch is stuck", async (): Promise<void> => {
+        setSystemTime(new Date("2026-09-18T10:00:37.500Z"));
+        const setTimeout = spyOn(window, "setTimeout");
+        const stuck = new Promise<void>((): void => {});
+        let calls = 0;
+
+        try {
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({
+                    callApi: async (): Promise<unknown> => {
+                        calls += 1;
+                        if (calls > 1) {
+                            await stuck;
+                        }
+
+                        return [
+                            timed(
+                                "Standup",
+                                "2026-09-18T10:01:00Z",
+                                "2026-09-18T10:02:00Z",
+                            ),
+                        ];
+                    },
+                }),
+            });
+
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+            await settle(card);
+            expect(classesOfFirstEvent(card)).toContain("is-in-future");
+
+            const tick = scheduledAfter(setTimeout, 22_500);
+            setSystemTime(new Date("2026-09-18T10:01:00.020Z"));
+            tick();
+            await settle(card);
+
+            expect(classesOfFirstEvent(card)).toContain("is-current");
+        } finally {
+            setTimeout.mockRestore();
         }
     });
 

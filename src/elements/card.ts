@@ -43,7 +43,7 @@ export class TodayCard extends LitElement {
     @state() private failedEntities: string[] = [];
     private initialized: boolean = false;
     private updateInProgress: boolean = false;
-    private refreshInterval: number | undefined;
+    private refreshTimer: number | undefined;
 
     /**
      * Home Assistant hands over a fresh object on every state change anywhere
@@ -145,18 +145,34 @@ export class TodayCard extends LitElement {
     connectedCallback(): void {
         super.connectedCallback();
 
-        if (this.refreshInterval === undefined) {
-            this.refreshInterval = window.setInterval((): void => {
-                this.updateEvents();
-            }, REFRESH_INTERVAL);
+        if (this.refreshTimer === undefined) {
+            this.scheduleRefresh();
         }
     }
 
     disconnectedCallback(): void {
-        window.clearInterval(this.refreshInterval);
-        this.refreshInterval = undefined;
+        window.clearTimeout(this.refreshTimer);
+        this.refreshTimer = undefined;
 
         super.disconnectedCallback();
+    }
+
+    /**
+     * Refresh on the minute, not a minute from now. Whether an event is past,
+     * current or still to come turns over at the minute boundary, so a timer
+     * running at an arbitrary phase shows the change up to a minute late.
+     *
+     * The redraw is asked for separately: a calendar that takes its time
+     * answering would otherwise hold up the clock as well as the events.
+     */
+    private scheduleRefresh(): void {
+        const delay = REFRESH_INTERVAL - (Date.now() % REFRESH_INTERVAL);
+
+        this.refreshTimer = window.setTimeout((): void => {
+            this.scheduleRefresh();
+            this.requestUpdate();
+            void this.updateEvents();
+        }, delay);
     }
 
     setConfig(config: CardConfig) {
