@@ -29,6 +29,9 @@ bun run build
 # Watch mode for development
 bun run watch
 
+# Type-check without emitting
+bun run typecheck
+
 # Run the test suite
 bun test
 
@@ -78,8 +81,10 @@ Lit elements have a DOM, defines an `action-handler` stand-in, and clears the
   the suite, so a release tag cannot publish a bundle whose tests fail.
 - `scripts/check-coverage.ts` holds `src/` to a floor across the whole tree.
   Bun's own `coverageThreshold` is applied per file, and the lowest file
-  would decide the number, so the script totals the lcov report instead.
-  Raise the floors in it when the real number rises.
+  would decide the number, so the script totals the lcov report instead. It
+  also fails if a `src/` file is missing from the report altogether, which
+  happens when no test imports it. Raise the floors in it when the real
+  number rises.
 
 ### Key Components
 
@@ -123,10 +128,12 @@ To add a new language:
 
 Releases are automated via GitHub Actions when a tag matching `v*.*.*` is pushed:
 1. Version number is injected into `src/const.ts` (replacing `v0.0.0`)
-2. Project is built
-3. Draft release is created with `dist/ha-today-card.js`
+2. Format check, typecheck, tests and the coverage floor all run, same as CI
+3. Project is built
+4. Draft release is created with `dist/ha-today-card.js`
 
-The output file is what HACS downloads and serves to Home Assistant users.
+A tag with a `-` in it (e.g. `v1.2.0-beta.1`) publishes as a prerelease. The
+output file is what HACS downloads and serves to Home Assistant users.
 
 ## Code Style
 
@@ -134,8 +141,10 @@ The output file is what HACS downloads and serves to Home Assistant users.
 - Prettier: no bracket spacing, experimental operators at start of line
 - TypeScript: strict mode with all safety features enabled (see tsconfig.json)
 - **Import conventions**: Lit package imports require explicit `.js` extensions due to package.json exports (e.g., `"lit/directives/class-map.js"` not `"lit/directives/class-map"`)
-- **Comments**: keep them short and about the code as it stands. A comment
-  earns its place by explaining why something non-obvious is the way it is, in
-  a line or two. Do not narrate history: no "used to", no "this used to break
-  because", no description of the bug a line fixes. Git and the pull request
-  hold that. If the code is clear, write no comment.
+- **Comments**: code should be mainly self-documenting. Write a comment only
+  for a real quirk a future reader would stumble on (a browser or Home
+  Assistant oddity, a non-obvious constraint), in a line or two. No verbose
+  explanatory blocks, no docblocks that restate what the code already says. Do
+  not narrate history: no "used to", no "this used to break because", no
+  description of the bug a line fixes. Git and the pull request hold that.
+  When in doubt, leave the comment out.

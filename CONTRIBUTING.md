@@ -47,10 +47,11 @@ the manual installation section of the README.
 The same checks run in CI, so running them before pushing saves a round trip.
 
 ```bash
-bun run format:check # Prettier
-bun run typecheck    # tsc --noEmit, strict mode
-bun test             # unit and component tests
-bun run build        # the bundle CI publishes
+bun run format:check     # Prettier
+bun run typecheck        # tsc --noEmit, strict mode
+bun run test:coverage    # unit and component tests, with coverage
+bun run coverage:check   # holds src/ coverage to its floor
+bun run build            # the bundle CI publishes
 ```
 
 Tests live in `tests/`, mirroring the structure of `src/`. A bug fix is easiest
