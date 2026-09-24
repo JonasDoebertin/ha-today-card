@@ -14,6 +14,7 @@
     "url": "https://github.com/JonasDoebertin/ha-today-card"
   },
   "license": "MIT",
+  "packageManager": "bun@1.4.2",
   "scripts": {
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",

@@ -17,6 +17,10 @@ import {TIME_FORMATS} from "../const";
 import {UiAction} from "../structs/action";
 import {mdiGestureTap, mdiListBox, mdiTextShort} from "../functions/icons";
 
+function parseExclude(text: string): string[] {
+    return text.split("\n").filter((line: string) => line.trim().length > 0);
+}
+
 const supportedActions: UiAction[] = [
     "navigate",
     "url",
@@ -114,6 +118,7 @@ export class TodayCardEditor extends LitElement {
     @property({attribute: false}) public hass!: HomeAssistant;
     @state() private config: CardConfig | undefined;
     @state() private entities: EntitiesRowConfig[] = [];
+    @state() private excludeText: string | undefined;
 
     static get styles(): CSSResult {
         return unsafeCSS(styles);
@@ -140,9 +145,18 @@ export class TodayCardEditor extends LitElement {
 
         setHass(this.hass);
 
+        const excludeMatchesConfig =
+            this.excludeText !== undefined
+            && isEqual(
+                parseExclude(this.excludeText),
+                this.config.exclude ?? [],
+            );
+
         const formData = {
             ...this.config,
-            exclude: this.config.exclude?.join("\n") ?? "",
+            exclude: excludeMatchesConfig
+                ? this.excludeText
+                : (this.config.exclude?.join("\n") ?? ""),
         };
 
         return html`
@@ -151,6 +165,7 @@ export class TodayCardEditor extends LitElement {
                 .data=${formData}
                 .schema=${FORM_SCHEMA}
                 .computeLabel=${this.computeLabel}
+                .computeHelper=${this.computeHelper}
                 @value-changed=${this.valueChanged}
             ></ha-form>
             <ha-expansion-panel outlined>
@@ -175,13 +190,15 @@ export class TodayCardEditor extends LitElement {
             return;
         }
 
-        const exclude: string[] | undefined =
-            typeof event.detail.value.exclude === "string"
-                ? event.detail.value.exclude
-                      .split("\n")
-                      .map((line: string) => line.trim())
-                      .filter((line: string) => line.length > 0)
-                : event.detail.value.exclude;
+        const excludeIsText = typeof event.detail.value.exclude === "string";
+
+        this.excludeText = excludeIsText
+            ? event.detail.value.exclude
+            : undefined;
+
+        const exclude: string[] | undefined = excludeIsText
+            ? parseExclude(event.detail.value.exclude)
+            : event.detail.value.exclude;
 
         const newConfig: CardConfig = {...event.detail.value};
 
@@ -213,5 +230,11 @@ export class TodayCardEditor extends LitElement {
 
     private computeLabel(schema: Record<string, unknown>): string {
         return localize(`config.label.${schema.name}`);
+    }
+
+    private computeHelper(schema: Record<string, unknown>): string {
+        return schema.name === "exclude"
+            ? localize("config.helper.exclude")
+            : "";
     }
 }

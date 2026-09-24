@@ -16,6 +16,9 @@
         "stub": {
             "title": "Calendario para hoy"
         },
+        "helper": {
+            "exclude": "Un patrón por línea. Busca en el título y la descripción de los eventos. Rodea un patrón con barras para usar una expresión regular, p. ej. /^Gym/i."
+        },
         "label": {
             "advance": "Avance",
             "clear": "Borrar",

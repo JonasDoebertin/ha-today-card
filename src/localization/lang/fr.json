@@ -8,16 +8,19 @@
     },
     "event": {
         "schedule": {
-            "from": "De",
+            "from": "À partir de",
             "until": "Jusqu'à"
         }
     },
     "config": {
         "stub": {
-            "title": "Aujourd'hui"
+            "title": "Programme du jour"
+        },
+        "helper": {
+            "exclude": "Un motif par ligne. Recherche dans le titre et la description des événements. Entourez un motif de barres obliques pour utiliser une expression régulière, par ex. /^Gym/i."
         },
         "label": {
-            "advance": "Journées de décalage",
+            "advance": "Jours de décalage",
             "clear": "Supprimer",
             "color": "Couleur",
             "content": "Contenu",
@@ -25,9 +28,9 @@
             "exclude": "Exclure les événements correspondants",
             "fallback_color": "Couleur par défaut",
             "interactions": "Interactions",
-            "show_all_day_events": "Montrer les événements sur toute la journée",
-            "show_past_events": "Montrer les événements passés",
-            "limit": "Événements maximum",
+            "show_all_day_events": "Afficher les événements sur toute la journée",
+            "show_past_events": "Afficher les événements passés",
+            "limit": "Nombre maximum d'événements",
             "tap_action": "Comportement lors de l'appui",
             "time_format": "Format de l'heure",
             "title": "Titre"

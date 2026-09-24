@@ -2,11 +2,11 @@ import dayjs from "dayjs";
 import CalendarEvent from "../structs/event";
 import {CardConfig, EntitiesRowConfig} from "../structs/config";
 import {HomeAssistant} from "custom-card-helpers";
+import {REQUEST_TIMEOUT} from "../const";
 
 export interface CalendarResult {
     events: CalendarEvent[];
-    /** Entity ids whose fetch failed, so the card can say so instead of
-     *  presenting a partial day as if it were the whole day. */
+    /** Entity ids whose fetch failed. */
     failed: string[];
 }
 
@@ -51,8 +51,7 @@ async function fetchEvents(
         const url = `calendars/${entity.entity}?start=${start.toISOString()}&end=${end.toISOString()}`;
 
         promises.push(
-            hass
-                .callApi("GET", url)
+            withTimeout(hass.callApi("GET", url), url)
                 .then((events: any): CalendarEvent[] => {
                     return transformEvents(events, entity, config);
                 })
@@ -60,9 +59,8 @@ async function fetchEvents(
                     collectedEvents.push(...events);
                 })
                 .catch((error): void => {
-                    // A calendar that fails contributes no events, which is
-                    // indistinguishable from a calendar with nothing on today.
-                    // Record it so the card can tell the difference.
+                    // Record the failure so the card can tell it apart from a
+                    // calendar with nothing on today.
                     console.error(error);
                     failed.push(entity.entity);
                 }),
@@ -74,12 +72,38 @@ async function fetchEvents(
     return {events: collectedEvents, failed};
 }
 
+function withTimeout<T>(request: Promise<T>, url: string): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const timeout = new Promise<never>((_resolve, reject): void => {
+        timer = setTimeout((): void => {
+            reject(new Error(`${url} did not answer in time`));
+        }, REQUEST_TIMEOUT);
+    });
+
+    return Promise.race([request, timeout]).finally((): void => {
+        clearTimeout(timer);
+    });
+}
+
+function hasDateOrTime(edge: any): boolean {
+    return typeof edge?.date === "string" || typeof edge?.dateTime === "string";
+}
+
 function transformEvents(
     events: Record<string, unknown>[],
     entity: EntitiesRowConfig,
     config: CardConfig,
 ): CalendarEvent[] {
-    return events.map((event) => new CalendarEvent(event, entity, config));
+    return events.map((event) => {
+        if (!hasDateOrTime(event.start) || !hasDateOrTime(event.end)) {
+            throw new Error(
+                `${entity.entity} returned an event without a start or end`,
+            );
+        }
+
+        return new CalendarEvent(event, entity, config);
+    });
 }
 
 function matchesExcludePattern(text: string, pattern: string): boolean {

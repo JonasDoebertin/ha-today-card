@@ -48,7 +48,9 @@ export class TodayCard extends LitElement {
     private clockMoved: boolean = false;
     private configured: boolean = false;
     private initialized: boolean = false;
-    private updateInProgress: boolean = false;
+    private detached: boolean = false;
+    private latestRequest: number = 0;
+    private requestInFlight: boolean = false;
     private refreshTimer: number | undefined;
 
     /**
@@ -62,7 +64,7 @@ export class TodayCard extends LitElement {
         this.currentHass = hass;
         setHass(hass);
 
-        if (!this.initialized) {
+        if (!this.initialized && !this.requestInFlight) {
             void this.updateEvents();
         }
     }
@@ -79,20 +81,23 @@ export class TodayCard extends LitElement {
         return document.createElement("today-card-editor");
     }
 
-    private static buildConfig(calendarEntities: string[]): CardConfig {
+    private static buildConfig(
+        calendarEntities: string[],
+        hass: HomeAssistant,
+    ): CardConfig {
         const entityDefinitions = calendarEntities.map((entity, i) => {
             return {entity, color: getFallBackColor(i)};
         });
 
         return {
             ...DEFAULT_CONFIG,
-            title: localize("config.stub.title"),
+            title: localize("config.stub.title", hass.language),
             entities: entityDefinitions,
         };
     }
 
     static getStubConfig(
-        _hass: HomeAssistant,
+        hass: HomeAssistant,
         entities: string[],
         entitiesFallback: string[],
     ): Partial<CardConfig> {
@@ -106,39 +111,33 @@ export class TodayCard extends LitElement {
             });
         }
 
-        return TodayCard.buildConfig(calendarEntities);
+        return TodayCard.buildConfig(calendarEntities, hass);
     }
 
     /**
-     * Offer the card in the picker when someone selects a calendar entity.
-     *
-     * Home Assistant 2026.6 and later call this for whichever entity the user
-     * picked. Returning null keeps the card out of the suggestion list, which
-     * matters because every custom card that answers indiscriminately makes the
-     * list less useful for everyone.
-     *
-     * Older versions ignore the property, so this stays safe to ship.
+     * Home Assistant 2026.6+ calls this for the entity the user picked;
+     * null keeps the card out of the suggestion list. Older versions ignore it.
      */
     static getEntitySuggestion(
-        _hass: HomeAssistant,
+        hass: HomeAssistant,
         entityId: string,
     ): EntitySuggestion | null {
         if (!entityId.startsWith("calendar.")) {
             return null;
         }
 
-        return {config: TodayCard.buildConfig([entityId])};
+        return {config: TodayCard.buildConfig([entityId], hass)};
     }
 
     /**
-     * Masonry layout uses this to balance columns, where 1 is roughly 50px.
-     * Without it Home Assistant assumes 1 and packs the column badly, since a
-     * card showing eight events is nothing like the height of one showing none.
-     *
-     * The empty-state message occupies a row too, hence the floor of 1.
+     * Masonry layout units are roughly 50px each; without this Home Assistant
+     * assumes 1 regardless of how many events are showing.
      */
     getCardSize(): number {
-        return (this.config?.title ? 1 : 0) + Math.max(this.events.length, 1);
+        const rows =
+            this.events.length + (this.failedEntities.length > 0 ? 1 : 0);
+
+        return (this.config?.title ? 1 : 0) + Math.max(rows, 1);
     }
 
     getLayoutOptions() {
@@ -155,22 +154,28 @@ export class TodayCard extends LitElement {
         if (this.refreshTimer === undefined) {
             this.scheduleRefresh();
         }
+
+        if (this.detached && this.configured) {
+            this.clockMoved = true;
+            this.requestUpdate();
+            void this.updateEvents();
+        }
+
+        this.detached = false;
     }
 
     disconnectedCallback(): void {
         window.clearTimeout(this.refreshTimer);
         this.refreshTimer = undefined;
+        this.detached = true;
 
         super.disconnectedCallback();
     }
 
     /**
-     * Refresh on the minute, not a minute from now. Whether an event is past,
-     * current or still to come turns over at the minute boundary, so a timer
-     * running at an arbitrary phase shows the change up to a minute late.
-     *
-     * The redraw is asked for separately: a calendar that takes its time
-     * answering would otherwise hold up the clock as well as the events.
+     * Refresh on the minute boundary, since that is when an event's past/
+     * current/future status turns over. The redraw is requested separately so
+     * a slow calendar fetch doesn't hold up the clock too.
      */
     private scheduleRefresh(): void {
         const untilBoundary =
@@ -195,31 +200,52 @@ export class TodayCard extends LitElement {
     setConfig(config: CardConfig) {
         assert(config, cardConfigStruct);
 
-        let entities = processEditorEntities(config.entities, true);
+        const deduped = config.entities.filter((entry, index, all): boolean => {
+            const entity = typeof entry === "string" ? entry : entry.entity;
+
+            return (
+                all.findIndex((other): boolean => {
+                    return (
+                        (typeof other === "string" ? other : other.entity)
+                        === entity
+                    );
+                }) === index
+            );
+        });
+        const entities = processEditorEntities(deduped, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
         this.configured = true;
 
-        this.updateEvents();
+        void this.updateEvents();
     }
 
     async updateEvents(): Promise<void> {
-        if (!this.hass || !this.configured || this.updateInProgress) {
+        if (!this.hass || !this.configured) {
             return;
         }
 
-        this.updateInProgress = true;
+        const request = ++this.latestRequest;
+        this.requestInFlight = true;
+
         try {
             const result = await getEvents(
                 this.config,
                 this.entities,
                 this.hass,
             );
-            this.events = result.events;
-            this.failedEntities = result.failed;
-            this.initialized = true;
+
+            if (request === this.latestRequest) {
+                this.events = result.events;
+                this.failedEntities = result.failed;
+                this.initialized = true;
+            }
+        } catch (error) {
+            console.error(error);
         } finally {
-            this.updateInProgress = false;
+            if (request === this.latestRequest) {
+                this.requestInFlight = false;
+            }
         }
     }
 
@@ -237,8 +263,7 @@ export class TodayCard extends LitElement {
         }
 
         // Lit clears changed when a render is skipped, so previous is the
-        // last hass considered rather than the last one rendered. Comparing
-        // for equality survives that; a comparison of degree would not.
+        // last hass considered, not the last one rendered.
         const previous = changed.get("hass") as HomeAssistant | undefined;
 
         if (!previous || previous.language !== this.hass.language) {
@@ -299,10 +324,8 @@ export class TodayCard extends LitElement {
 
         const failed = this.failedEntities.length > 0;
 
-        // "Nothing scheduled" is only true when every calendar answered. If one
-        // of them failed, an empty list means we do not know what is on today,
-        // so the error takes the place of the reassuring message rather than
-        // sitting next to it.
+        // An empty list only means "nothing scheduled" if every calendar
+        // answered; otherwise the error takes the fallback message's place.
         const rows = [
             ...(failed ? [this.renderError()] : []),
             ...this.events.map((event: CalendarEvent): TemplateResult => {

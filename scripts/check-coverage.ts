@@ -1,16 +1,14 @@
-/**
- * Check the coverage of `src/` as a whole against a floor. Bun's own
- * `coverageThreshold` applies per file, so the weakest file would set the
- * number for every file. Run `bun run test:coverage` first for the report.
- */
+// Holds src/ coverage to a floor and fails on src/ files missing from the
+// report (no test imports them). Run `bun run test:coverage` first.
 
 // Raise these when the measured coverage rises.
 const THRESHOLDS = {
-    functions: 93,
-    lines: 98.5,
+    functions: 96.5,
+    lines: 99,
 };
 
 const REPORT = "coverage/lcov.info";
+const SRC_GLOB = "src/**/*.ts";
 
 interface Totals {
     functionsFound: number;
@@ -46,6 +44,41 @@ function readTotals(report: string): Totals {
     return totals;
 }
 
+function reportedFiles(report: string): Set<string> {
+    const files = new Set<string>();
+
+    for (const line of report.split("\n")) {
+        if (line.startsWith("SF:")) {
+            files.add(line.slice("SF:".length));
+        }
+    }
+
+    return files;
+}
+
+// Type-only modules get no SF: entry; list them here.
+const TYPE_ONLY_FILES = new Set<string>();
+
+async function findUnreportedFiles(report: string): Promise<string[]> {
+    const reported = reportedFiles(report);
+    const glob = new Bun.Glob(SRC_GLOB);
+    const missing: string[] = [];
+
+    for await (const path of glob.scan(".")) {
+        if (
+            path.endsWith(".d.ts")
+            || reported.has(path)
+            || TYPE_ONLY_FILES.has(path)
+        ) {
+            continue;
+        }
+
+        missing.push(path);
+    }
+
+    return missing.sort();
+}
+
 function percentage(hit: number, found: number): number {
     // An unmeasured report should fail, not read as perfect coverage.
     return found === 0 ? 0 : (hit / found) * 100;
@@ -61,13 +94,26 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const totals = readTotals(await file.text());
+    const report = await file.text();
+    const totals = readTotals(report);
     const measured = {
         functions: percentage(totals.functionsHit, totals.functionsFound),
         lines: percentage(totals.linesHit, totals.linesFound),
     };
 
     let failed = false;
+
+    const unreported = await findUnreportedFiles(report);
+
+    if (unreported.length > 0) {
+        console.error(
+            "No test imports these files, so they are invisible to coverage:",
+        );
+        for (const path of unreported) {
+            console.error(`  ${path}`);
+        }
+        failed = true;
+    }
 
     for (const [metric, floor] of Object.entries(THRESHOLDS)) {
         const actual = measured[metric as keyof typeof measured];
