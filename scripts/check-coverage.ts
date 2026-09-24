@@ -1,10 +1,5 @@
-/**
- * Check the coverage of `src/` as a whole against a floor. Bun's own
- * `coverageThreshold` applies per file, so the weakest file would set the
- * number for every file. Also fails if a `src/` file is missing from the
- * report entirely, which happens when no test imports it. Run
- * `bun run test:coverage` first for the report.
- */
+// Holds src/ coverage to a floor and fails on src/ files missing from the
+// report (no test imports them). Run `bun run test:coverage` first.
 
 // Raise these when the measured coverage rises.
 const THRESHOLDS = {
@@ -61,54 +56,10 @@ function reportedFiles(report: string): Set<string> {
     return files;
 }
 
-/**
- * A file with no executable code (only interfaces, type aliases and ambient
- * declarations) never earns an `SF:` entry, even when imported by tests.
- * Track brace depth so field lines inside an interface/type body don't get
- * mistaken for statements of their own.
- */
-function isTypeOnly(source: string): boolean {
-    const withoutComments = source
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/\/\/.*$/gm, "");
-
-    let depth = 0;
-
-    for (const rawLine of withoutComments.split("\n")) {
-        const line = rawLine.trim();
-
-        if (line === "") {
-            continue;
-        }
-
-        if (depth > 0) {
-            depth +=
-                (line.match(/{/g)?.length ?? 0)
-                - (line.match(/}/g)?.length ?? 0);
-            continue;
-        }
-
-        const opensTypeBlock =
-            /^(export\s+)?(interface\b|type\s+\S+\s*=\s*{|declare\s+(module|global)\b)/.test(
-                line,
-            );
-        const isTypeStatement =
-            /^(export\s+)?type\b.*;?$/.test(line)
-            || /^import\s+type\b.*;$/.test(line);
-
-        if (!opensTypeBlock && !isTypeStatement) {
-            return false;
-        }
-
-        if (opensTypeBlock) {
-            depth +=
-                (line.match(/{/g)?.length ?? 0)
-                - (line.match(/}/g)?.length ?? 0);
-        }
-    }
-
-    return true;
-}
+// Files with no executable code (only interfaces, type aliases and ambient
+// declarations) never earn an `SF:` entry even when a test imports them; none
+// of src/ needs that today, so this stays empty until one does.
+const TYPE_ONLY_FILES = new Set<string>();
 
 async function findUnreportedFiles(report: string): Promise<string[]> {
     const reported = reportedFiles(report);
@@ -116,11 +67,11 @@ async function findUnreportedFiles(report: string): Promise<string[]> {
     const missing: string[] = [];
 
     for await (const path of glob.scan(".")) {
-        if (path.endsWith(".d.ts") || reported.has(path)) {
-            continue;
-        }
-
-        if (isTypeOnly(await Bun.file(path).text())) {
+        if (
+            path.endsWith(".d.ts")
+            || reported.has(path)
+            || TYPE_ONLY_FILES.has(path)
+        ) {
             continue;
         }
 
