@@ -118,7 +118,7 @@ Events receive dynamic classes for custom styling via card-mod:
 
 ## Localization
 
-Translations are stored in `src/localization/lang/{locale}.json`. Currently supports: English (en), German (de), Spanish (es), French (fr), Italian (it). Keys missing from a file fall back to English.
+Translations are stored in `src/localization/lang/{locale}.json`. Currently supports: English (en), German (de), Spanish (es), French (fr), Italian (it). A regional code (e.g. de-CH) falls back to its base language file, then English; keys missing from a file fall back to English.
 
 To add a new language:
 1. Add `{locale}.json` file in `src/localization/lang/`

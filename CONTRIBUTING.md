@@ -25,7 +25,8 @@ Translations live in `src/localization/lang/` as one JSON file per locale.
 3. Run `bun run format:fix` and open a pull request.
 
 Missing keys fall back to English, so a partial translation still works. It is
-better to leave a key out than to guess at it.
+better to leave a key out than to guess at it. A regional code (e.g. de-CH)
+falls back to its base language file, then English.
 
 ## Development setup
 
