@@ -16,6 +16,9 @@
         "stub": {
             "title": "Heutiger Terminplan"
         },
+        "helper": {
+            "exclude": "Ein Muster pro Zeile. Durchsucht Titel und Beschreibung der Termine. Mit Schrägstrichen umschlossen wird ein Muster zum regulären Ausdruck, z. B. /^Gym/i."
+        },
         "label": {
             "advance": "Vorlauf",
             "clear": "Entfernen",
@@ -23,10 +26,10 @@
             "content": "Inhalt",
             "entities": "Entitäten",
             "exclude": "Termine ausschließen",
-            "fallback_color": "Standard-Farbe",
+            "fallback_color": "Standardfarbe",
             "interactions": "Interaktionen",
-            "show_all_day_events": "Zeige ganztägige Termine",
-            "show_past_events": "Zeige vergangene Termine",
+            "show_all_day_events": "Ganztägige Termine anzeigen",
+            "show_past_events": "Vergangene Termine anzeigen",
             "limit": "Max. Anzahl Termine",
             "tap_action": "Verhalten beim Antippen",
             "time_format": "Zeitformat",
