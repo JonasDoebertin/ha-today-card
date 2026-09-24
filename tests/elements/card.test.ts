@@ -1112,6 +1112,37 @@ describe("changing the configuration while a fetch is running", (): void => {
         ).toContain("#ff0000");
     });
 
+    test("assigns fallback colors by position among the unique entities, not the raw list", async (): Promise<void> => {
+        const card = await mountCard(
+            {
+                entities: ["calendar.work", "calendar.work", "calendar.home"],
+            },
+            {
+                "calendar.work": [
+                    timed(
+                        "Standup",
+                        "2026-09-18T09:00:00Z",
+                        "2026-09-18T09:15:00Z",
+                    ),
+                ],
+                "calendar.home": [
+                    timed(
+                        "Family",
+                        "2026-09-18T10:00:00Z",
+                        "2026-09-18T10:15:00Z",
+                    ),
+                ],
+            },
+        );
+
+        const colors = shadowAll(card, ".event .indicator").map((element) =>
+            element.getAttribute("style"),
+        );
+
+        expect(colors[0]).toContain("var(--light-blue-color)");
+        expect(colors[1]).toContain("var(--amber-color)");
+    });
+
     test("settles quietly when fetching fails outright", async (): Promise<void> => {
         const restore = silenceConsole();
 

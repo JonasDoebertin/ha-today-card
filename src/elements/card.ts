@@ -200,14 +200,19 @@ export class TodayCard extends LitElement {
     setConfig(config: CardConfig) {
         assert(config, cardConfigStruct);
 
-        const entities = processEditorEntities(config.entities, true).filter(
-            (entry, index, all): boolean => {
-                return (
-                    all.findIndex((other) => other.entity === entry.entity)
-                    === index
-                );
-            },
-        );
+        const deduped = config.entities.filter((entry, index, all): boolean => {
+            const entity = typeof entry === "string" ? entry : entry.entity;
+
+            return (
+                all.findIndex((other): boolean => {
+                    return (
+                        (typeof other === "string" ? other : other.entity)
+                        === entity
+                    );
+                }) === index
+            );
+        });
+        const entities = processEditorEntities(deduped, true);
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
         this.configured = true;
