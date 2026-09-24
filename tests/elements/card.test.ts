@@ -433,6 +433,30 @@ describe("the size it claims in a masonry column", (): void => {
 
         expect((card as unknown as TodayCard).getCardSize()).toBe(3);
     });
+
+    test("counts the row naming calendars it could not reach", async (): Promise<void> => {
+        const restore = silenceConsole();
+
+        try {
+            const card = await mountCard(
+                {title: "Today"},
+                {
+                    "calendar.work": [
+                        timed(
+                            "A",
+                            "2026-09-18T09:00:00Z",
+                            "2026-09-18T10:00:00Z",
+                        ),
+                    ],
+                    "calendar.home": new Error("down"),
+                },
+            );
+
+            expect((card as unknown as TodayCard).getCardSize()).toBe(3);
+        } finally {
+            restore();
+        }
+    });
 });
 
 describe("the configuration it suggests", (): void => {
@@ -591,6 +615,59 @@ describe("keeping itself up to date", (): void => {
         } finally {
             setTimeout.mockRestore();
         }
+    });
+
+    test("catches up with the clock when it is attached again", async (): Promise<void> => {
+        let calls = 0;
+        const card = await mount<Configurable>("today-card", {
+            hass: fakeHass({
+                callApi: async (): Promise<unknown> => {
+                    calls += 1;
+                    return [
+                        timed(
+                            "Standup",
+                            "2026-09-18T10:00:00Z",
+                            "2026-09-18T10:30:00Z",
+                        ),
+                    ];
+                },
+            }),
+        });
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        await settle(card);
+        expect(classesOfFirstEvent(card)).toContain("is-current");
+
+        card.remove();
+        setSystemTime(new Date("2026-09-18T11:00:00Z"));
+        const before = calls;
+        document.body.appendChild(card);
+        await settle(card);
+
+        expect(calls).toBe(before + 1);
+        expect(classesOfFirstEvent(card)).toContain("is-in-past");
+    });
+
+    test("hides an event that finished while it was detached", async (): Promise<void> => {
+        const card = await mountCard(
+            {show_past_events: false},
+            {
+                "calendar.work": [
+                    timed(
+                        "Standup",
+                        "2026-09-18T10:00:00Z",
+                        "2026-09-18T10:30:00Z",
+                    ),
+                ],
+            },
+        );
+        expect(shadowAll(card, ".event.is-current")).toHaveLength(1);
+
+        card.remove();
+        setSystemTime(new Date("2026-09-18T11:00:00Z"));
+        document.body.appendChild(card);
+        await settle(card);
+
+        expect(shadowAll(card, ".event.is-fallback")).toHaveLength(1);
     });
 
     test("does not stack timers when it is connected again without leaving", async (): Promise<void> => {
@@ -882,10 +959,61 @@ describe("refreshing on a timer", (): void => {
         }
     });
 
-    test("does not start a second fetch while one is still running", async (): Promise<void> => {
-        // The interval keeps firing while a slow calendar is still answering.
-        // Without the guard those requests pile up and the newest answer is
-        // not necessarily the one that wins.
+    test("only fetches once while repeated connections arrive before the first answer", async (): Promise<void> => {
+        let calls = 0;
+        const blocked = new Promise<void>((): void => {});
+        const callApi = async (): Promise<unknown> => {
+            calls += 1;
+            await blocked;
+            return [];
+        };
+
+        const card = document.createElement("today-card") as Configurable;
+        document.body.appendChild(card);
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+
+        for (let i = 0; i < 3; i++) {
+            (card as unknown as TodayCard).hass = fakeHass({callApi});
+        }
+        await settle(card);
+
+        expect(calls).toBe(1);
+    });
+
+    test("fetches again on the next tick even when a request never answers", async (): Promise<void> => {
+        const setTimeout = spyOn(window, "setTimeout");
+        let calls = 0;
+
+        try {
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({
+                    callApi: (): Promise<unknown> => {
+                        calls += 1;
+                        return new Promise((): void => {});
+                    },
+                }),
+            });
+
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+            await settle(card);
+            expect(calls).toBe(1);
+
+            scheduledAfter(setTimeout, 60_000)();
+            await settle(card);
+
+            expect(calls).toBe(2);
+        } finally {
+            setTimeout.mockRestore();
+        }
+    });
+});
+
+describe("changing the configuration while a fetch is running", (): void => {
+    test("shows the result for the newest configuration, whichever answers last", async (): Promise<void> => {
+        const events = [
+            timed("Gym", "2026-09-18T07:00:00Z", "2026-09-18T08:00:00Z"),
+            timed("Standup", "2026-09-18T09:00:00Z", "2026-09-18T09:15:00Z"),
+        ];
         let calls = 0;
         let release: (() => void) | undefined;
         const blocked = new Promise<void>((resolve): void => {
@@ -896,20 +1024,89 @@ describe("refreshing on a timer", (): void => {
             hass: fakeHass({
                 callApi: async (): Promise<unknown> => {
                     calls += 1;
-                    await blocked;
-                    return [];
+                    if (calls === 1) {
+                        await blocked;
+                    }
+
+                    return events;
                 },
             }),
         });
 
-        card.setConfig(cardConfig({entities: ["calendar.work"]}));
-        void (card as unknown as TodayCard).updateEvents();
-        void (card as unknown as TodayCard).updateEvents();
+        const titles = (): (string | null)[] => {
+            return shadowAll(card, ".event .title strong").map(
+                (element) => element.textContent,
+            );
+        };
 
-        expect(calls).toBe(1);
+        card.setConfig(cardConfig({entities: ["calendar.work"]}));
+        card.setConfig(
+            cardConfig({entities: ["calendar.work"], exclude: ["Gym"]}),
+        );
+        await settle(card);
+        expect(titles()).toEqual(["Standup"]);
 
         release?.();
         await settle(card);
+        expect(titles()).toEqual(["Standup"]);
+    });
+
+    test("fetches each calendar once when it is listed twice, keeping the first color", async (): Promise<void> => {
+        const asked: string[] = [];
+        const card = await mount<Configurable>("today-card", {
+            hass: fakeHass({
+                callApi: async (
+                    _method: string,
+                    path: string,
+                ): Promise<unknown> => {
+                    asked.push(path);
+                    return [
+                        timed(
+                            "Standup",
+                            "2026-09-18T09:00:00Z",
+                            "2026-09-18T09:15:00Z",
+                        ),
+                    ];
+                },
+            }),
+        });
+
+        card.setConfig(
+            cardConfig({
+                entities: [
+                    {entity: "calendar.work", color: "#ff0000"},
+                    {entity: "calendar.work", color: "#0000ff"},
+                ],
+            }),
+        );
+        await settle(card);
+
+        expect(asked).toHaveLength(1);
+        expect(shadowAll(card, ".event")).toHaveLength(1);
+        expect(
+            shadowOne(card, ".event .indicator")?.getAttribute("style"),
+        ).toContain("#ff0000");
+    });
+
+    test("settles quietly when fetching fails outright", async (): Promise<void> => {
+        const restore = silenceConsole();
+
+        try {
+            const card = await mount<Configurable>("today-card", {
+                hass: fakeHass({
+                    callApi: (): never => {
+                        throw new Error("no connection");
+                    },
+                }),
+            });
+            card.setConfig(cardConfig({entities: ["calendar.work"]}));
+
+            await expect(
+                (card as unknown as TodayCard).updateEvents(),
+            ).resolves.toBeUndefined();
+        } finally {
+            restore();
+        }
     });
 });
 

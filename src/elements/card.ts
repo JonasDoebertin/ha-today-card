@@ -48,7 +48,9 @@ export class TodayCard extends LitElement {
     private clockMoved: boolean = false;
     private configured: boolean = false;
     private initialized: boolean = false;
-    private updateInProgress: boolean = false;
+    private detached: boolean = false;
+    private latestRequest: number = 0;
+    private requestInFlight: boolean = false;
     private refreshTimer: number | undefined;
 
     /**
@@ -62,7 +64,7 @@ export class TodayCard extends LitElement {
         this.currentHass = hass;
         setHass(hass);
 
-        if (!this.initialized) {
+        if (!this.initialized && !this.requestInFlight) {
             void this.updateEvents();
         }
     }
@@ -138,7 +140,10 @@ export class TodayCard extends LitElement {
      * The empty-state message occupies a row too, hence the floor of 1.
      */
     getCardSize(): number {
-        return (this.config?.title ? 1 : 0) + Math.max(this.events.length, 1);
+        const rows =
+            this.events.length + (this.failedEntities.length > 0 ? 1 : 0);
+
+        return (this.config?.title ? 1 : 0) + Math.max(rows, 1);
     }
 
     getLayoutOptions() {
@@ -155,11 +160,20 @@ export class TodayCard extends LitElement {
         if (this.refreshTimer === undefined) {
             this.scheduleRefresh();
         }
+
+        if (this.detached && this.configured) {
+            this.clockMoved = true;
+            this.requestUpdate();
+            void this.updateEvents();
+        }
+
+        this.detached = false;
     }
 
     disconnectedCallback(): void {
         window.clearTimeout(this.refreshTimer);
         this.refreshTimer = undefined;
+        this.detached = true;
 
         super.disconnectedCallback();
     }
@@ -195,31 +209,47 @@ export class TodayCard extends LitElement {
     setConfig(config: CardConfig) {
         assert(config, cardConfigStruct);
 
-        let entities = processEditorEntities(config.entities, true);
+        const entities = processEditorEntities(config.entities, true).filter(
+            (entry, index, all): boolean => {
+                return (
+                    all.findIndex((other) => other.entity === entry.entity)
+                    === index
+                );
+            },
+        );
         this.config = {...DEFAULT_CONFIG, ...config, entities: entities};
         this.entities = entities;
         this.configured = true;
 
-        this.updateEvents();
+        void this.updateEvents();
     }
 
     async updateEvents(): Promise<void> {
-        if (!this.hass || !this.configured || this.updateInProgress) {
+        if (!this.hass || !this.configured) {
             return;
         }
 
-        this.updateInProgress = true;
+        const request = ++this.latestRequest;
+        this.requestInFlight = true;
+
         try {
             const result = await getEvents(
                 this.config,
                 this.entities,
                 this.hass,
             );
-            this.events = result.events;
-            this.failedEntities = result.failed;
-            this.initialized = true;
+
+            if (request === this.latestRequest) {
+                this.events = result.events;
+                this.failedEntities = result.failed;
+                this.initialized = true;
+            }
+        } catch (error) {
+            console.error(error);
         } finally {
-            this.updateInProgress = false;
+            if (request === this.latestRequest) {
+                this.requestInFlight = false;
+            }
         }
     }
 
