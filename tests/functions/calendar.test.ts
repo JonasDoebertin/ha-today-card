@@ -4,6 +4,7 @@ import {
     describe,
     expect,
     setSystemTime,
+    spyOn,
     test,
 } from "bun:test";
 import {CalendarResult, getEvents} from "../../src/functions/calendar";
@@ -535,4 +536,112 @@ describe("reporting calendars that fail", (): void => {
             restore();
         }
     });
+});
+
+describe("giving up on a calendar that does not answer", (): void => {
+    type Scheduled = {callback: () => void; delay: number | undefined};
+
+    test("reports it as failed once the request times out", async (): Promise<void> => {
+        const restore = silenceConsole();
+        const scheduled: Scheduled[] = [];
+        const setTimeout = spyOn(globalThis, "setTimeout").mockImplementation(((
+            callback: () => void,
+            delay?: number,
+        ): number => {
+            scheduled.push({callback, delay});
+            return scheduled.length;
+        }) as unknown as typeof globalThis.setTimeout);
+
+        try {
+            const pending = getEvents(
+                cardConfig({entities: ["calendar.hung"]}),
+                [entityRow("calendar.hung")],
+                fakeHass({
+                    callApi: (): Promise<unknown> => new Promise(() => {}),
+                }),
+            );
+
+            const timeout = scheduled.find(
+                (entry: Scheduled): boolean => entry.delay === 30_000,
+            );
+            expect(timeout).toBeDefined();
+            timeout?.callback();
+
+            expect(await pending).toEqual({
+                events: [],
+                failed: ["calendar.hung"],
+            });
+        } finally {
+            setTimeout.mockRestore();
+            restore();
+        }
+    });
+
+    test("clears the timeout once the calendar answers", async (): Promise<void> => {
+        const setTimeout = spyOn(globalThis, "setTimeout");
+        const clearTimeout = spyOn(globalThis, "clearTimeout");
+
+        try {
+            await fetchWith({}, {"calendar.a": []});
+
+            const index = setTimeout.mock.calls.findIndex(
+                (call: unknown[]): boolean => call[1] === 30_000,
+            );
+            expect(index).toBeGreaterThanOrEqual(0);
+            expect(clearTimeout).toHaveBeenCalledWith(
+                setTimeout.mock.results[index]?.value,
+            );
+        } finally {
+            setTimeout.mockRestore();
+            clearTimeout.mockRestore();
+        }
+    });
+});
+
+describe("a calendar that answers with a malformed event", (): void => {
+    const good = timed(
+        "Standup",
+        "2026-09-18T09:00:00Z",
+        "2026-09-18T09:30:00Z",
+    );
+
+    test.each([
+        [
+            "no start",
+            {
+                id: "x",
+                summary: "Broken",
+                end: {dateTime: "2026-09-18T11:00:00Z"},
+            },
+        ],
+        [
+            "no end",
+            {
+                id: "x",
+                summary: "Broken",
+                start: {dateTime: "2026-09-18T10:00:00Z"},
+            },
+        ],
+        [
+            "an empty start",
+            {id: "x", summary: "Broken", start: {}, end: {date: "2026-09-19"}},
+        ],
+    ])(
+        "fails only that calendar when an event has %s",
+        async (_label, broken): Promise<void> => {
+            const restore = silenceConsole();
+
+            try {
+                const {events, failed} = await fetchWith(
+                    {},
+                    {"calendar.broken": [broken], "calendar.working": [good]},
+                );
+
+                expect(failed).toEqual(["calendar.broken"]);
+                expect(events.map((each) => each.title)).toEqual(["Standup"]);
+            } finally {
+                restore();
+            }
+        },
+    );
 });
