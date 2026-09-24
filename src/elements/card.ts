@@ -81,20 +81,23 @@ export class TodayCard extends LitElement {
         return document.createElement("today-card-editor");
     }
 
-    private static buildConfig(calendarEntities: string[]): CardConfig {
+    private static buildConfig(
+        calendarEntities: string[],
+        hass: HomeAssistant,
+    ): CardConfig {
         const entityDefinitions = calendarEntities.map((entity, i) => {
             return {entity, color: getFallBackColor(i)};
         });
 
         return {
             ...DEFAULT_CONFIG,
-            title: localize("config.stub.title"),
+            title: localize("config.stub.title", hass.language),
             entities: entityDefinitions,
         };
     }
 
     static getStubConfig(
-        _hass: HomeAssistant,
+        hass: HomeAssistant,
         entities: string[],
         entitiesFallback: string[],
     ): Partial<CardConfig> {
@@ -108,7 +111,7 @@ export class TodayCard extends LitElement {
             });
         }
 
-        return TodayCard.buildConfig(calendarEntities);
+        return TodayCard.buildConfig(calendarEntities, hass);
     }
 
     /**
@@ -122,14 +125,14 @@ export class TodayCard extends LitElement {
      * Older versions ignore the property, so this stays safe to ship.
      */
     static getEntitySuggestion(
-        _hass: HomeAssistant,
+        hass: HomeAssistant,
         entityId: string,
     ): EntitySuggestion | null {
         if (!entityId.startsWith("calendar.")) {
             return null;
         }
 
-        return {config: TodayCard.buildConfig([entityId])};
+        return {config: TodayCard.buildConfig([entityId], hass)};
     }
 
     /**

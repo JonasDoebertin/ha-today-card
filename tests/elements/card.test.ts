@@ -11,6 +11,7 @@ import {TodayCard} from "../../src/elements/card";
 import {CardConfig, cardConfigStruct} from "../../src/structs/config";
 import {is} from "superstruct";
 import localize from "../../src/localization/localize";
+import {setHass} from "../../src/globals";
 import {
     calendarApi,
     cardConfig,
@@ -507,6 +508,31 @@ describe("the configuration it suggests", (): void => {
         expect(suggestion?.config.entities).toEqual([
             {entity: "calendar.work", color: "light-blue"},
         ]);
+    });
+
+    test("titles the stub config in the given hass's language, even before hass is known globally", (): void => {
+        setHass(null as never);
+
+        const config = TodayCard.getStubConfig(
+            fakeHass({language: "de"}),
+            ["calendar.work"],
+            [],
+        );
+
+        expect(config.title).toBe(localize("config.stub.title", "de"));
+    });
+
+    test("titles the entity suggestion in the given hass's language, even before hass is known globally", (): void => {
+        setHass(null as never);
+
+        const suggestion = TodayCard.getEntitySuggestion(
+            fakeHass({language: "de"}),
+            "calendar.work",
+        );
+
+        expect(suggestion?.config.title).toBe(
+            localize("config.stub.title", "de"),
+        );
     });
 });
 
