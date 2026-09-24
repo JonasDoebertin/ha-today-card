@@ -115,14 +115,8 @@ export class TodayCard extends LitElement {
     }
 
     /**
-     * Offer the card in the picker when someone selects a calendar entity.
-     *
-     * Home Assistant 2026.6 and later call this for whichever entity the user
-     * picked. Returning null keeps the card out of the suggestion list, which
-     * matters because every custom card that answers indiscriminately makes the
-     * list less useful for everyone.
-     *
-     * Older versions ignore the property, so this stays safe to ship.
+     * Home Assistant 2026.6+ calls this for the entity the user picked;
+     * null keeps the card out of the suggestion list. Older versions ignore it.
      */
     static getEntitySuggestion(
         hass: HomeAssistant,
@@ -136,11 +130,8 @@ export class TodayCard extends LitElement {
     }
 
     /**
-     * Masonry layout uses this to balance columns, where 1 is roughly 50px.
-     * Without it Home Assistant assumes 1 and packs the column badly, since a
-     * card showing eight events is nothing like the height of one showing none.
-     *
-     * The empty-state message occupies a row too, hence the floor of 1.
+     * Masonry layout units are roughly 50px each; without this Home Assistant
+     * assumes 1 regardless of how many events are showing.
      */
     getCardSize(): number {
         const rows =
@@ -182,12 +173,9 @@ export class TodayCard extends LitElement {
     }
 
     /**
-     * Refresh on the minute, not a minute from now. Whether an event is past,
-     * current or still to come turns over at the minute boundary, so a timer
-     * running at an arbitrary phase shows the change up to a minute late.
-     *
-     * The redraw is asked for separately: a calendar that takes its time
-     * answering would otherwise hold up the clock as well as the events.
+     * Refresh on the minute boundary, since that is when an event's past/
+     * current/future status turns over. The redraw is requested separately so
+     * a slow calendar fetch doesn't hold up the clock too.
      */
     private scheduleRefresh(): void {
         const untilBoundary =
@@ -270,8 +258,7 @@ export class TodayCard extends LitElement {
         }
 
         // Lit clears changed when a render is skipped, so previous is the
-        // last hass considered rather than the last one rendered. Comparing
-        // for equality survives that; a comparison of degree would not.
+        // last hass considered, not the last one rendered.
         const previous = changed.get("hass") as HomeAssistant | undefined;
 
         if (!previous || previous.language !== this.hass.language) {
@@ -332,10 +319,8 @@ export class TodayCard extends LitElement {
 
         const failed = this.failedEntities.length > 0;
 
-        // "Nothing scheduled" is only true when every calendar answered. If one
-        // of them failed, an empty list means we do not know what is on today,
-        // so the error takes the place of the reassuring message rather than
-        // sitting next to it.
+        // An empty list only means "nothing scheduled" if every calendar
+        // answered; otherwise the error takes the fallback message's place.
         const rows = [
             ...(failed ? [this.renderError()] : []),
             ...this.events.map((event: CalendarEvent): TemplateResult => {

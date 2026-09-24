@@ -3,8 +3,8 @@
 
 // Raise these when the measured coverage rises.
 const THRESHOLDS = {
-    functions: 93,
-    lines: 98.5,
+    functions: 96.5,
+    lines: 99,
 };
 
 const REPORT = "coverage/lcov.info";
@@ -56,9 +56,7 @@ function reportedFiles(report: string): Set<string> {
     return files;
 }
 
-// Files with no executable code (only interfaces, type aliases and ambient
-// declarations) never earn an `SF:` entry even when a test imports them; none
-// of src/ needs that today, so this stays empty until one does.
+// Type-only modules get no SF: entry; list them here.
 const TYPE_ONLY_FILES = new Set<string>();
 
 async function findUnreportedFiles(report: string): Promise<string[]> {

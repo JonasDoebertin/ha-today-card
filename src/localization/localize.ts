@@ -33,9 +33,7 @@ export default function localize(key: string, language?: string): string {
     const lang = language ?? getHass()?.language ?? DEFAULT_LANG;
     const base = lang.split("-")[0] as string;
 
-    // A translation file that has not caught up with a newly added key, or a
-    // regional variant (es-419, de-CH) nothing ships separately, falls back
-    // in turn rather than showing the raw key.
+    // Exact code, then base language (es-419 → es), then English, then the key.
     return (
         getTranslatedString(lang, key)
         ?? getTranslatedString(base, key)

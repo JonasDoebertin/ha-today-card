@@ -1,8 +1,6 @@
 import {afterEach, describe, expect, Mock, spyOn, test} from "bun:test";
 import {loadHaComponents} from "../../src/functions/hacks";
 
-// Spying on customElements.get keeps each test's fixtures local, unlike a
-// real customElements.define, which is permanent for the process.
 let get: Mock<typeof customElements.get> | undefined;
 
 afterEach((): void => {

@@ -6,8 +6,7 @@ import {REQUEST_TIMEOUT} from "../const";
 
 export interface CalendarResult {
     events: CalendarEvent[];
-    /** Entity ids whose fetch failed, so the card can say so instead of
-     *  presenting a partial day as if it were the whole day. */
+    /** Entity ids whose fetch failed. */
     failed: string[];
 }
 
@@ -60,9 +59,8 @@ async function fetchEvents(
                     collectedEvents.push(...events);
                 })
                 .catch((error): void => {
-                    // A calendar that fails contributes no events, which is
-                    // indistinguishable from a calendar with nothing on today.
-                    // Record it so the card can tell the difference.
+                    // Record the failure so the card can tell it apart from a
+                    // calendar with nothing on today.
                     console.error(error);
                     failed.push(entity.entity);
                 }),
