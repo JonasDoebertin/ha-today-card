@@ -3,7 +3,6 @@ import "../../src/elements/editor";
 import {CardConfig} from "../../src/structs/config";
 import {cardConfig, fakeHass} from "../support/factories";
 import {mount, recordEvents, settle, shadowOne} from "../support/mount";
-import localize from "../../src/localization/localize";
 
 interface Configurable extends HTMLElement {
     setConfig(config: CardConfig): void;
@@ -198,7 +197,9 @@ describe("the exclude field's helper text", (): void => {
         const {computeHelper} = await form();
 
         expect(computeHelper({name: "exclude"})).toBe(
-            localize("config.helper.exclude"),
+            "One pattern per line. Matches event titles and descriptions. "
+                + "Wrap a pattern in slashes to use a regular expression, "
+                + "e.g. /^Gym/i.",
         );
     });
 
@@ -215,8 +216,7 @@ describe("the exclude textarea while editing", (): void => {
 
         await changeForm(editor, {...cardConfig({}), exclude: "foo\n\nb"});
 
-        // Home Assistant hands the resulting config back through setConfig,
-        // simulating the round trip a real config-changed causes.
+        // Simulate HA handing the config back via setConfig.
         (editor as unknown as {setConfig(config: CardConfig): void}).setConfig(
             cardConfig({exclude: ["foo", "b"]}),
         );

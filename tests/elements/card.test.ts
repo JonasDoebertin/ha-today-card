@@ -519,7 +519,7 @@ describe("the configuration it suggests", (): void => {
             [],
         );
 
-        expect(config.title).toBe(localize("config.stub.title", "de"));
+        expect(config.title).toBe("Heutiger Terminplan");
     });
 
     test("titles the entity suggestion in the given hass's language, even before hass is known globally", (): void => {
@@ -530,9 +530,7 @@ describe("the configuration it suggests", (): void => {
             "calendar.work",
         );
 
-        expect(suggestion?.config.title).toBe(
-            localize("config.stub.title", "de"),
-        );
+        expect(suggestion?.config.title).toBe("Heutiger Terminplan");
     });
 });
 
