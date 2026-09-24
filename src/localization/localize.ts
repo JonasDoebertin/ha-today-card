@@ -8,7 +8,6 @@ import {getHass} from "../globals";
 const TRANSLATIONS: Record<string, unknown> = {
     de,
     en,
-    "en-GB": en,
     es,
     fr,
     it,
@@ -30,13 +29,16 @@ function getTranslatedString(lang: string, key: string): string | undefined {
     }
 }
 
-export default function localize(key: string): string {
-    const lang = getHass()?.language ?? DEFAULT_LANG;
+export default function localize(key: string, language?: string): string {
+    const lang = language ?? getHass()?.language ?? DEFAULT_LANG;
+    const base = lang.split("-")[0] as string;
 
-    // A translation file that has not caught up with a newly added key
-    // falls back to English rather than showing the raw key.
+    // A translation file that has not caught up with a newly added key, or a
+    // regional variant (es-419, de-CH) nothing ships separately, falls back
+    // in turn rather than showing the raw key.
     return (
         getTranslatedString(lang, key)
+        ?? getTranslatedString(base, key)
         ?? getTranslatedString(DEFAULT_LANG, key)
         ?? key
     );
