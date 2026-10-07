@@ -25,7 +25,8 @@ Translations live in `src/localization/lang/` as one JSON file per locale.
 3. Run `bun run format:fix` and open a pull request.
 
 Missing keys fall back to English, so a partial translation still works. It is
-better to leave a key out than to guess at it.
+better to leave a key out than to guess at it. A regional code (e.g. de-CH)
+falls back to its base language file, then English.
 
 ## Development setup
 
@@ -47,10 +48,11 @@ the manual installation section of the README.
 The same checks run in CI, so running them before pushing saves a round trip.
 
 ```bash
-bun run format:check # Prettier
-bun run typecheck    # tsc --noEmit, strict mode
-bun test             # unit and component tests
-bun run build        # the bundle CI publishes
+bun run format:check     # Prettier
+bun run typecheck        # tsc --noEmit, strict mode
+bun run test:coverage    # unit and component tests, with coverage
+bun run coverage:check   # holds src/ coverage to its floor
+bun run build            # the bundle CI publishes
 ```
 
 Tests live in `tests/`, mirroring the structure of `src/`. A bug fix is easiest

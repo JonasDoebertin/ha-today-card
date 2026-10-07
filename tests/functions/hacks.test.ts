@@ -1,15 +1,18 @@
-import {describe, expect, test} from "bun:test";
+import {afterEach, describe, expect, Mock, spyOn, test} from "bun:test";
 import {loadHaComponents} from "../../src/functions/hacks";
 
-/**
- * Home Assistant does not register `ha-entity-picker` or `ha-form` until
- * something asks a built-in card for its config element. The editor needs both
- * before it renders, so it pokes the built-in cards into loading them.
- */
+let get: Mock<typeof customElements.get> | undefined;
+
+afterEach((): void => {
+    get?.mockRestore();
+});
+
+// Home Assistant does not register ha-entity-picker or ha-form until
+// something asks a built-in card for its config element.
 describe("loadHaComponents", (): void => {
     test("survives a Home Assistant that has not loaded the built-in cards", (): void => {
-        // Nothing to poke and nothing already registered: it must not throw,
-        // or opening the editor would fail outright.
+        get = spyOn(customElements, "get").mockReturnValue(undefined);
+
         expect((): void => loadHaComponents()).not.toThrow();
     });
 
@@ -28,12 +31,17 @@ describe("loadHaComponents", (): void => {
             }
         }
 
-        if (!customElements.get("hui-entities-card")) {
-            customElements.define("hui-entities-card", EntitiesCardStub);
-        }
-        if (!customElements.get("hui-entity-badge")) {
-            customElements.define("hui-entity-badge", EntityBadgeStub);
-        }
+        get = spyOn(customElements, "get").mockImplementation(
+            (tag: string): CustomElementConstructor | undefined => {
+                if (tag === "hui-entities-card") {
+                    return EntitiesCardStub;
+                }
+                if (tag === "hui-entity-badge") {
+                    return EntityBadgeStub;
+                }
+                return undefined;
+            },
+        );
 
         loadHaComponents();
 

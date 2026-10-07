@@ -90,14 +90,14 @@ describe("what comes back out of the form", (): void => {
         expect(changes[0]?.config.exclude).toEqual(["standup", "/lunch/i"]);
     });
 
-    test("trims each line and drops the blank ones", async (): Promise<void> => {
+    test("drops blank and whitespace-only lines", async (): Promise<void> => {
         // A trailing newline is what a textarea gives you for free, and an
         // empty pattern would match every event.
         const {editor, changes} = await mountEditor({});
 
         await changeForm(editor, {
             ...cardConfig({}),
-            exclude: "  standup  \n\n   \nlunch\n",
+            exclude: "standup\n\n   \nlunch\n",
         });
 
         expect(changes[0]?.config.exclude).toEqual(["standup", "lunch"]);
@@ -119,6 +119,17 @@ describe("what comes back out of the form", (): void => {
         await changeForm(editor, {...cardConfig({}), exclude: ""});
 
         expect(changes[0]?.config).not.toHaveProperty("exclude");
+    });
+
+    test("keeps a pattern's own padding, trimming only to decide it isn't blank", async (): Promise<void> => {
+        const {editor, changes} = await mountEditor({});
+
+        await changeForm(editor, {
+            ...cardConfig({}),
+            exclude: "  padded\n\n   \nlunch\n",
+        });
+
+        expect(changes[0]?.config.exclude).toEqual(["  padded", "lunch"]);
     });
 
     test("accepts an exclude list that is already an array", async (): Promise<void> => {
@@ -168,6 +179,63 @@ describe("what comes back out of the form", (): void => {
         await changeForm(editor, {...cardConfig({}), title: "Today"});
 
         expect(escaped).toEqual([]);
+    });
+});
+
+describe("the exclude field's helper text", (): void => {
+    const form = async (): Promise<{
+        computeHelper: (schema: Record<string, unknown>) => string;
+    }> => {
+        const {editor} = await mountEditor({});
+
+        return shadowOne(editor, "ha-form") as unknown as {
+            computeHelper: (schema: Record<string, unknown>) => string;
+        };
+    };
+
+    test("localizes the exclude helper", async (): Promise<void> => {
+        const {computeHelper} = await form();
+
+        expect(computeHelper({name: "exclude"})).toBe(
+            "One pattern per line. Matches event titles and descriptions. "
+                + "Wrap a pattern in slashes to use a regular expression, "
+                + "e.g. /^Gym/i.",
+        );
+    });
+
+    test("has no helper for any other field", async (): Promise<void> => {
+        const {computeHelper} = await form();
+
+        expect(computeHelper({name: "title"})).toBeFalsy();
+    });
+});
+
+describe("the exclude textarea while editing", (): void => {
+    test("keeps a blank line the user just typed between patterns", async (): Promise<void> => {
+        const {editor} = await mountEditor({});
+
+        await changeForm(editor, {...cardConfig({}), exclude: "foo\n\nb"});
+
+        // Simulate HA handing the config back via setConfig.
+        (editor as unknown as {setConfig(config: CardConfig): void}).setConfig(
+            cardConfig({exclude: ["foo", "b"]}),
+        );
+        await settle(editor);
+
+        expect(formData(editor).exclude).toBe("foo\n\nb");
+    });
+
+    test("falls back to the stored patterns once the config changes from outside", async (): Promise<void> => {
+        const {editor} = await mountEditor({});
+
+        await changeForm(editor, {...cardConfig({}), exclude: "foo\n\nb"});
+
+        (editor as unknown as {setConfig(config: CardConfig): void}).setConfig(
+            cardConfig({exclude: ["other"]}),
+        );
+        await settle(editor);
+
+        expect(formData(editor).exclude).toBe("other");
     });
 });
 

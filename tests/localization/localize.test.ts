@@ -70,6 +70,38 @@ describe("localize", (): void => {
         );
     });
 
+    test("falls back to the base language for a regional Spanish variant", (): void => {
+        setHass(fakeHass({language: "es-419"}));
+
+        expect(localize("noEvents.title")).toBe(
+            readKey(es, "noEvents.title") as string,
+        );
+    });
+
+    test("falls back to the base language for Swiss German", (): void => {
+        setHass(fakeHass({language: "de-CH"}));
+
+        expect(localize("noEvents.title")).toBe(
+            readKey(de, "noEvents.title") as string,
+        );
+    });
+
+    test("falls back to English for a regional variant nothing ships", (): void => {
+        setHass(fakeHass({language: "pt-BR"}));
+
+        expect(localize("noEvents.title")).toBe(
+            readKey(en, "noEvents.title") as string,
+        );
+    });
+
+    test("accepts a language override instead of reading the global hass", (): void => {
+        setHass(fakeHass({language: "en"}));
+
+        expect(localize("noEvents.title", "de")).toBe(
+            readKey(de, "noEvents.title") as string,
+        );
+    });
+
     test("returns the key itself when nothing defines it", (): void => {
         setHass(fakeHass({language: "en"}));
 
@@ -83,6 +115,49 @@ describe("localize", (): void => {
 
         expect(localize("event.schedule.from.nope")).toBe(
             "event.schedule.from.nope",
+        );
+    });
+});
+
+describe("translation fixes", (): void => {
+    test("fr", (): void => {
+        expect(localize("event.schedule.from", "fr")).toBe("À partir de");
+        expect(localize("config.stub.title", "fr")).toBe("Programme du jour");
+        expect(localize("config.label.advance", "fr")).toBe(
+            "Jours de décalage",
+        );
+        expect(localize("config.label.limit", "fr")).toBe(
+            "Nombre maximum d'événements",
+        );
+        expect(localize("config.label.show_all_day_events", "fr")).toBe(
+            "Afficher les événements sur toute la journée",
+        );
+        expect(localize("config.label.show_past_events", "fr")).toBe(
+            "Afficher les événements passés",
+        );
+    });
+
+    test("de", (): void => {
+        expect(localize("config.label.fallback_color", "de")).toBe(
+            "Standardfarbe",
+        );
+        expect(localize("config.label.show_all_day_events", "de")).toBe(
+            "Ganztägige Termine anzeigen",
+        );
+        expect(localize("config.label.show_past_events", "de")).toBe(
+            "Vergangene Termine anzeigen",
+        );
+    });
+
+    test("en", (): void => {
+        expect(localize("config.label.show_all_day_events", "en")).toBe(
+            "Show all-day events",
+        );
+        expect(localize("config.label.fallback_color", "en")).toBe(
+            "Fallback color",
+        );
+        expect(localize("config.label.time_format", "en")).toBe(
+            "Time display format",
         );
     });
 });

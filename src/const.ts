@@ -6,6 +6,8 @@ export const REFRESH_INTERVAL: number = 60 * 1_000;
 
 export const MINIMUM_REFRESH_DELAY: number = 1_000;
 
+export const REQUEST_TIMEOUT: number = 30 * 1_000;
+
 export const TIME_FORMATS = [
     {
         value: "H:mm",

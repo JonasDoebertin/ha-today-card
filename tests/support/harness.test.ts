@@ -27,6 +27,6 @@ describe("test harness", (): void => {
 
         const card = await mount("today-card", {hass: fakeHass()});
 
-        expect(shadowHtml(card)).toBeString();
+        expect(shadowHtml(card)).toContain("<ha-card");
     });
 });

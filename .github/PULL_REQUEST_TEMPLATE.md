@@ -10,6 +10,7 @@
 
 - [ ] `bun run format:check` passes
 - [ ] `bun run typecheck` passes
-- [ ] `bun test` passes
+- [ ] `bun run test:coverage` passes
+- [ ] `bun run coverage:check` passes
 - [ ] Tried the change in a running Home Assistant instance
 - [ ] README updated, if the change adds or changes a configuration option

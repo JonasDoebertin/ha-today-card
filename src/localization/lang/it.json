@@ -16,6 +16,9 @@
         "stub": {
             "title": "Programma di oggi"
         },
+        "helper": {
+            "exclude": "Uno schema per riga. Cerca nel titolo e nella descrizione degli eventi. Racchiudi uno schema tra barre per usare un'espressione regolare, ad es. /^Gym/i."
+        },
         "label": {
             "advance": "Anticipo",
             "clear": "Cancella",

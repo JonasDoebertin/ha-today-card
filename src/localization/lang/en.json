@@ -16,6 +16,9 @@
         "stub": {
             "title": "Today's Schedule"
         },
+        "helper": {
+            "exclude": "One pattern per line. Matches event titles and descriptions. Wrap a pattern in slashes to use a regular expression, e.g. /^Gym/i."
+        },
         "label": {
             "advance": "Advance",
             "clear": "Clear",
@@ -23,13 +26,13 @@
             "content": "Content",
             "entities": "Entities",
             "exclude": "Exclude events matching",
-            "fallback_color": "Fallback Color",
+            "fallback_color": "Fallback color",
             "interactions": "Interactions",
-            "show_all_day_events": "Show all day events",
+            "show_all_day_events": "Show all-day events",
             "show_past_events": "Show past events",
             "limit": "Max. number of events",
             "tap_action": "Tap behavior",
-            "time_format": "Time Display Format",
+            "time_format": "Time display format",
             "title": "Title"
         }
     }
