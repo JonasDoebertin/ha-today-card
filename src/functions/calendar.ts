@@ -31,7 +31,10 @@ export async function getEvents(
     );
 
     return {
-        events: limitEvents(sortEvents(filterEvents(events, config)), config),
+        events: limitEvents(
+            sortEvents(filterEvents(deduplicateEvents(events, config), config)),
+            config,
+        ),
         failed,
     };
 }
@@ -70,6 +73,28 @@ async function fetchEvents(
     await Promise.all(promises);
 
     return {events: collectedEvents, failed};
+}
+
+function deduplicateEvents(
+    events: CalendarEvent[],
+    config: CardConfig,
+): CalendarEvent[] {
+    if (!config.combine_similar_events) {
+        return events;
+    }
+
+    const seen = new Set<string>();
+
+    return events.filter((event: CalendarEvent): boolean => {
+        const key = `${event.title}\u0000${event.start.unix()}\u0000${event.end.unix()}`;
+
+        if (seen.has(key)) {
+            return false;
+        }
+
+        seen.add(key);
+        return true;
+    });
 }
 
 function withTimeout<T>(request: Promise<T>, url: string): Promise<T> {

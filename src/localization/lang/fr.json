@@ -21,6 +21,7 @@
         },
         "label": {
             "advance": "Jours de décalage",
+            "combine_similar_events": "Combiner les événements similaires",
             "clear": "Supprimer",
             "color": "Couleur",
             "content": "Contenu",

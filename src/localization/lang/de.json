@@ -21,6 +21,7 @@
         },
         "label": {
             "advance": "Vorlauf",
+            "combine_similar_events": "Ähnliche Termine zusammenfassen",
             "clear": "Entfernen",
             "color": "Farbe",
             "content": "Inhalt",
