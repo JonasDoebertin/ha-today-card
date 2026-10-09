@@ -100,7 +100,8 @@ Lit elements have a DOM, defines an `action-handler` stand-in, and clears the
 2. Parallel API calls to Home Assistant's `calendars/{entity}` endpoints
 3. Raw events transformed into `CalendarEvent` instances
 4. Events filtered based on `show_all_day_events` and `show_past_events` config
-5. Events sorted: all-day events first (by duration, then day), then regular events (by start time)
+5. With `combine_similar_events`, events sharing title, start and end are merged; the copy from the first configured calendar wins
+6. Events sorted: all-day events first (by duration, then day), then regular events (by start time)
 
 ### Configuration Validation
 

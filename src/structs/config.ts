@@ -41,6 +41,7 @@ export const cardConfigStruct = assign(
         fallback_color: optional(string()),
         show_all_day_events: optional(boolean()),
         show_past_events: optional(boolean()),
+        combine_similar_events: optional(boolean()),
         limit: optional(
             refine(number(), "non-negative", (value) => value >= 0),
         ),

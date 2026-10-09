@@ -23,6 +23,7 @@
             "advance": "Anticipo",
             "clear": "Cancella",
             "color": "Colore",
+            "combine_similar_events": "Combina eventi simili",
             "content": "Contenuto",
             "entities": "Entità",
             "exclude": "Escludi gli eventi corrispondenti",

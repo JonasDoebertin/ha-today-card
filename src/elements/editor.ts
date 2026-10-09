@@ -90,6 +90,7 @@ const FORM_SCHEMA = [
                 schema: [
                     {name: "show_all_day_events", selector: {boolean: {}}},
                     {name: "show_past_events", selector: {boolean: {}}},
+                    {name: "combine_similar_events", selector: {boolean: {}}},
                 ],
             },
         ],
