@@ -646,7 +646,7 @@ describe("a calendar that answers with a malformed event", (): void => {
     );
 });
 
-describe("combine_similar_events", (): void => {
+describe("combining similar events", (): void => {
     const shared = timed(
         "Party",
         "2026-09-18T14:00:00Z",
@@ -687,27 +687,80 @@ describe("combine_similar_events", (): void => {
         expect(titles).toEqual(["Party", "Party"]);
     });
 
-    test("keeps events with the same title but different times", async (): Promise<void> => {
-        const morning = timed(
-            "Standup",
-            "2026-09-18T09:00:00Z",
-            "2026-09-18T09:30:00Z",
+    test("keeps events with the same title and start but a different end", async (): Promise<void> => {
+        const short = timed(
+            "Gym",
+            "2026-09-18T18:00:00Z",
+            "2026-09-18T19:00:00Z",
         );
-        const afternoon = timed(
-            "Standup",
-            "2026-09-18T15:00:00Z",
-            "2026-09-18T15:30:00Z",
+        const long = timed(
+            "Gym",
+            "2026-09-18T18:00:00Z",
+            "2026-09-18T20:00:00Z",
         );
 
         const titles = await titlesFrom(
             {combine_similar_events: true, show_past_events: true},
             {
-                "calendar.a": [morning],
-                "calendar.b": [afternoon],
+                "calendar.a": [short],
+                "calendar.b": [long],
             },
         );
 
-        expect(titles).toEqual(["Standup", "Standup"]);
+        expect(titles).toEqual(["Gym", "Gym"]);
+    });
+
+    test("keeps events with the same title and end but a different start", async (): Promise<void> => {
+        const early = timed(
+            "Gym",
+            "2026-09-18T17:00:00Z",
+            "2026-09-18T19:00:00Z",
+        );
+        const late = timed(
+            "Gym",
+            "2026-09-18T18:00:00Z",
+            "2026-09-18T19:00:00Z",
+        );
+
+        const titles = await titlesFrom(
+            {combine_similar_events: true, show_past_events: true},
+            {
+                "calendar.a": [early],
+                "calendar.b": [late],
+            },
+        );
+
+        expect(titles).toEqual(["Gym", "Gym"]);
+    });
+
+    test("keeps the other calendar's copy when the first one is excluded", async (): Promise<void> => {
+        const titles = await titlesFrom(
+            {combine_similar_events: true, exclude: ["private"]},
+            {
+                "calendar.a": [{...shared, description: "private"}],
+                "calendar.b": [shared],
+            },
+        );
+
+        expect(titles).toEqual(["Party"]);
+    });
+
+    test("counts a merged event once against the limit", async (): Promise<void> => {
+        const dinner = timed(
+            "Dinner",
+            "2026-09-18T18:00:00Z",
+            "2026-09-18T19:00:00Z",
+        );
+
+        const titles = await titlesFrom(
+            {combine_similar_events: true, limit: 3},
+            {
+                "calendar.a": [onlyOnA, shared],
+                "calendar.b": [shared, dinner],
+            },
+        );
+
+        expect(titles).toEqual(["Dentist", "Party", "Dinner"]);
     });
 
     test("keeps events with different titles at the same time", async (): Promise<void> => {
