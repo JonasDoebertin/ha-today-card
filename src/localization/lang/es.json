@@ -21,9 +21,9 @@
         },
         "label": {
             "advance": "Avance",
-            "combine_similar_events": "Combinar eventos similares",
             "clear": "Borrar",
             "color": "Color",
+            "combine_similar_events": "Combinar eventos similares",
             "content": "Contenido",
             "entities": "Entidades",
             "exclude": "Excluir eventos que coincidan",
