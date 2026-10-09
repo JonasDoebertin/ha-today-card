@@ -10,7 +10,6 @@ export interface CalendarResult {
     failed: string[];
 }
 
-/** Fetch events for the configured day and apply filtering, deduplication, sorting, and limits. */
 export async function getEvents(
     config: CardConfig,
     entities: EntitiesRowConfig[],
@@ -40,7 +39,6 @@ export async function getEvents(
     };
 }
 
-/** Fetch raw events from every calendar entity, preserving the configured entity order. */
 async function fetchEvents(
     entities: EntitiesRowConfig[],
     start: dayjs.Dayjs,
@@ -77,7 +75,6 @@ async function fetchEvents(
     return {events: results.flat(), failed};
 }
 
-/** Drop events that share a title, start, and end with an earlier event. */
 function deduplicateEvents(
     events: CalendarEvent[],
     config: CardConfig,
