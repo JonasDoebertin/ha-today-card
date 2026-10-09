@@ -743,15 +743,24 @@ describe("combine_similar_events", (): void => {
         expect(titles).toEqual(["Holiday"]);
     });
 
-    test("keeps the first calendar's event for the color", async (): Promise<void> => {
-        const {events} = await fetchWith(
-            {combine_similar_events: true, show_past_events: true},
-            {
-                "calendar.a": [shared],
-                "calendar.b": [shared],
-            },
+    test("keeps the first calendar's color even when it answers last", async (): Promise<void> => {
+        const entities = [
+            entityRow("calendar.a", "yellow"),
+            entityRow("calendar.b", "purple"),
+        ];
+        const callApi = (_method: string, path: string): Promise<unknown> =>
+            path.startsWith("calendars/calendar.a?")
+                ? new Promise((resolve): void => {
+                      setTimeout((): void => resolve([shared]), 0);
+                  })
+                : Promise.resolve([shared]);
+
+        const {events} = await getEvents(
+            cardConfig({combine_similar_events: true, entities}),
+            entities,
+            fakeHass({callApi}),
         );
 
-        expect(events).toHaveLength(1);
+        expect(events.map((event) => event.color)).toEqual(["yellow"]);
     });
 });
