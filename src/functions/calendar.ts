@@ -10,6 +10,7 @@ export interface CalendarResult {
     failed: string[];
 }
 
+/** Fetch events for the configured day and apply filtering, deduplication, sorting, and limits. */
 export async function getEvents(
     config: CardConfig,
     entities: EntitiesRowConfig[],
@@ -32,13 +33,14 @@ export async function getEvents(
 
     return {
         events: limitEvents(
-            sortEvents(filterEvents(deduplicateEvents(events, config), config)),
+            sortEvents(deduplicateEvents(filterEvents(events, config), config)),
             config,
         ),
         failed,
     };
 }
 
+/** Fetch raw events from every calendar entity, preserving the configured entity order. */
 async function fetchEvents(
     entities: EntitiesRowConfig[],
     start: dayjs.Dayjs,
@@ -46,11 +48,11 @@ async function fetchEvents(
     config: CardConfig,
     hass: HomeAssistant,
 ): Promise<CalendarResult> {
-    const collectedEvents: CalendarEvent[] = [];
+    const results: CalendarEvent[][] = entities.map(() => []);
     const failed: string[] = [];
     const promises: Promise<void>[] = [];
 
-    entities.forEach((entity: EntitiesRowConfig) => {
+    entities.forEach((entity: EntitiesRowConfig, index: number) => {
         const url = `calendars/${entity.entity}?start=${start.toISOString()}&end=${end.toISOString()}`;
 
         promises.push(
@@ -59,7 +61,7 @@ async function fetchEvents(
                     return transformEvents(events, entity, config);
                 })
                 .then((events: CalendarEvent[]): void => {
-                    collectedEvents.push(...events);
+                    results[index] = events;
                 })
                 .catch((error): void => {
                     // Record the failure so the card can tell it apart from a
@@ -72,9 +74,10 @@ async function fetchEvents(
 
     await Promise.all(promises);
 
-    return {events: collectedEvents, failed};
+    return {events: results.flat(), failed};
 }
 
+/** Drop events that share a title, start, and end with an earlier event. */
 function deduplicateEvents(
     events: CalendarEvent[],
     config: CardConfig,
