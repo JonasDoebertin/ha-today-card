@@ -23,6 +23,7 @@
             "advance": "Jours de décalage",
             "clear": "Supprimer",
             "color": "Couleur",
+            "combine_similar_events": "Combiner les événements similaires",
             "content": "Contenu",
             "entities": "Entités",
             "exclude": "Exclure les événements correspondants",

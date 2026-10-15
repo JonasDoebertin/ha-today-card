@@ -23,6 +23,7 @@
             "advance": "Avance",
             "clear": "Borrar",
             "color": "Color",
+            "combine_similar_events": "Combinar eventos similares",
             "content": "Contenido",
             "entities": "Entidades",
             "exclude": "Excluir eventos que coincidan",

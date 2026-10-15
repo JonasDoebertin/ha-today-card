@@ -23,6 +23,7 @@
             "advance": "Vorlauf",
             "clear": "Entfernen",
             "color": "Farbe",
+            "combine_similar_events": "Doppelte Termine zusammenfassen",
             "content": "Inhalt",
             "entities": "Entitäten",
             "exclude": "Termine ausschließen",

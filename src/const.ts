@@ -43,6 +43,7 @@ export const DEFAULT_CONFIG: CardConfig = {
     fallback_color: "primary",
     show_all_day_events: true,
     show_past_events: false,
+    combine_similar_events: false,
     limit: 0,
     tap_action: {
         action: "none",

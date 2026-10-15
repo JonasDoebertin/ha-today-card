@@ -26,7 +26,7 @@ Home Assistant's built-in calendar card shows a month, a week or the next few da
 
 Point it at one or more calendars and it renders today's schedule, one color per calendar, all-day events first.
 
-- Several calendars in one list, each in its own color. Pick the colors or let the card assign them.
+- Several calendars in one list, each in its own color. Pick the colors or let the card assign them. With `combine_similar_events`, an event that sits on two calendars shows up once.
 - All-day events sit at the top. Multi-day events carry a day counter such as `(2/5)`.
 - `advance` moves the card to tomorrow, to the day after, or back to yesterday, so one dashboard can show several days side by side.
 - `exclude` drops recurring clutter by plain text or regular expression, `limit` caps the list, and `show_past_events` decides whether the morning stays visible all afternoon.
@@ -81,6 +81,7 @@ title: "Today's Schedule"
 advance: 4
 show_all_day_events: true
 show_past_events: false
+combine_similar_events: true
 limit: 3
 exclude:
   - "Trash Day"
@@ -109,6 +110,7 @@ tap_action:
 | `advance`             | number          | Optional     | `0`       | Allows to display the schedule of another day then today, eg. `1` for tomorrow's events, `2` for the day after tomorrow, and `-1` for yesterday's events                          |
 | `show_all_day_events` | boolean         | Optional     | `true`    | Whether to show all day events in the schedule                                                                                                                                  |
 | `show_past_events`    | boolean         | Optional     | `false`   | Whether to include past events in the schedule                                                                                                                                  |
+| `combine_similar_events` | boolean | Optional | `false` | Shows events with the same title, start and end only once, in the color of the first calendar listed. This also merges separate events that happen to match, such as two people's "Busy" blocks |
 | `limit`               | number          | Optional     | `0`       | Limits the number of events to display, the default `0` means no limiting                                                                                                       |
 | `exclude`             | list of strings | Optional     | `[]`      | Patterns that hide an event when they match its title or description. Plain text matches case-insensitively anywhere in the value; a pattern wrapped in `/slashes/` is treated as a regular expression (see [excluding events](#excluding-events))   |
 | `time_format`         | string          | Optional     | `HH:mm`   | Define a custom format for displaying the event's start and end times (see [time formatting](#time-formatting))                                                                     |

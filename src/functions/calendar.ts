@@ -31,7 +31,10 @@ export async function getEvents(
     );
 
     return {
-        events: limitEvents(sortEvents(filterEvents(events, config)), config),
+        events: limitEvents(
+            sortEvents(deduplicateEvents(filterEvents(events, config), config)),
+            config,
+        ),
         failed,
     };
 }
@@ -43,11 +46,11 @@ async function fetchEvents(
     config: CardConfig,
     hass: HomeAssistant,
 ): Promise<CalendarResult> {
-    const collectedEvents: CalendarEvent[] = [];
+    const results: CalendarEvent[][] = entities.map(() => []);
     const failed: string[] = [];
     const promises: Promise<void>[] = [];
 
-    entities.forEach((entity: EntitiesRowConfig) => {
+    entities.forEach((entity: EntitiesRowConfig, index: number) => {
         const url = `calendars/${entity.entity}?start=${start.toISOString()}&end=${end.toISOString()}`;
 
         promises.push(
@@ -56,7 +59,7 @@ async function fetchEvents(
                     return transformEvents(events, entity, config);
                 })
                 .then((events: CalendarEvent[]): void => {
-                    collectedEvents.push(...events);
+                    results[index] = events;
                 })
                 .catch((error): void => {
                     // Record the failure so the card can tell it apart from a
@@ -69,7 +72,29 @@ async function fetchEvents(
 
     await Promise.all(promises);
 
-    return {events: collectedEvents, failed};
+    return {events: results.flat(), failed};
+}
+
+function deduplicateEvents(
+    events: CalendarEvent[],
+    config: CardConfig,
+): CalendarEvent[] {
+    if (!config.combine_similar_events) {
+        return events;
+    }
+
+    const seen = new Set<string>();
+
+    return events.filter((event: CalendarEvent): boolean => {
+        const key = `${event.title}\u0000${event.start.unix()}\u0000${event.end.unix()}`;
+
+        if (seen.has(key)) {
+            return false;
+        }
+
+        seen.add(key);
+        return true;
+    });
 }
 
 function withTimeout<T>(request: Promise<T>, url: string): Promise<T> {
