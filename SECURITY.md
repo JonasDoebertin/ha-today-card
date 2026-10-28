@@ -3,8 +3,8 @@
 ## Supported versions
 
 Today Card is a dashboard card that runs in your browser. Only the latest
-release receives fixes. If you run an older version, update through HACS before
-reporting a problem.
+release receives fixes. If you run an older version, update through the
+Marketplace (or HACS before Home Assistant 2026.11) before reporting a problem.
 
 ## Reporting a vulnerability
 

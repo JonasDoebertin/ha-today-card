@@ -4,7 +4,7 @@
 
 **A Lovelace card that shows one day of your calendars as a plain list.**
 
-[![HACS][hacs-badge]][hacs-url]
+[![Marketplace][marketplace-badge]][marketplace-url]
 [![Release][release-badge]][releases-url]
 [![Build][build-badge]][build-url]
 [![License][license-badge]][license-url]
@@ -37,17 +37,25 @@ Point it at one or more calendars and it renders today's schedule, one color per
 
 ## Installation
 
+### Marketplace
+
+On Home Assistant 2026.11 and newer, **Today Card** is in the Marketplace catalog.
+
+1. Go to **Settings** > **Marketplace** and search for **Today Card**.
+2. Select **Install**, then reload your browser.
+3. Add `custom:today-card` to your dashboard like any other card, via the card picker or YAML.
+
+Or use the button. It opens Today Card in the Marketplace, or in HACS on older versions:
+
+[![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
+
 ### HACS
 
-**Today Card** is available in the HACS default store.
+On versions before 2026.11, **Today Card** is in the HACS default store.
 
 1. Open **HACS** in your Home Assistant instance and search for **Today Card**.
 2. Click **Download** and restart Home Assistant if HACS asks you to.
 3. Add `custom:today-card` to your dashboard like any other card, via the card picker or YAML.
-
-Or use the button that takes you straight there:
-
-[![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
 
 ### Manual
 
@@ -329,7 +337,7 @@ Released under the [MIT license](LICENSE).
 
 <!-- Badges -->
 
-[hacs-badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge
+[marketplace-badge]: https://img.shields.io/badge/Marketplace-Catalog-41BDF5.svg?style=for-the-badge
 [release-badge]: https://img.shields.io/github/v/release/JonasDoebertin/ha-today-card?style=for-the-badge
 [build-badge]: https://img.shields.io/github/actions/workflow/status/JonasDoebertin/ha-today-card/build.yml?branch=main&style=for-the-badge
 [license-badge]: https://img.shields.io/github/license/JonasDoebertin/ha-today-card?style=for-the-badge
@@ -337,7 +345,7 @@ Released under the [MIT license](LICENSE).
 
 <!-- References -->
 
-[hacs-url]: https://github.com/hacs/integration
+[marketplace-url]: https://www.home-assistant.io/integrations/marketplace/
 [build-url]: https://github.com/JonasDoebertin/ha-today-card/actions/workflows/build.yml
 [license-url]: https://github.com/JonasDoebertin/ha-today-card/blob/main/LICENSE
 [my-ha-url]: https://my.home-assistant.io/redirect/hacs_repository/?owner=JonasDoebertin&repository=ha-today-card
