@@ -341,14 +341,14 @@ Released under the [MIT license](LICENSE).
 [release-badge]: https://img.shields.io/github/v/release/JonasDoebertin/ha-today-card?style=for-the-badge
 [build-badge]: https://img.shields.io/github/actions/workflow/status/JonasDoebertin/ha-today-card/build.yml?branch=main&style=for-the-badge
 [license-badge]: https://img.shields.io/github/license/JonasDoebertin/ha-today-card?style=for-the-badge
-[my-ha-badge]: https://my.home-assistant.io/badges/hacs_repository.svg
+[my-ha-badge]: https://my.home-assistant.io/badges/marketplace_repository.svg
 
 <!-- References -->
 
 [marketplace-url]: https://www.home-assistant.io/integrations/marketplace/
 [build-url]: https://github.com/JonasDoebertin/ha-today-card/actions/workflows/build.yml
 [license-url]: https://github.com/JonasDoebertin/ha-today-card/blob/main/LICENSE
-[my-ha-url]: https://my.home-assistant.io/redirect/hacs_repository/?owner=JonasDoebertin&repository=ha-today-card
+[my-ha-url]: https://my.home-assistant.io/redirect/marketplace_repository/?owner=JonasDoebertin&repository=ha-today-card
 [releases-url]: https://github.com/JonasDoebertin/ha-today-card/releases
 [latest-release-url]: https://github.com/JonasDoebertin/ha-today-card/releases/latest
 [card-mod-url]: https://github.com/thomasloven/lovelace-card-mod
