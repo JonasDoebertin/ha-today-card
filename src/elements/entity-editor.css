@@ -35,6 +35,8 @@
 /*noinspection CssUnresolvedCustomProperty*/
 .remove-icon {
     flex: 0;
+    --ha-icon-button-size: 36px;
+    /* Home Assistant before 2026.3 reads the mdc variable */
     --mdc-icon-button-size: 36px;
     color: var(--secondary-text-color);
 }
