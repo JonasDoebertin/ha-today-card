@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Today Card is a custom Lovelace card for Home Assistant that displays calendar events for the current day (or other days via the `advance` option). It is built as a Web Component using Lit and TypeScript, bundled with Bun, and distributed via HACS.
+Today Card is a custom Lovelace card for Home Assistant that displays calendar events for the current day (or other days via the `advance` option). It is built as a Web Component using Lit and TypeScript, bundled with Bun, and distributed through the Home Assistant Marketplace (HACS before Home Assistant 2026.11).
 
 ## Tech Stack
 
@@ -134,7 +134,8 @@ Releases are automated via GitHub Actions when a tag matching `v*.*.*` is pushed
 4. Draft release is created with `dist/ha-today-card.js`
 
 A tag with a `-` in it (e.g. `v1.2.0-beta.1`) publishes as a prerelease. The
-output file is what HACS downloads and serves to Home Assistant users.
+output file is what the Marketplace and HACS download and serve to Home Assistant
+users.
 
 ## Code Style
 
