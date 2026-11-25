@@ -20,7 +20,7 @@
   <img width="640" height="254" alt="Today Card for Home Assistant Lovelace Preview" src="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-light.png">
 </picture>
 
-[Installation](#installation) · [Quick start](#quick-start) · [Configuration](#configuration) · [Styling](#custom-styling) · [Recipes](#recipes)
+[Quick start](#quick-start) · [Configuration](#configuration) · [Styling](#custom-styling) · [Recipes](#recipes)
 
 </div>
 
