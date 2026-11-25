@@ -9,7 +9,11 @@
 [![Build][build-badge]][build-url]
 [![License][license-badge]][license-url]
 
+<!-- ha-marketplace:exclude-start -->
+
 [![Open in your Home Assistant instance][my-ha-badge]][my-ha-url]
+
+<!-- ha-marketplace:exclude-end -->
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JonasDoebertin/ha-today-card/main/docs/preview-dark.png">
@@ -34,6 +38,8 @@ Point it at one or more calendars and it renders today's schedule, one color per
 - The markup is flat and the class names are stable, so [card-mod][card-mod-url] restyling stays short. Spacing is exposed as CSS variables.
 - When a calendar cannot be reached, the card names it rather than showing an empty day.
 - Translated into English, German, Spanish, French and Italian.
+
+<!-- ha-marketplace:exclude-start -->
 
 ## Installation
 
@@ -65,6 +71,8 @@ On versions before 2026.11, **Today Card** is in the HACS default store.
    - Set _Url_ to `/local/ha-today-card.js`
    - Set _Resource type_ to `JavaScript Module`
 4. Add `custom:today-card` to your dashboard like any other card, via the card picker or YAML.
+
+<!-- ha-marketplace:exclude-end -->
 
 ## Quick start
 
